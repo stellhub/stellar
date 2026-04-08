@@ -27,17 +27,17 @@ Dual-stack positioning:
 
 ## Core Component Matrix
 
-| Domain | English Name | Chinese Name | Short Name | Responsibility |
+| Domain | English Full Name | Chinese Full Name | Short Name | Responsibility |
 | :--- | :--- | :--- | :--- | :--- |
-| Service discovery | `StarMap` | `乾仪` | `乾` | service metadata, instance discovery, registration |
-| Config center | `Nebula` | `坤仪` | `坤` | dynamic configuration and environment distribution |
-| Tracing | `LightBeam` | `离鉴` | `离` | tracing, observability, request illumination |
-| Governance | `Orbit` | `巽策` | `巽` | routing, traffic governance, rollout control |
-| Limiting and circuit breaking | `Pulsar` | `艮闸` | `艮` | rate limiting, circuit breaking, overload protection |
-| Distributed scheduling | `Chronos` | `震策` | `震` | scheduling and distributed job execution |
-| Distributed locking | `Singularity` | `坎锁` | `坎` | exclusivity and concurrency control |
-| Gateway | `EventHorizon` | `兑门` | `兑` | ingress, boundary traffic, protocol aggregation |
-| Messaging and event flow | `TaiJi Flow` | `太极流` | `中枢` | messaging, event streaming, asynchronous decoupling |
+| <nobr>Service discovery</nobr> | `StarMap` | `乾仪` | `乾` | service metadata, instance discovery, registration |
+| <nobr>Config center</nobr> | `Nebula` | `坤仪` | `坤` | dynamic configuration and environment distribution |
+| <nobr>Tracing</nobr> | `LightBeam` | `离鉴` | `离` | tracing, observability, request illumination |
+| <nobr>Governance</nobr> | `Orbit` | `巽策` | `巽` | routing, traffic governance, rollout control |
+| <nobr>Limiting and circuit breaking</nobr> | `Pulsar` | `艮闸` | `艮` | rate limiting, circuit breaking, overload protection |
+| <nobr>Distributed scheduling</nobr> | `Chronos` | `震策` | `震` | scheduling and distributed job execution |
+| <nobr>Distributed locking</nobr> | `Singularity` | `坎锁` | `坎` | exclusivity and concurrency control |
+| <nobr>Gateway</nobr> | `EventHorizon` | `兑门` | `兑` | ingress, boundary traffic, protocol aggregation |
+| <nobr>Messaging and event flow</nobr> | `TaiJi Flow` | `太极流` | `中枢` | messaging, event streaming, asynchronous decoupling |
 
 Recommended presentation style:
 
