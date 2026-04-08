@@ -46,6 +46,64 @@ Recommended presentation style:
 - `Orbit · 巽`
 - `TaiJi Flow · 太极流`
 
+## Naming Rationale for Core Components
+
+These names are not direct functional translations. Each one binds an engineering role to a stellar metaphor and a Bagua-derived Chinese concept. The English name carries technical branding, while the Chinese name carries structural and philosophical meaning.
+
+### StarMap · 乾仪
+
+- `StarMap` refers to a celestial map or coordinate chart. A service registry is effectively the coordinate system of the platform, allowing services to locate and discover one another.
+- `乾仪` draws from the idea that `Qian` represents Heaven in the *I Ching*. Qian stands for primacy, order, and overarching direction, which matches the role of global service metadata.
+- The character `仪` suggests a formal model, pattern, or governing frame, indicating that this is the system-wide reference standard rather than a single node.
+
+### Nebula · 坤仪
+
+- `Nebula` evokes the stellar nursery: a space that carries matter and gives rise to formation. That aligns with a config center, which carries environment state and nurtures runtime behavior.
+- `坤仪` draws from `Kun`, which represents Earth in the *I Ching*. Kun is the principle of bearing, containing, and sustaining, which fits a configuration substrate.
+- `仪` again signals a formal system of order rather than a random set of config values.
+
+### LightBeam · 离鉴
+
+- `LightBeam` highlights the act of illumination. Distributed tracing exists to make invisible call paths visible across the system.
+- `离鉴` draws from `Li`, which in the *I Ching* is associated with fire, brightness, and visibility.
+- `鉴` means mirror, reflection, or discernment. The point is not only to illuminate the system, but also to inspect and understand it clearly.
+
+### Orbit · 巽策
+
+- `Orbit` expresses governed movement along an established path. That directly fits routing, policy-driven traffic shaping, and service governance.
+- `巽策` draws from `Xun`, associated with wind in the *I Ching*. Wind penetrates gently but thoroughly, which matches the way governance influences traffic behavior without brute force.
+- `策` means strategy, planning, and policy. The name emphasizes rule-based guidance rather than static interception.
+
+### Pulsar · 艮闸
+
+- `Pulsar` suggests stable cadence and precise periodic control. That maps well to quotas, thresholds, and controlled frequency in rate limiting and circuit breaking.
+- `艮闸` draws from `Gen`, associated with stillness and stopping in the *I Ching*.
+- `闸` means gate or sluice. The name makes the engineering meaning explicit: it is a protective gate that stops overload and isolates failure.
+
+### Chronos · 震策
+
+- `Chronos` represents time order and temporal control, making it a natural fit for scheduling.
+- `震策` draws from `Zhen`, associated with thunder and activation in the *I Ching*.
+- `策` emphasizes orchestration and dispatch strategy, not just clock-based triggering.
+
+### Singularity · 坎锁
+
+- `Singularity` captures the idea of collapsing many concurrent contenders into one exclusive control point.
+- `坎锁` draws from `Kan`, associated with water, danger, and constrained passage in the *I Ching*.
+- `锁` states the engineering role directly: exclusive locking that turns disorderly contention into controlled access.
+
+### EventHorizon · 兑门
+
+- `EventHorizon` represents a boundary surface between inside and outside. A gateway is exactly that boundary for ingress traffic.
+- `兑门` draws from `Dui`, associated with openness, speech, and the mouth or opening in the *I Ching*.
+- `门` makes the meaning explicit: it is the formal gate through which external requests enter the system.
+
+### TaiJi Flow · 太极流
+
+- `TaiJi Flow` emphasizes flow as the medium of events, messages, and asynchronous movement across the platform.
+- `太极流` draws from the classical line that Taiji gives rise to LiangYi. In this system, messaging is treated as the central medium that keeps all components connected.
+- The name is intentionally central rather than peripheral, because the messaging layer is the circulation core of the overall architecture.
+
 ## AI Extension Layer
 
 Beyond the Bagua governance matrix, the system defines an independent AI-native extension layer:
@@ -61,6 +119,43 @@ Beyond the Bagua governance matrix, the system defines an independent AI-native 
 | `Meng MCP` | `蒙` | prompt guidance protocol |
 
 The Spirit Axis is intentionally separate from the eight Bagua positions. It is an intelligence layer built above the governance layer.
+
+## Naming Rationale for the AI Layer
+
+### Spirit Axis · 灵觉层
+
+- `Spirit Axis` describes the axis of cognition, understanding, and intelligent response.
+- `灵觉层` means an awareness layer rather than a single model endpoint. It frames AI as a structured layer of reasoning, memory, and execution.
+
+### ZhongFu Engine · 中孚
+
+- `ZhongFu` comes from Hexagram 61 of the *I Ching*, carrying the idea of inner trust, sincerity, and meaningful resonance.
+- As a reasoning engine, the name suggests semantic understanding with internal coherence rather than shallow pattern matching.
+
+### DaChu Memory · 大畜
+
+- `DaChu` comes from Hexagram 26, associated with accumulation, reserve, and cultivated storage.
+- That makes it a strong fit for memory, retrieval, and knowledge retention.
+
+### Sui Agent · 随位
+
+- `Sui` carries the sense of following conditions and adapting to circumstance.
+- `位` adds the idea of role and position, so the name conveys adaptive execution within a defined operational role.
+
+### Xian MCP · 咸
+
+- `Xian` comes from Hexagram 31, centered on resonance and mutual sensing.
+- That makes it appropriate for context perception and resource awareness.
+
+### Heng MCP · 恒
+
+- `Heng` comes from Hexagram 32, centered on constancy and continuity.
+- It fits the tool execution protocol because reliable action must be stable, repeatable, and durable.
+
+### Meng MCP · 蒙
+
+- `Meng` comes from Hexagram 4, associated with instruction, awakening, and guided understanding.
+- It fits prompt guidance because the role of prompting is to orient the model toward correct interpretation and action.
 
 ## Engineering Naming Rules
 
