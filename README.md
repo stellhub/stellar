@@ -1,125 +1,65 @@
 # 星轴
 
-`星轴` 是一套自研微服务中间件体系，其正式英文总品牌为 `Stellar Axis`。整套体系只采用宇宙意象命名：以“星轴”作为品牌主线，以“星图、星云、星轨、视界”等名称表达核心产品，以“星穹层”表达 AI 扩展能力，面向高并发、高可用、可治理、可演进的分布式系统场景。
+`星轴` 的正式英文总品牌为 `Stellar Axis`。本仓库用于沉淀 `Stellar Axis（星轴）` 体系的最终方案，并作为品牌、产品、工程命名、仓库布局和依赖边界的唯一权威文档。
 
-本仓库当前聚焦四类内容：
+当前仓库只保留两份最终文档：
 
-- 总品牌与体系定位
-- 核心组件命名与职责映射
-- 仓库布局与模块边界
-- 依赖约束与架构决策
+- 中文版：`README.md`
+- 英文版：`README-EN.md`
 
-## 核心定位
+所有过程性提案、路线图、初始化计划和阶段性描述均已收敛，不再单独保留。
 
-星轴不是若干开源组件的简单拼装，而是一套统一命名、统一分层、统一依赖约束的中间件体系。整体设计遵循以下原则：
+## 最终品牌结论
 
-- 以 `Stellar Axis（星轴）` 作为唯一总品牌
-- 以 `英文正式名 + 中文宇宙名` 作为核心组件展示方式
-- 以英文工程名作为仓库、模块、依赖坐标的唯一命名口径
-- 以协议、SDK、事件和控制面作为跨产品协作边界
+- 英文总品牌：`Stellar Axis`
+- 中文总品牌：`星轴`
+- 首次标准展示：`Stellar Axis（星轴）`
 
 双栈定位如下：
 
 - Java 框架：`Stellar Core（星核）`
 - Go 框架：`Stellar Pulse（星脉）`
 
-## 核心组件矩阵
+使用规则如下：
 
-| 领域 | 英文全称/中文全称 | 简称 |
-| :--- | :---------------- | :--- |
-| 注册中心 | `StarMap / 星图` | `星图` |
-| 配置中心 | `Nebula / 星云` | `星云` |
-| 链路追踪 | `StarTrace / 星迹` | `星迹` |
-| 服务治理 | `Orbit / 星轨` | `星轨` |
-| 流控熔断 | `Pulsar / 脉冲` | `脉冲` |
-| 任务调度 | `Astrolabe / 星盘` | `星盘` |
-| 分布式锁 | `Singularity / 奇点` | `奇点` |
-| 网关入口 | `EventHorizon / 视界` | `视界` |
-| 消息队列 | `CometFlow / 彗流` | `彗流` |
-| 指标平台 | `Constellation / 星座` | `星座` |
-| 告警平台 | `NovaSignal / 星讯` | `星讯` |
-| 零信平台 | `StarShield / 星盾` | `星盾` |
-| 密钥中心 | `StarKey / 星钥` | `星钥` |
+- 官网、README、方案文档首次出现时，统一使用 `Stellar Axis（星轴）`
+- 中文语境可直接使用 `星轴`
+- 英文语境可直接使用 `Stellar Axis`
+- 不再保留任何传统哲学别名、拼音品牌或混合命名
+
+## 核心组件命名
+
+核心组件统一采用：
+
+> `英文正式名 · 中文宇宙名`
+
+### 核心中间件矩阵
+
+| 领域 | 英文正式名 | 中文正式名 |
+| :--- | :--- | :--- |
+| 注册中心 | `StarMap` | `星图` |
+| 配置中心 | `Nebula` | `星云` |
+| 链路追踪 | `StarTrace` | `星迹` |
+| 服务治理 | `Orbit` | `星轨` |
+| 流控熔断 | `Pulsar` | `脉冲` |
+| 任务调度 | `Astrolabe` | `星盘` |
+| 分布式锁 | `Singularity` | `奇点` |
+| 网关入口 | `EventHorizon` | `视界` |
+| 消息队列 | `CometFlow` | `彗流` |
+| 指标平台 | `Constellation` | `星座` |
+| 告警平台 | `NovaSignal` | `星讯` |
+| 零信任平台 | `StarShield` | `星盾` |
+| 密钥中心 | `StarKey` | `星钥` |
 
 推荐展示方式：
 
 - `StarMap · 星图`
 - `Nebula · 星云`
+- `StarTrace · 星迹`
 - `Orbit · 星轨`
 - `CometFlow · 彗流`
 
-## 核心组件命名释义
-
-这一套命名不再引入地域文化或传统哲学别名，所有名称都直接绑定到宇宙、轨道、光学、时空和天体结构，让品牌语义更加统一、清晰、易扩展。
-
-### StarMap · 星图
-
-- `StarMap` 指星图与星位坐标。服务注册中心的本质，就是为所有服务实例提供统一坐标系，使调用方能够完成定位、发现与导航。
-- 中文名 `星图` 与英文名保持完全同源，既适合品牌传播，也适合工程语境下的理解与记忆。
-
-### Nebula · 星云
-
-- `Nebula` 指星云。星云既是广阔的承载空间，也是新结构的孕育场，契合配置中心承载环境、分发参数、组织运行态的职责。
-- 中文名 `星云` 直接表达“承载与生成”的语义，不再引入额外隐喻层。
-
-### StarTrace · 星迹
-
-- `StarTrace` 强调轨迹可见、路径可追。链路追踪的核心价值，就是把原本不可见的调用过程变成可观测的路径记录。
-- 中文名 `星迹` 与调用链“留痕、显影、回放”的能力高度贴合。
-
-### Orbit · 星轨
-
-- `Orbit` 指轨道。治理系统本质上是在定义请求如何沿着既定轨道运行，包括路由、负载、灰度、流量牵引与治理策略。
-- 中文名 `星轨` 直接体现“路径、约束、演化”的工程语义。
-
-### Pulsar · 脉冲
-
-- `Pulsar` 指脉冲星。脉冲星的节律、阈值和周期感，非常适合表达限流、配额、熔断和过载保护中的频率控制。
-- 中文名 `脉冲` 简洁直接，适合在系统中表达“节拍限制”和“压力闸门”。
-
-### Astrolabe · 星盘
-
-- `Astrolabe` 指星盘或天体测位仪，天然带有时间、方位、周期和校准的语义。
-- 中文名 `星盘` 适合作为调度系统名称，因为它同时涵盖时钟、周期、定位与编排。
-
-### Singularity · 奇点
-
-- `Singularity` 指奇点，强调在复杂分布式空间中收束为唯一控制点，这与锁的排他性与唯一性高度一致。
-- 中文名 `奇点` 也保留了“集中、收束、单点裁决”的表达力。
-
-### EventHorizon · 视界
-
-- `EventHorizon` 指事件视界，是内外边界的临界面。网关正是系统内部与外部流量的边界层，承担接入、聚合、鉴权与转发职责。
-- 中文名 `视界` 直接表达“边界、门面、临界面”的含义，适合作为网关家族主名。
-
-### CometFlow · 彗流
-
-- `CometFlow` 强调高速流动、跨域穿行和轨迹清晰，适合表达消息、事件、异步数据和系统内能量的流转。
-- 中文名 `彗流` 保留了快速、持续、可观测的流动感，适合作为消息系统的主名。
-
-### Constellation · 星座
-
-- `Constellation` 指由多个观测点组成的结构化星座，适合表达由海量指标构成的观测图谱。
-- 中文名 `星座` 对应指标聚合、拓扑映射和全局观测的工程角色。
-
-### NovaSignal · 星讯
-
-- `NovaSignal` 指高可见度、快速扩散的事件信号，适合作为告警、通知、升级和值守联动平台的名称。
-- 中文名 `星讯` 适合承载规则告警、阈值告警和事件编排。
-
-### StarShield · 星盾
-
-- `StarShield` 强调边界防护、身份保护和信任裁定，适合作为统一认证鉴权与零信任平台的工程品牌。
-- 中文名 `星盾` 清晰表达了身份安全与访问防护的职责。
-
-### StarKey · 星钥
-
-- `StarKey` 把密钥系统和统一主钥语义直接绑定到品牌中，适合作为 KMS 与密钥分发系统的工程名称。
-- 中文名 `星钥` 适合承载密钥生命周期管理、证书分发、轮换与机密托管等能力。
-
-## AI 星穹层
-
-在核心治理矩阵之外，体系还定义了独立的 AI 星穹层：
+### AI 星穹层矩阵
 
 | 英文正式名 | 中文正式名 | 职责 |
 | :--- | :--- | :--- |
@@ -131,90 +71,117 @@
 | `Vector MCP` | `星行` | 工具执行协议 |
 | `GuideStar MCP` | `导星` | Prompt 引导协议 |
 
-星穹层不再绑定任何传统哲学结构，而是作为治理层之上的认知扩展层存在。
+## 工程命名规范
 
-## AI 命名释义
+工程实体统一只使用英文，不挂中文宇宙名。
 
-### Astral Layer · 星穹层
+适用对象：
 
-- `Astral Layer` 表示覆盖在治理体系之上的智能层。
-- 中文名 `星穹层` 强调它不是单点模型，而是一层负责理解、记忆、推理与执行的认知结构。
+- Git 仓库名
+- Maven `artifactId`
+- Go module
+- Java 包名
+- CLI 工具名
+- `starter`、`client`、`sdk`、`sidecar`、`operator` 等子模块
 
-### Quasar Engine · 类星引擎
+统一规则如下：
 
-- `Quasar Engine` 借用类星体的高能、高密度与强辐射意象，强调推理引擎的高强度理解与生成能力。
-- 中文名 `类星引擎` 兼顾品牌辨识度与技术感。
+- 全部使用小写英文
+- 单词之间使用中划线 `-`
+- 不使用中文
+- 不使用拼音
+- 不使用中英混拼
 
-### StarVault Memory · 星库
+### 固定工程命名
 
-- `StarVault Memory` 表示统一的知识与上下文储备空间，用于积累、检索和回放模型所需的信息。
-- 中文名 `星库` 直观表达“稳定存储、可检索、可沉淀”的能力。
-
-### Orbit Agent · 轨使
-
-- `Orbit Agent` 强调代理在既定轨道中执行、编排和协同，而不是无边界地扩张。
-- 中文名 `轨使` 适合表达面向任务链路的自治执行能力。
-
-### Sensor MCP · 星感
-
-- `Sensor MCP` 用于上下文感知协议，强调 AI 与外部资源之间首先发生的是感知与识别。
-- 中文名 `星感` 表达环境感知、上下文采样与资源发现。
-
-### Vector MCP · 星行
-
-- `Vector MCP` 用于工具执行协议，强调执行路径清晰、动作可达、结果可验证。
-- 中文名 `星行` 表达工具调用的运行轨迹与稳定执行。
-
-### GuideStar MCP · 导星
-
-- `GuideStar MCP` 用于 Prompt 引导协议，强调系统通过明确导向帮助模型进入正确理解与执行路径。
-- 中文名 `导星` 适合作为提示、引导和约束协议的名称。
-
-## 工程命名口径
-
-以下口径已经固定：
-
-- 总品牌：`Stellar Axis（星轴）`
 - Java 聚合仓库：`stellar-core`
 - Go 聚合仓库：`stellar-pulse`
 - AI 聚合仓库：`astral-layer`
 - 控制平面：`stellar-control-plane`
 - CLI：`stellarctl`
 - 公开依赖坐标根命名空间：`io.stellar.axis`
+- Go 上层命名空间：`github.com/stellar-axis/`
 
-不再保留任何带传统哲学意象或混合语义的旧别名。
+### 工程命名模式
 
-## 网关家族命名建议
+推荐使用：
 
-你现在有内部网关、外部网关、LLM 网关、边缘网关。它们适合共享同一个网关家族主名，并通过二级限定词区分不同职责。
+> `{product}-{capability}-{role}`
 
-建议规则：
+常见示例：
 
-- 家族主名统一使用 `EventHorizon · 视界`
-- 不同项目通过二级限定词区分
-- 仓库名、模块名和部署单元继续使用英文工程后缀区分
+- `starmap-client-spring-boot-starter`
+- `nebula-client-spring-boot-starter`
+- `orbit-governance-starter`
+- `comet-flow-client`
 
-推荐方案如下：
+### OTel SDK 命名最终结论
 
-| 场景 | 英文建议 | 中文建议 | 说明 |
-| :--- | :--- | :--- | :--- |
-| 内部网关 | `EventHorizon Internal` | `视界·内域` | 面向服务网格内部、东西向流量与内部路由治理 |
-| 外部网关 | `EventHorizon External` | `视界·外域` | 面向南北向入口、开放接入与统一暴露 |
-| LLM 网关 | `EventHorizon LLM` | `视界·智域` | 面向模型路由、模型鉴权、Token 治理与 AI 请求编排 |
-| 边缘网关 | `EventHorizon Edge` | `视界·边域` | 面向边缘节点、接入加速、就近转发与边缘计算场景 |
+OpenTelemetry 相关 SDK 统一采用：
 
-如果落实到仓库名，建议分别使用：
+> `{product}-otel-{signal}-{lang}-sdk`
+
+其中：
+
+- `{product}` 表示产品归属，例如 `startrace`
+- `{signal}` 表示信号类型，例如 `logs`、`traces`、`metrics`
+- `{lang}` 表示语言维度，例如 `java`、`go`
+
+当前已经冻结的最终命名如下：
+
+- `startrace-otel-logs-java-sdk`
+- `startrace-otel-logs-go-sdk`
+
+对应坐标示例：
+
+- `io.stellar.axis:startrace-otel-logs-java-sdk`
+- `io.stellar.axis:startrace-otel-logs-go-sdk`
+
+扩展示例如下：
+
+- `startrace-otel-traces-java-sdk`
+- `startrace-otel-metrics-java-sdk`
+- `startrace-otel-traces-go-sdk`
+- `startrace-otel-metrics-go-sdk`
+
+如果未来需要语言级聚合模块，可单独使用：
+
+- `startrace-otel-java-sdk`
+- `startrace-otel-go-sdk`
+
+但这两个名称只建议用于聚合层，不建议用于具体的 `logs` SDK。
+
+### Java 包名建议
+
+- `io.stellar.axis.starmap.client`
+- `io.stellar.axis.nebula.config`
+- `io.stellar.axis.orbit.router`
+- `io.stellar.axis.pulsar.limiter`
+- `io.stellar.axis.cometflow.producer`
+
+## 网关家族命名
+
+网关家族主名统一使用 `EventHorizon · 视界`，通过二级限定词区分不同职责。
+
+| 场景 | 英文建议 | 中文建议 |
+| :--- | :--- | :--- |
+| 内部网关 | `EventHorizon Internal` | `视界·内域` |
+| 外部网关 | `EventHorizon External` | `视界·外域` |
+| LLM 网关 | `EventHorizon LLM` | `视界·智域` |
+| 边缘网关 | `EventHorizon Edge` | `视界·边域` |
+
+对应仓库名建议：
 
 - `event-horizon-internal`
 - `event-horizon-external`
 - `event-horizon-llm`
 - `event-horizon-edge`
 
-## 仓库布局
+## 仓库布局最终结论
 
-整个体系采用“品牌聚合仓库 + 核心产品仓库 + 配套能力仓库”的三层结构。
+体系采用“品牌聚合仓库 + 核心产品仓库 + 配套能力仓库”的三层结构。
 
-顶层聚合仓库：
+### 顶层聚合仓库
 
 - `stellar-axis`
 - `stellar-core`
@@ -225,7 +192,7 @@
 - `stellar-examples`
 - `stellar-deploy`
 
-核心产品仓库：
+### 核心产品仓库
 
 - `starmap`
 - `nebula`
@@ -237,7 +204,7 @@
 - `event-horizon`
 - `comet-flow`
 
-单产品统一目录骨架：
+### 单产品统一目录骨架
 
 ```text
 {product}/
@@ -253,7 +220,15 @@
 └── examples/
 ```
 
-## 依赖规则
+模块约束如下：
+
+- `docs/`、`api/`、`server/`、`clients/`、`deploy/`、`test/` 为核心骨架
+- `starters/` 仅在提供 Java 接入时创建
+- `sidecars/` 仅在存在边车形态时创建
+- `operators/` 仅在存在 Kubernetes 生命周期管理需求时创建
+- `examples/` 仅在需要独立最小示例时创建
+
+## 依赖边界最终结论
 
 整套体系统一采用单向依赖约束。
 
@@ -274,17 +249,23 @@
 - `productA/server -> productB/server`
 - `examples -> product/internal`
 
-## 文档导航
+进一步约束如下：
 
-- [命名提案](./Proposal.md)
-- [命名规范](./Naming-Convention.md)
-- [仓库布局](./Repo-Layout.md)
-- [模块依赖](./Module-Dependency.md)
-- [架构决策记录](./Architecture-Decision-Record.md)
+- `stellar-axis` 只承载规范与入口，不承载运行时代码
+- `stellar-core` 和 `stellar-pulse` 只能依赖公开契约，不能依赖具体服务端实现
+- 核心产品之间只能通过 API、SDK、事件、配置或控制面交互
+- 控制平面只能依赖公开管理面，不能依赖产品内部实现
 
-## 架构口号
+## 最终摘要
 
-> 以星轴定向，以星图定位，以星轨协同，以视界守边。
+本仓库已经固定以下最终结论：
+
+1. 唯一总品牌为 `Stellar Axis（星轴）`
+2. 核心组件统一使用 `英文正式名 · 中文宇宙名`
+3. 仓库、模块、包名、依赖坐标统一只使用英文工程名
+4. 仓库结构固定为聚合仓库、核心产品仓库和配套能力仓库三层
+5. 跨产品协作统一通过公开 API、SDK、事件和控制面完成
+6. OpenTelemetry Logs SDK 最终命名固定为 `startrace-otel-logs-java-sdk` 与 `startrace-otel-logs-go-sdk`
 
 ## License
 
