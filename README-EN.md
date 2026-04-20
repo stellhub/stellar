@@ -31,35 +31,35 @@ Usage rules:
 
 All core products follow this unified display rule:
 
-> `English official name · Chinese cosmic name`
+> `Stell-style name · original imagery`
 
 ### Core Middleware Matrix
 
-| Domain | English Name | Chinese Name |
-| :--- | :--- | :--- |
-| Service Registry | `StarMap` | `星图` |
-| Configuration Center | `Nebula` | `星云` |
-| Distributed Tracing | `StarTrace` | `星迹` |
-| Service Governance | `Orbit` | `星轨` |
-| Rate Limiting and Circuit Breaking | `Pulsar` | `脉冲` |
-| Scheduling | `Astrolabe` | `星盘` |
-| Distributed Locking | `Singularity` | `奇点` |
-| Gateway | `EventHorizon` | `视界` |
-| Messaging | `CometFlow` | `彗流` |
-| Logging Platform | `Spectrum` | `星谱` |
-| Metrics Platform | `Constellation` | `星座` |
-| Alerting Platform | `NovaSignal` | `星讯` |
-| Zero Trust Platform | `StarShield` | `星盾` |
-| Key Management | `StarKey` | `星钥` |
+| Domain | Original Imagery | **Stell-style Name** | Naming Rationale |
+| :--- | :--- | :--- | :--- |
+| **Service Registry** | StarMap (`星图`) | **Stellmap** | Stell + Map, a coordinate map for locating services. |
+| **Configuration Center** | Nebula (`星云`) | **Stellnula** | A shortened blend of Stell and Nebula, suggesting an omnipresent cloud of config. |
+| **Distributed Tracing** | StarTrace (`星迹`) | **Stelltrace** | Stell + Trace, following requests across the system like interstellar routes. |
+| **Service Governance** | Orbit (`星轨`) | **Stellorbit** | Stell + Orbit, keeping services running on predictable paths. |
+| **Rate Limiting and Circuit Breaking** | Pulsar (`脉冲`) | **Stellpulse** | Stell + Pulse, expressing precise control over traffic rhythm. |
+| **Scheduling** | Astrolabe (`星盘`) | **Stellabe** | A shortened blend of Stell and Astrolabe, inspired by the classic celestial instrument. |
+| **Distributed Locking** | Singularity (`奇点`) | **Stellpoint** | A singularity becomes a single point; Stell + Point emphasizes the unique execution point. |
+| **Gateway** | EventHorizon (`视界`) | **Stellgate** | Gate is a natural gateway metaphor, forming a clear "stellar gate". |
+| **Messaging** | CometFlow (`彗流`) | **Stellflow** | Stell + Flow, evoking an ordered data stream like a comet tail. |
+| **Logging Platform** | Spectrum (`星谱`) | **Stellspec** | A shortened blend of Stell and Spectrum, focused on analyzing system "spectra". |
+| **Metrics Platform** | Constellation (`星座`) | **Stellcon** | A shortened blend of Stell and Constellation, connecting metric points into constellations. |
+| **Alerting Platform** | NovaSignal (`星讯`) | **Stellvox** | Vox means voice or message in Latin, giving the alerting plane a clearer signal metaphor. |
+| **Zero Trust Platform** | StarShield (`星盾`) | **Stellguard** | Stell + Guard, a more active and dynamic defensive identity than Shield. |
+| **Key Management** | StarKey (`星钥`) | **Stellkey** | Stell + Key, direct and strong for key management positioning. |
 
 Recommended display examples:
 
-- `StarMap · 星图`
-- `Nebula · 星云`
-- `StarTrace · 星迹`
-- `Spectrum · 星谱`
-- `Orbit · 星轨`
-- `CometFlow · 彗流`
+- `Stellmap · 星图`
+- `Stellnula · 星云`
+- `Stelltrace · 星迹`
+- `Stellspec · 星谱`
+- `Stellorbit · 星轨`
+- `Stellflow · 彗流`
 
 ### AI Astral Layer Matrix
 
@@ -112,28 +112,28 @@ Recommended pattern:
 
 Common examples:
 
-- `starmap-client-spring-boot-starter`
-- `nebula-client-spring-boot-starter`
-- `orbit-governance-starter`
-- `comet-flow-client`
+- `stellmap-client-spring-boot-starter`
+- `stellnula-client-spring-boot-starter`
+- `stellorbit-governance-starter`
+- `stellflow-client`
 
 ### Final Logging SDK Naming
 
-`Spectrum` is the official product name for the logging platform. Its external SDKs use simplified names and do not include `otel` or signal-type markers in the primary SDK name.
+`Stellspec` is the official product name for the logging platform. Its external SDKs use simplified names and do not include `otel` or signal-type markers in the primary SDK name.
 
 The finalized names are:
 
-- `spectrum-java-sdk`
-- `spectrum-go-sdk`
+- `stellspec-java-sdk`
+- `stellspec-go-sdk`
 
 Coordinate examples:
 
-- `io.stellar.axis:spectrum-java-sdk`
-- `io.stellar.axis:spectrum-go-sdk`
+- `io.stellar.axis:stellspec-java-sdk`
+- `io.stellar.axis:stellspec-go-sdk`
 
 Naming semantics:
 
-- `spectrum` is the product ownership for the logging platform
+- `stellspec` is the product ownership for the logging platform
 - `java` and `go` represent the language dimension
 - `sdk` represents the engineering role
 
@@ -141,29 +141,29 @@ Naming semantics:
 
 ### Java Package Naming Examples
 
-- `io.stellar.axis.starmap.client`
-- `io.stellar.axis.nebula.config`
-- `io.stellar.axis.orbit.router`
-- `io.stellar.axis.pulsar.limiter`
-- `io.stellar.axis.cometflow.producer`
+- `io.stellar.axis.stellmap.client`
+- `io.stellar.axis.stellnula.config`
+- `io.stellar.axis.stellorbit.router`
+- `io.stellar.axis.stellpulse.limiter`
+- `io.stellar.axis.stellflow.producer`
 
 ## Gateway Family Naming
 
-The gateway family uses `EventHorizon · 视界` as the unified family name, with secondary qualifiers for specific responsibilities.
+The gateway family uses `Stellgate · 视界` as the unified family name, with secondary qualifiers for specific responsibilities.
 
 | Scenario | English Name | Chinese Name |
 | :--- | :--- | :--- |
-| Internal Gateway | `EventHorizon Internal` | `视界·内域` |
-| External Gateway | `EventHorizon External` | `视界·外域` |
-| LLM Gateway | `EventHorizon LLM` | `视界·智域` |
-| Edge Gateway | `EventHorizon Edge` | `视界·边域` |
+| Internal Gateway | `Stellgate Internal` | `视界·内域` |
+| External Gateway | `Stellgate External` | `视界·外域` |
+| LLM Gateway | `Stellgate LLM` | `视界·智域` |
+| Edge Gateway | `Stellgate Edge` | `视界·边域` |
 
 Recommended repository names:
 
-- `event-horizon-internal`
-- `event-horizon-external`
-- `event-horizon-llm`
-- `event-horizon-edge`
+- `stellgate-internal`
+- `stellgate-external`
+- `stellgate-llm`
+- `stellgate-edge`
 
 ## Final Repository Layout
 
@@ -182,16 +182,20 @@ The ecosystem uses a three-layer structure: aggregate repositories, core product
 
 ### Core Product Repositories
 
-- `starmap`
-- `nebula`
-- `startrace`
-- `orbit`
-- `pulsar`
-- `astrolabe`
-- `singularity`
-- `event-horizon`
-- `comet-flow`
-- `spectrum`
+- `stellmap`
+- `stellnula`
+- `stelltrace`
+- `stellorbit`
+- `stellpulse`
+- `stellabe`
+- `stellpoint`
+- `stellgate`
+- `stellflow`
+- `stellspec`
+- `stellcon`
+- `stellvox`
+- `stellguard`
+- `stellkey`
 
 ### Unified Product Repository Skeleton
 
@@ -254,7 +258,7 @@ This repository has frozen the following final decisions:
 3. Repositories, modules, package names, and dependency coordinates use English engineering names only
 4. Repository topology is fixed as aggregate repositories, core product repositories, and supporting repositories
 5. Cross-product collaboration must happen through public APIs, SDKs, events, and control-plane interfaces
-6. The finalized logging platform name is `Spectrum · 星谱`, and its SDK names are `spectrum-java-sdk` and `spectrum-go-sdk`
+6. The finalized logging platform name is `Stellspec · 星谱`, and its SDK names are `stellspec-java-sdk` and `stellspec-go-sdk`
 
 ## License
 

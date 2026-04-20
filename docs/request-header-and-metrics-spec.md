@@ -55,7 +55,7 @@
 | `X-Stellar-Tenant-Id` | `t-01` | 租户 ID |
 | `X-Stellar-Device-Id` | `d-88f1` | 设备 ID |
 | `X-Stellar-Client-Ip` | `10.20.30.40` | 平台归一后的客户端 IP |
-| `X-Stellar-Source-App` | `event-horizon-external` | 来源应用 |
+| `X-Stellar-Source-App` | `stellgate-external` | 来源应用 |
 | `X-Stellar-Source-Service` | `gateway` | 来源服务 |
 | `X-Stellar-Source-Region` | `cn-east-1` | 来源区域 |
 | `X-Stellar-Env` | `prod` | 来源环境 |

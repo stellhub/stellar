@@ -30,35 +30,35 @@
 
 核心组件统一采用：
 
-> `英文正式名 · 中文宇宙名`
+> `Stell 风格命名 · 原始意象`
 
 ### 核心中间件矩阵
 
-| 领域   | 英文正式名 | 中文正式名 |
-|:-----| :--- | :--- |
-| 注册中心 | `StarMap` | `星图` |
-| 配置中心 | `Nebula` | `星云` |
-| 链路追踪 | `StarTrace` | `星迹` |
-| 服务治理 | `Orbit` | `星轨` |
-| 流控熔断 | `Pulsar` | `脉冲` |
-| 任务调度 | `Astrolabe` | `星盘` |
-| 分布式锁 | `Singularity` | `奇点` |
-| 网关入口 | `EventHorizon` | `视界` |
-| 消息队列 | `CometFlow` | `彗流` |
-| 日志平台 | `Spectrum` | `星谱` |
-| 指标平台 | `Constellation` | `星座` |
-| 告警平台 | `NovaSignal` | `星讯` |
-| 零信平台 | `StarShield` | `星盾` |
-| 密钥中心 | `StarKey` | `星钥` |
+| 领域 | 原始意象 | **Stell 风格命名** | 命名逻辑解析 |
+| :--- | :--- | :--- | :--- |
+| **注册中心** | 星图 (StarMap) | **Stellmap** | Stell + Map，定位服务的地理坐标图。 |
+| **配置中心** | 星云 (Nebula) | **Stellnula** | Stell + Nebula 缩写，像星云一样无处不在。 |
+| **链路追踪** | 星迹 (StarTrace) | **Stelltrace** | Stell + Trace，追踪请求在星际间的流转。 |
+| **服务治理** | 星轨 (Orbit) | **Stellorbit** | Stell + Orbit，让服务在预定的轨道上运行。 |
+| **流控熔断** | 脉冲 (Pulsar) | **Stellpulse** | Stell + Pulse，精准掌控流量脉搏。 |
+| **任务调度** | 星盘 (Astrolabe) | **Stellabe** | Stell + Astrolabe 缩写，古老的星际定位仪。 |
+| **分布式锁** | 奇点 (Singularity) | **Stellpoint** | 奇点即一点。Stell + Point，锁定唯一的执行点。 |
+| **网关入口** | 视界 (EventHorizon) | **Stellgate** | 网关通常叫 Gate。Stell + Gate，星际之门。 |
+| **消息队列** | 彗流 (CometFlow) | **Stellflow** | Stell + Flow，像彗星尾迹一样的有序数据流。 |
+| **日志平台** | 星谱 (Spectrum) | **Stellspec** | Stell + Spectrum 缩写，分析系统“光谱”异常。 |
+| **指标平台** | 星座 (Constellation) | **Stellcon** | Stell + Constellation 缩写，由指标点连成的星座。 |
+| **告警平台** | 星讯 (NovaSignal) | **Stellvox** | Vox 在拉丁语中意为声音/讯息。Stell + Vox。 |
+| **零信平台** | 星盾 (StarShield) | **Stellguard** | Stell + Guard，星际守卫，比 Shield 更有动态感。 |
+| **密钥中心** | 星钥 (StarKey) | **Stellkey** | Stell + Key，简单有力，符合密钥中心定位。 |
 
 推荐展示方式：
 
-- `StarMap · 星图`
-- `Nebula · 星云`
-- `StarTrace · 星迹`
-- `Spectrum · 星谱`
-- `Orbit · 星轨`
-- `CometFlow · 彗流`
+- `Stellmap · 星图`
+- `Stellnula · 星云`
+- `Stelltrace · 星迹`
+- `Stellspec · 星谱`
+- `Stellorbit · 星轨`
+- `Stellflow · 彗流`
 
 ### AI 星穹层矩阵
 
@@ -111,28 +111,28 @@
 
 常见示例：
 
-- `starmap-client-spring-boot-starter`
-- `nebula-client-spring-boot-starter`
-- `orbit-governance-starter`
-- `comet-flow-client`
+- `stellmap-client-spring-boot-starter`
+- `stellnula-client-spring-boot-starter`
+- `stellorbit-governance-starter`
+- `stellflow-client`
 
 ### 日志平台 SDK 命名最终结论
 
-`Spectrum` 作为日志平台主名，对外 SDK 统一采用简化命名，不再把 `otel` 或信号类型写入 SDK 主名称。
+`Stellspec` 作为日志平台主名，对外 SDK 统一采用简化命名，不再把 `otel` 或信号类型写入 SDK 主名称。
 
 当前已经冻结的最终命名如下：
 
-- `spectrum-java-sdk`
-- `spectrum-go-sdk`
+- `stellspec-java-sdk`
+- `stellspec-go-sdk`
 
 对应坐标示例：
 
-- `io.stellar.axis:spectrum-java-sdk`
-- `io.stellar.axis:spectrum-go-sdk`
+- `io.stellar.axis:stellspec-java-sdk`
+- `io.stellar.axis:stellspec-go-sdk`
 
 命名含义如下：
 
-- `spectrum` 表示日志平台产品归属
+- `stellspec` 表示日志平台产品归属
 - `java`、`go` 表示语言维度
 - `sdk` 表示工程角色
 
@@ -140,29 +140,29 @@
 
 ### Java 包名建议
 
-- `io.stellar.axis.starmap.client`
-- `io.stellar.axis.nebula.config`
-- `io.stellar.axis.orbit.router`
-- `io.stellar.axis.pulsar.limiter`
-- `io.stellar.axis.cometflow.producer`
+- `io.stellar.axis.stellmap.client`
+- `io.stellar.axis.stellnula.config`
+- `io.stellar.axis.stellorbit.router`
+- `io.stellar.axis.stellpulse.limiter`
+- `io.stellar.axis.stellflow.producer`
 
 ## 网关家族命名
 
-网关家族主名统一使用 `EventHorizon · 视界`，通过二级限定词区分不同职责。
+网关家族主名统一使用 `Stellgate · 视界`，通过二级限定词区分不同职责。
 
 | 场景 | 英文建议 | 中文建议 |
 | :--- | :--- | :--- |
-| 内部网关 | `EventHorizon Internal` | `视界·内域` |
-| 外部网关 | `EventHorizon External` | `视界·外域` |
-| LLM 网关 | `EventHorizon LLM` | `视界·智域` |
-| 边缘网关 | `EventHorizon Edge` | `视界·边域` |
+| 内部网关 | `Stellgate Internal` | `视界·内域` |
+| 外部网关 | `Stellgate External` | `视界·外域` |
+| LLM 网关 | `Stellgate LLM` | `视界·智域` |
+| 边缘网关 | `Stellgate Edge` | `视界·边域` |
 
 对应仓库名建议：
 
-- `event-horizon-internal`
-- `event-horizon-external`
-- `event-horizon-llm`
-- `event-horizon-edge`
+- `stellgate-internal`
+- `stellgate-external`
+- `stellgate-llm`
+- `stellgate-edge`
 
 ## 仓库布局最终结论
 
@@ -181,16 +181,20 @@
 
 ### 核心产品仓库
 
-- `starmap`
-- `nebula`
-- `startrace`
-- `orbit`
-- `pulsar`
-- `astrolabe`
-- `singularity`
-- `event-horizon`
-- `comet-flow`
-- `spectrum`
+- `stellmap`
+- `stellnula`
+- `stelltrace`
+- `stellorbit`
+- `stellpulse`
+- `stellabe`
+- `stellpoint`
+- `stellgate`
+- `stellflow`
+- `stellspec`
+- `stellcon`
+- `stellvox`
+- `stellguard`
+- `stellkey`
 
 ### 单产品统一目录骨架
 
@@ -274,7 +278,7 @@
 3. 仓库、模块、包名、依赖坐标统一只使用英文工程名
 4. 仓库结构固定为聚合仓库、核心产品仓库和配套能力仓库三层
 5. 跨产品协作统一通过公开 API、SDK、事件和控制面完成
-6. 日志平台最终命名固定为 `Spectrum · 星谱`，对应 SDK 命名固定为 `spectrum-java-sdk` 与 `spectrum-go-sdk`
+6. 日志平台最终命名固定为 `Stellspec · 星谱`，对应 SDK 命名固定为 `stellspec-java-sdk` 与 `stellspec-go-sdk`
 7. 全体系基础环境变量统一遵循 `docs/environment-variable-spec.md`
 8. 全体系请求 Header 与指标统一遵循 `docs/request-header-and-metrics-spec.md`
 

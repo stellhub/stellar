@@ -99,10 +99,10 @@
 
 在 `STELLAR_*` 之外，各产品可以保留自己的产品级环境变量，例如：
 
-- 日志平台：`SPECTRUM_*`
-- 链路平台：`STARTRACE_*`
-- 配置中心：`NEBULA_*`
-- 服务治理：`ORBIT_*`
+- 日志平台：`STELLSPEC_*`
+- 链路平台：`STELLTRACE_*`
+- 配置中心：`STELLNULA_*`
+- 服务治理：`STELLORBIT_*`
 
 但产品级变量只允许描述：
 
