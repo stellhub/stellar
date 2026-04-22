@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 REMOTE_NAME="${REMOTE_NAME:-origin}"
-REMOTE_URL="${REMOTE_URL:-https://github.com/stellhub/stellar.git}"
+REMOTE_URL="${REMOTE_URL:-git@github.com:stellhub/stellar.git}"
 BRANCH_NAME="${BRANCH_NAME:-main}"
 LOG_DIR="${LOG_DIR:-${REPO_ROOT}/logs}"
 LOG_FILE="${LOG_FILE:-${LOG_DIR}/auto-pull.log}"
