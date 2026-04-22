@@ -47,6 +47,11 @@ export default defineConfig({
   head: [
     ["link", { rel: "icon", type: "image/png", href: "/logo/logo.png" }]
   ],
+  vite: {
+    server: {
+      allowedHosts: [".stellhub.top"]
+    }
+  },
   themeConfig: {
     siteTitle: "星级枢纽",
     logo: "/logo/logo.png",
