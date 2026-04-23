@@ -18,6 +18,6 @@ sudo nginx -s reload
 chmod +x scripts/auto-pull.sh
 crontab -e
 
-* * * * * /bin/bash /path/to/stellar/scripts/auto-pull.sh
+* * * * * /bin/bash /data/stellar/scripts/auto-pull.sh
 
 ```
