@@ -1,201 +1,283 @@
-<svg width="1600" height="1100" viewBox="0 0 1600 1100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="2200" height="1380" viewBox="0 0 2200 1380" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="1100" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#08111F"/>
-      <stop offset="1" stop-color="#0F1D33"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="2200" y2="1380" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#06101C"/>
+      <stop offset="1" stop-color="#0A1730"/>
     </linearGradient>
-    <linearGradient id="band1" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#183B66" stop-opacity="0.92"/>
-      <stop offset="1" stop-color="#102A4C" stop-opacity="0.92"/>
-    </linearGradient>
-    <linearGradient id="band2" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#234D3C" stop-opacity="0.92"/>
-      <stop offset="1" stop-color="#16392C" stop-opacity="0.92"/>
-    </linearGradient>
-    <linearGradient id="band3" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#5C4420" stop-opacity="0.92"/>
-      <stop offset="1" stop-color="#453215" stop-opacity="0.92"/>
-    </linearGradient>
-    <linearGradient id="band4" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#4C305B" stop-opacity="0.92"/>
-      <stop offset="1" stop-color="#311D43" stop-opacity="0.92"/>
-    </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    <pattern id="smallGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#1D3D67" stroke-opacity="0.16" stroke-width="1"/>
+    </pattern>
+    <pattern id="largeGrid" width="120" height="120" patternUnits="userSpaceOnUse">
+      <rect width="120" height="120" fill="url(#smallGrid)"/>
+      <path d="M120 0H0V120" fill="none" stroke="#2F5F98" stroke-opacity="0.24" stroke-width="1.5"/>
+    </pattern>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#5FD8FF" flood-opacity="0.16"/>
     </filter>
-    <marker id="arrowSolid" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-      <path d="M0 0L10 5L0 10Z" fill="#81D4FF"/>
+    <marker id="arrowMain" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0 0L14 7L0 14Z" fill="#7FE4FF"/>
     </marker>
-    <marker id="arrowDash" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-      <path d="M0 0L10 5L0 10Z" fill="#FFB870"/>
+    <marker id="arrowObserve" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0 0L14 7L0 14Z" fill="#8FB7FF"/>
     </marker>
     <style>
       text {
         font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
       }
       .title {
-        font-size: 34px;
+        font-size: 48px;
         font-weight: 700;
-        fill: #F4F8FF;
+        fill: #F5FAFF;
       }
       .subtitle {
+        font-size: 23px;
+        fill: #AFC6E8;
+      }
+      .layer-tag {
         font-size: 17px;
-        fill: #B4C6E3;
-      }
-      .band-title {
-        font-size: 20px;
         font-weight: 700;
-        fill: #F6FAFF;
+        letter-spacing: 0.18em;
+        fill: #76DFFF;
       }
-      .band-desc {
-        font-size: 13px;
-        fill: #D7E2F6;
+      .layer-title {
+        font-size: 28px;
+        font-weight: 700;
+        fill: #F4FAFF;
+      }
+      .layer-desc {
+        font-size: 18px;
+        fill: #C9DAF4;
       }
       .node-title {
-        font-size: 18px;
+        font-size: 24px;
         font-weight: 700;
-        fill: #F8FBFF;
+        fill: #F6FBFF;
+      }
+      .node-domain {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        fill: #70DEFF;
       }
       .node-subtitle {
-        font-size: 14px;
-        fill: #DCE7F9;
+        font-size: 17px;
+        fill: #D7E6FA;
       }
       .legend {
-        font-size: 14px;
+        font-size: 18px;
         fill: #D4E0F5;
       }
       .note {
-        font-size: 13px;
-        fill: #9FB3D6;
+        font-size: 15px;
+        fill: #8FA9D1;
+      }
+      .panel {
+        fill: rgba(10, 22, 40, 0.62);
+        stroke: #4B7EBA;
+        stroke-width: 2;
+      }
+      .panel-accent {
+        fill: rgba(10, 22, 40, 0.18);
+        stroke: #70DEFF;
+        stroke-opacity: 0.32;
+        stroke-width: 1.5;
+      }
+      .node {
+        fill: rgba(11, 26, 48, 0.94);
+        stroke: #76DFFF;
+        stroke-width: 2;
+      }
+      .node-header {
+        stroke: #4FB9EA;
+        stroke-width: 1.5;
+      }
+      .edge-main {
+        stroke: #7FE4FF;
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .edge-observe {
+        stroke: #8FB7FF;
+        stroke-width: 4.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 14 12;
+        fill: none;
       }
     </style>
   </defs>
 
-  <rect width="1600" height="1100" fill="url(#bg)"/>
-  <circle cx="1420" cy="120" r="260" fill="#1D3F73" fill-opacity="0.18"/>
-  <circle cx="190" cy="980" r="260" fill="#4B2F60" fill-opacity="0.12"/>
-  <circle cx="420" cy="130" r="180" fill="#194B4A" fill-opacity="0.08"/>
+  <rect width="2200" height="1380" fill="url(#bg)"/>
+  <rect width="2200" height="1380" fill="url(#largeGrid)"/>
 
-  <text x="72" y="74" class="title">星级枢纽核心中间件矩阵层级依赖图</text>
-  <text x="72" y="106" class="subtitle">基于 README.md 的职责定义与依赖边界整理，表达“推荐的公开依赖方向”，而非服务端之间的直接实现耦合。</text>
+  <circle cx="340" cy="150" r="140" fill="#144777" fill-opacity="0.12"/>
+  <circle cx="1780" cy="160" r="220" fill="#183A73" fill-opacity="0.14"/>
+  <circle cx="1820" cy="1160" r="260" fill="#1A2E61" fill-opacity="0.12"/>
+  <circle cx="250" cy="1180" r="240" fill="#11335A" fill-opacity="0.1"/>
 
-  <rect x="60" y="150" width="1480" height="170" rx="28" fill="url(#band1)" stroke="#4C7BB7" stroke-opacity="0.45"/>
-  <rect x="60" y="350" width="1480" height="210" rx="28" fill="url(#band2)" stroke="#5CA583" stroke-opacity="0.45"/>
-  <rect x="60" y="590" width="1480" height="190" rx="28" fill="url(#band3)" stroke="#C89A5A" stroke-opacity="0.42"/>
-  <rect x="60" y="810" width="1480" height="210" rx="28" fill="url(#band4)" stroke="#A57CC9" stroke-opacity="0.42"/>
+  <text x="92" y="74" class="title">Stell Hub Core Middleware Blueprint</text>
+  <text x="92" y="110" class="subtitle">以分层职责、公开契约与观测闭环组织的基础架构中间件蓝图</text>
 
-  <text x="92" y="190" class="band-title">L1 接入与安全层</text>
-  <text x="92" y="214" class="band-desc">统一入口、身份与零信任校验，位于最上游。</text>
+  <g filter="url(#glow)">
+    <rect x="80" y="170" width="2040" height="180" rx="28" class="panel"/>
+    <rect x="96" y="186" width="2008" height="148" rx="22" class="panel-accent"/>
 
-  <text x="92" y="390" class="band-title">L2 治理与运行层</text>
-  <text x="92" y="414" class="band-desc">流量治理、调度编排、异步通信等核心运行能力，依赖基础设施并向观测层输出信号。</text>
+    <rect x="80" y="390" width="2040" height="250" rx="28" class="panel"/>
+    <rect x="96" y="406" width="2008" height="218" rx="22" class="panel-accent"/>
 
-  <text x="92" y="630" class="band-title">L3 基础支撑层</text>
-  <text x="92" y="654" class="band-desc">注册、配置、锁与密钥等基础能力，向上提供稳定契约。</text>
+    <rect x="80" y="690" width="2040" height="220" rx="28" class="panel"/>
+    <rect x="96" y="706" width="2008" height="188" rx="22" class="panel-accent"/>
 
-  <text x="92" y="850" class="band-title">L4 可观测与告警层</text>
-  <text x="92" y="874" class="band-desc">统一承接链路、日志、指标，并驱动告警闭环。</text>
-
-  <g filter="url(#shadow)">
-    <rect x="220" y="210" width="300" height="82" rx="18" fill="#245B93" stroke="#8BD0FF" stroke-opacity="0.65"/>
-    <text x="250" y="242" class="node-title">EventHorizon · 视界</text>
-    <text x="250" y="268" class="node-subtitle">网关入口 / 统一访问边界</text>
-
-    <rect x="860" y="210" width="300" height="82" rx="18" fill="#245B93" stroke="#8BD0FF" stroke-opacity="0.65"/>
-    <text x="890" y="242" class="node-title">StarShield · 星盾</text>
-    <text x="890" y="268" class="node-subtitle">零信平台 / 身份与策略</text>
+    <rect x="80" y="960" width="2040" height="250" rx="28" class="panel"/>
+    <rect x="96" y="976" width="2008" height="218" rx="22" class="panel-accent"/>
   </g>
 
-  <g filter="url(#shadow)">
-    <rect x="90" y="440" width="260" height="88" rx="18" fill="#21614D" stroke="#90E2B8" stroke-opacity="0.7"/>
-    <text x="120" y="474" class="node-title">Orbit · 星轨</text>
-    <text x="120" y="500" class="node-subtitle">服务治理 / 路由与编排</text>
+  <rect x="120" y="194" width="240" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="216" class="layer-tag">L1 ACCESS / SECURITY</text>
+  <text x="120" y="266" class="layer-title">接入与安全层</text>
+  <text x="120" y="298" class="layer-desc">统一入口、身份与零信任校验，位于最上游。</text>
 
-    <rect x="420" y="440" width="260" height="88" rx="18" fill="#21614D" stroke="#90E2B8" stroke-opacity="0.7"/>
-    <text x="450" y="474" class="node-title">Pulsar · 脉冲</text>
-    <text x="450" y="500" class="node-subtitle">流控熔断 / 保护与降级</text>
+  <rect x="120" y="414" width="248" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="436" class="layer-tag">L2 GOVERNANCE / RUNTIME</text>
+  <text x="120" y="486" class="layer-title">治理与运行层</text>
+  <text x="120" y="518" class="layer-desc">流量治理、调度编排、异步通信等核心运行能力，依赖基础设施并向观测层输出信号。</text>
 
-    <rect x="750" y="440" width="260" height="88" rx="18" fill="#21614D" stroke="#90E2B8" stroke-opacity="0.7"/>
-    <text x="780" y="474" class="node-title">Astrolabe · 星盘</text>
-    <text x="780" y="500" class="node-subtitle">任务调度 / 分布式编排</text>
+  <rect x="120" y="714" width="222" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="736" class="layer-tag">L3 FOUNDATION</text>
+  <text x="120" y="786" class="layer-title">基础支撑层</text>
+  <text x="120" y="818" class="layer-desc">注册、配置、锁与密钥等基础能力，向上提供稳定契约。</text>
 
-    <rect x="1080" y="440" width="260" height="88" rx="18" fill="#21614D" stroke="#90E2B8" stroke-opacity="0.7"/>
-    <text x="1110" y="474" class="node-title">CometFlow · 彗流</text>
-    <text x="1110" y="500" class="node-subtitle">消息队列 / 异步事件流</text>
+  <rect x="120" y="984" width="258" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="1006" class="layer-tag">L4 OBSERVABILITY / ALERT</text>
+  <text x="120" y="1056" class="layer-title">可观测与告警层</text>
+  <text x="120" y="1088" class="layer-desc">统一承接链路、日志、指标，并驱动告警闭环。</text>
+
+  <g filter="url(#glow)">
+    <rect x="260" y="226" width="380" height="110" rx="18" class="node"/>
+    <line x1="260" y1="258" x2="640" y2="258" class="node-header"/>
+    <text x="292" y="248" class="node-domain">GATEWAY</text>
+    <text x="292" y="290" class="node-title">Stellgate · 视界</text>
+    <text x="292" y="320" class="node-subtitle">网关入口 / 统一访问边界</text>
+
+    <rect x="1320" y="226" width="380" height="110" rx="18" class="node"/>
+    <line x1="1320" y1="258" x2="1700" y2="258" class="node-header"/>
+    <text x="1352" y="248" class="node-domain">ZERO TRUST</text>
+    <text x="1352" y="290" class="node-title">Stellguard · 星盾</text>
+    <text x="1352" y="320" class="node-subtitle">零信平台 / 身份与策略</text>
   </g>
 
-  <g filter="url(#shadow)">
-    <rect x="90" y="660" width="260" height="86" rx="18" fill="#70531E" stroke="#FFD38A" stroke-opacity="0.72"/>
-    <text x="120" y="694" class="node-title">StarMap · 星图</text>
-    <text x="120" y="720" class="node-subtitle">注册中心 / 服务发现</text>
+  <g filter="url(#glow)">
+    <rect x="120" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="120" y1="528" x2="440" y2="528" class="node-header"/>
+    <text x="148" y="518" class="node-domain">SERVICE MESH</text>
+    <text x="148" y="560" class="node-title">Stellorbit · 星轨</text>
+    <text x="148" y="592" class="node-subtitle">服务治理 / 路由与编排</text>
 
-    <rect x="420" y="660" width="260" height="86" rx="18" fill="#70531E" stroke="#FFD38A" stroke-opacity="0.72"/>
-    <text x="450" y="694" class="node-title">Nebula · 星云</text>
-    <text x="450" y="720" class="node-subtitle">配置中心 / 动态配置</text>
+    <rect x="620" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="620" y1="528" x2="940" y2="528" class="node-header"/>
+    <text x="648" y="518" class="node-domain">RESILIENCE</text>
+    <text x="648" y="560" class="node-title">Stellpulse · 脉冲</text>
+    <text x="648" y="592" class="node-subtitle">流控熔断 / 保护与降级</text>
 
-    <rect x="750" y="660" width="260" height="86" rx="18" fill="#70531E" stroke="#FFD38A" stroke-opacity="0.72"/>
-    <text x="780" y="694" class="node-title">Singularity · 奇点</text>
-    <text x="780" y="720" class="node-subtitle">分布式锁 / 互斥协调</text>
+    <rect x="1120" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="1120" y1="528" x2="1440" y2="528" class="node-header"/>
+    <text x="1148" y="518" class="node-domain">SCHEDULER</text>
+    <text x="1148" y="560" class="node-title">Stellabe · 星盘</text>
+    <text x="1148" y="592" class="node-subtitle">任务调度 / 分布式编排</text>
 
-    <rect x="1080" y="660" width="260" height="86" rx="18" fill="#70531E" stroke="#FFD38A" stroke-opacity="0.72"/>
-    <text x="1110" y="694" class="node-title">StarKey · 星钥</text>
-    <text x="1110" y="720" class="node-subtitle">密钥中心 / 凭据管理</text>
+    <rect x="1620" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="1620" y1="528" x2="1940" y2="528" class="node-header"/>
+    <text x="1648" y="518" class="node-domain">EVENT BUS</text>
+    <text x="1648" y="560" class="node-title">Stellflow · 彗流</text>
+    <text x="1648" y="592" class="node-subtitle">消息队列 / 异步事件流</text>
   </g>
 
-  <g filter="url(#shadow)">
-    <rect x="90" y="890" width="260" height="88" rx="18" fill="#5A3472" stroke="#D7B6FF" stroke-opacity="0.72"/>
-    <text x="120" y="924" class="node-title">StarTrace · 星迹</text>
-    <text x="120" y="950" class="node-subtitle">链路追踪 / Trace 汇聚</text>
+  <g filter="url(#glow)">
+    <rect x="120" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="120" y1="802" x2="440" y2="802" class="node-header"/>
+    <text x="148" y="792" class="node-domain">REGISTRY</text>
+    <text x="148" y="834" class="node-title">Stellmap · 星图</text>
+    <text x="148" y="864" class="node-subtitle">注册中心 / 服务发现</text>
 
-    <rect x="420" y="890" width="260" height="88" rx="18" fill="#5A3472" stroke="#D7B6FF" stroke-opacity="0.72"/>
-    <text x="450" y="924" class="node-title">Spectrum · 星谱</text>
-    <text x="450" y="950" class="node-subtitle">日志平台 / Log 汇聚</text>
+    <rect x="620" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="620" y1="802" x2="940" y2="802" class="node-header"/>
+    <text x="648" y="792" class="node-domain">CONFIGURATION</text>
+    <text x="648" y="834" class="node-title">Stellnula · 星云</text>
+    <text x="648" y="864" class="node-subtitle">配置中心 / 动态配置</text>
 
-    <rect x="750" y="890" width="260" height="88" rx="18" fill="#5A3472" stroke="#D7B6FF" stroke-opacity="0.72"/>
-    <text x="780" y="924" class="node-title">Constellation · 星座</text>
-    <text x="780" y="950" class="node-subtitle">指标平台 / Metric 汇聚</text>
+    <rect x="1120" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="1120" y1="802" x2="1440" y2="802" class="node-header"/>
+    <text x="1148" y="792" class="node-domain">LOCK / COORDINATION</text>
+    <text x="1148" y="834" class="node-title">Stellpoint · 奇点</text>
+    <text x="1148" y="864" class="node-subtitle">分布式锁 / 互斥协调</text>
 
-    <rect x="1080" y="890" width="260" height="88" rx="18" fill="#5A3472" stroke="#D7B6FF" stroke-opacity="0.72"/>
-    <text x="1110" y="924" class="node-title">NovaSignal · 星讯</text>
-    <text x="1110" y="950" class="node-subtitle">告警平台 / 告警收敛与通知</text>
+    <rect x="1620" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="1620" y1="802" x2="1940" y2="802" class="node-header"/>
+    <text x="1648" y="792" class="node-domain">SECRET MANAGEMENT</text>
+    <text x="1648" y="834" class="node-title">Stellkey · 星钥</text>
+    <text x="1648" y="864" class="node-subtitle">密钥中心 / 凭据管理</text>
   </g>
 
-  <path d="M520 251C640 251 660 251 860 251" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
+  <g filter="url(#glow)">
+    <rect x="120" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="120" y1="1072" x2="440" y2="1072" class="node-header"/>
+    <text x="148" y="1062" class="node-domain">TRACE</text>
+    <text x="148" y="1104" class="node-title">Stelltrace · 星迹</text>
+    <text x="148" y="1136" class="node-subtitle">链路追踪 / Trace 汇聚</text>
 
-  <path d="M370 480C400 480 396 480 420 480" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M300 292C270 340 220 370 220 440" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M340 292C420 346 500 384 550 440" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M1080 251C1010 310 1000 356 880 440" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
+    <rect x="620" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="620" y1="1072" x2="940" y2="1072" class="node-header"/>
+    <text x="648" y="1062" class="node-domain">LOGGING</text>
+    <text x="648" y="1104" class="node-title">Stellspec · 星谱</text>
+    <text x="648" y="1136" class="node-subtitle">日志平台 / Log 汇聚</text>
 
-  <path d="M220 528C220 586 220 606 220 660" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M250 528C320 590 420 618 550 660" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M550 528C550 586 550 606 550 660" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M880 528C880 586 880 606 880 660" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M910 528C980 590 1080 618 1210 660" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <path d="M1010 251C1120 320 1180 360 1210 660" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
+    <rect x="1120" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="1120" y1="1072" x2="1440" y2="1072" class="node-header"/>
+    <text x="1148" y="1062" class="node-domain">METRICS</text>
+    <text x="1148" y="1104" class="node-title">Stellcon · 星座</text>
+    <text x="1148" y="1136" class="node-subtitle">指标平台 / Metric 汇聚</text>
 
-  <path d="M320 292C300 410 260 520 550 660" stroke="#81D4FF" stroke-width="4" stroke-opacity="0.9" marker-end="url(#arrowSolid)"/>
+    <rect x="1620" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="1620" y1="1072" x2="1940" y2="1072" class="node-header"/>
+    <text x="1648" y="1062" class="node-domain">ALERTING</text>
+    <text x="1648" y="1104" class="node-title">Stellvox · 星讯</text>
+    <text x="1648" y="1136" class="node-subtitle">告警平台 / 收敛与通知</text>
+  </g>
 
-  <path d="M260 292C240 470 180 650 220 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M320 292C320 470 480 650 550 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M380 292C430 460 700 630 880 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
+  <path d="M640 281C860 281 1070 281 1320 281" class="edge-main" marker-end="url(#arrowMain)"/>
 
-  <path d="M220 528C220 690 220 760 220 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M550 528C550 690 550 760 880 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M880 528C880 690 880 760 220 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M1210 528C1210 690 1210 760 550 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M1010 251C1030 500 1120 650 550 890" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
+  <path d="M438 336C400 392 334 438 280 496" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M506 336C625 404 718 444 780 496" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1488 336C1412 398 1348 442 1280 496" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1544 336C1686 434 1764 520 1780 770" class="edge-main" marker-end="url(#arrowMain)"/>
 
-  <path d="M220 978C300 1010 420 1010 1080 934" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M550 978C700 1030 920 1030 1080 950" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <path d="M880 978C980 1008 1040 1002 1080 966" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
+  <path d="M440 553C520 553 560 553 620 553" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M280 610C280 680 280 720 280 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M324 610C442 700 584 736 780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M780 610C780 680 780 720 780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1280 610C1280 680 1280 720 1280 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1324 610C1450 698 1592 740 1780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M520 336C520 518 634 662 780 770" class="edge-main" marker-end="url(#arrowMain)"/>
 
-  <rect x="1120" y="118" width="340" height="110" rx="18" fill="#0E1727" fill-opacity="0.92" stroke="#4D6388" stroke-opacity="0.52"/>
-  <line x1="1150" y1="154" x2="1240" y2="154" stroke="#81D4FF" stroke-width="4" marker-end="url(#arrowSolid)"/>
-  <text x="1260" y="159" class="legend">主依赖：通过公开 API / SDK / 配置 / 策略进行单向依赖</text>
-  <line x1="1150" y1="192" x2="1240" y2="192" stroke="#FFB870" stroke-width="3.5" stroke-dasharray="12 10" marker-end="url(#arrowDash)"/>
-  <text x="1260" y="197" class="legend">观测输出：统一向 Trace / Log / Metric 汇聚，再由告警平台闭环</text>
+  <path d="M438 336C352 574 300 790 280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M506 336C530 576 674 794 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M572 336C712 570 1028 776 1280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
 
-  <text x="72" y="1052" class="note">说明 1：该图依据 README 中“核心中间件矩阵”“依赖边界最终结论”抽象而来，强调层级与方向，不表示强绑定实现。</text>
-  <text x="72" y="1076" class="note">说明 2：遵循 README 的约束，跨产品协作应通过公开契约完成，避免 productA/server 直接依赖 productB/server。</text>
+  <path d="M280 610C280 796 280 908 280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M780 610C780 792 960 904 1280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1280 610C1280 790 1060 904 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1780 610C1780 792 1538 904 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1544 336C1590 620 1642 812 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+
+  <path d="M440 1097C770 1176 1186 1178 1620 1097" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M940 1097C1208 1158 1452 1152 1620 1097" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1440 1097C1520 1126 1580 1120 1620 1097" class="edge-observe" marker-end="url(#arrowObserve)"/>
+
+  <rect x="1340" y="80" width="780" height="124" rx="18" fill="#0A1A31" stroke="#4C78AA" stroke-width="2" stroke-opacity="0.56"/>
+  <line x1="1386" y1="124" x2="1496" y2="124" class="edge-main" marker-end="url(#arrowMain)"/>
+  <text x="1526" y="130" class="legend">主依赖：通过公开 API / SDK / 配置 / 策略形成单向依赖</text>
+  <line x1="1386" y1="170" x2="1496" y2="170" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <text x="1526" y="176" class="legend">观测输出：统一向 Trace / Log / Metric 汇聚，再由 Stellvox 闭环</text>
 </svg>

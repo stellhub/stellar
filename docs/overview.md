@@ -3,23 +3,22 @@ title: 体系总览
 outline: deep
 ---
 
-# 星级枢纽
+# 星际枢纽
 
-`星级枢纽` 的正式英文总品牌为 `Stell Hub`。本仓库用于沉淀 `Stell Hub（星级枢纽）` 体系的最终方案，并作为品牌、产品、工程命名、仓库布局和依赖边界的唯一权威文档。
+`星际枢纽` 的正式英文总品牌为 `Stell Hub`。本仓库用于沉淀 `Stell Hub（星际枢纽）` 体系的最终方案，并作为品牌、产品、工程命名、仓库布局和依赖边界的唯一权威文档。
 
 当前仓库以一份站点首页和若干规范文档为主：
 
 - 首页：`docs/index.md`
 - 体系总览：`docs/overview.md`
 - 核心产品总览：`docs/products/index.md`
-- 全局环境变量规范：`docs/environment-variable-spec.md`
-- 全局请求 Header 与指标规范：`docs/request-header-and-metrics-spec.md`
+- 可观测规范：`docs/products/observability-spec.md`
 
 ## 最终品牌结论
 
 - 英文总品牌：`Stell Hub`
-- 中文总品牌：`星级枢纽`
-- 首次标准展示：`Stell Hub（星级枢纽）`
+- 中文总品牌：`星际枢纽`
+- 首次标准展示：`Stell Hub（星际枢纽）`
 
 双栈定位如下：
 
@@ -28,8 +27,8 @@ outline: deep
 
 使用规则如下：
 
-- 官网、README、方案文档首次出现时，统一使用 `Stell Hub（星级枢纽）`
-- 中文语境可直接使用 `星级枢纽`
+- 官网、README、方案文档首次出现时，统一使用 `Stell Hub（星际枢纽）`
+- 中文语境可直接使用 `星际枢纽`
 - 英文语境可直接使用 `Stell Hub`
 
 ## 核心组件命名
@@ -68,20 +67,20 @@ outline: deep
 
 对应详细设计文档入口：
 
-- [Stellmap · 星图](/products/stellmap)
-- [Stellnula · 星云](/products/stellnula)
-- [Stelltrace · 星迹](/products/stelltrace)
-- [Stellorbit · 星轨](/products/stellorbit)
-- [Stellpulse · 脉冲](/products/stellpulse)
-- [Stellabe · 星盘](/products/stellabe)
-- [Stellpoint · 奇点](/products/stellpoint)
-- [Stellgate · 视界](/products/stellgate)
-- [Stellflow · 彗流](/products/stellflow)
-- [Stellspec · 星谱](/products/stellspec)
-- [Stellcon · 星座](/products/stellcon)
-- [Stellvox · 星讯](/products/stellvox)
-- [Stellguard · 星盾](/products/stellguard)
-- [Stellkey · 星钥](/products/stellkey)
+- [Stellmap · 星图](/products/stellmap/)
+- [Stellnula · 星云](/products/stellnula/)
+- [Stelltrace · 星迹](/products/stelltrace/)
+- [Stellorbit · 星轨](/products/stellorbit/)
+- [Stellpulse · 脉冲](/products/stellpulse/)
+- [Stellabe · 星盘](/products/stellabe/)
+- [Stellpoint · 奇点](/products/stellpoint/)
+- [Stellgate · 视界](/products/stellgate/)
+- [Stellflow · 彗流](/products/stellflow/)
+- [Stellspec · 星谱](/products/stellspec/)
+- [Stellcon · 星座](/products/stellcon/)
+- [Stellvox · 星讯](/products/stellvox/)
+- [Stellguard · 星盾](/products/stellguard/)
+- [Stellkey · 星钥](/products/stellkey/)
 
 矩阵配图如下：
 
@@ -279,8 +278,7 @@ outline: deep
 
 除品牌、命名、仓库布局与依赖边界之外，体系还固定以下全局运行规范：
 
-- 环境变量规范：`docs/environment-variable-spec.md`
-- 请求 Header 与指标规范：`docs/request-header-and-metrics-spec.md`
+- 可观测规范：`docs/products/observability-spec.md`
 
 适用范围如下：
 
@@ -300,14 +298,13 @@ outline: deep
 
 本仓库已经固定以下最终结论：
 
-1. 唯一总品牌为 `Stell Hub（星级枢纽）`
+1. 唯一总品牌为 `Stell Hub（星际枢纽）`
 2. 核心组件统一使用 `英文正式名 · 中文宇宙名`
 3. 仓库、模块、包名、依赖坐标统一只使用英文工程名
 4. 仓库结构固定为聚合仓库、核心产品仓库和配套能力仓库三层
 5. 跨产品协作统一通过公开 API、SDK、事件和控制面完成
 6. 日志平台最终命名固定为 `Stellspec · 星谱`，对应 SDK 命名固定为 `stellspec-java-sdk` 与 `stellspec-go-sdk`
-7. 全体系基础环境变量统一遵循 `docs/environment-variable-spec.md`
-8. 全体系请求 Header 与指标统一遵循 `docs/request-header-and-metrics-spec.md`
+7. 全体系基础环境变量、请求上下文与指标语义统一遵循 `docs/products/observability-spec.md`
 
 ## License
 

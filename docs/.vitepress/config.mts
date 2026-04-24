@@ -1,21 +1,38 @@
 import { defineConfig } from "vitepress";
 
 const productItems = [
-  { text: "产品总览", link: "/products/" },
-  { text: "Stellmap · 星图", link: "/products/stellmap" },
-  { text: "Stellnula · 星云", link: "/products/stellnula" },
-  { text: "Stelltrace · 星迹", link: "/products/stelltrace" },
-  { text: "Stellorbit · 星轨", link: "/products/stellorbit" },
-  { text: "Stellpulse · 脉冲", link: "/products/stellpulse" },
-  { text: "Stellabe · 星盘", link: "/products/stellabe" },
-  { text: "Stellpoint · 奇点", link: "/products/stellpoint" },
-  { text: "Stellgate · 视界", link: "/products/stellgate" },
-  { text: "Stellflow · 彗流", link: "/products/stellflow" },
-  { text: "Stellspec · 星谱", link: "/products/stellspec" },
-  { text: "Stellcon · 星座", link: "/products/stellcon" },
-  { text: "Stellvox · 星讯", link: "/products/stellvox" },
-  { text: "Stellguard · 星盾", link: "/products/stellguard" },
-  { text: "Stellkey · 星钥", link: "/products/stellkey" }
+  {
+    text: "核心产品矩阵",
+    items: [
+      { text: "产品总览", link: "/products/" },
+      { text: "Stellmap · 星图", link: "/products/stellmap/" },
+      { text: "Stellnula · 星云", link: "/products/stellnula/" },
+      { text: "Stelltrace · 星迹", link: "/products/stelltrace/" },
+      { text: "Stellorbit · 星轨", link: "/products/stellorbit/" },
+      { text: "Stellpulse · 脉冲", link: "/products/stellpulse/" },
+      { text: "Stellabe · 星盘", link: "/products/stellabe/" },
+      { text: "Stellpoint · 奇点", link: "/products/stellpoint/" },
+      { text: "Stellgate · 视界", link: "/products/stellgate/" },
+      { text: "Stellflow · 彗流", link: "/products/stellflow/" },
+      { text: "Stellspec · 星谱", link: "/products/stellspec/" },
+      { text: "Stellcon · 星座", link: "/products/stellcon/" },
+      { text: "Stellvox · 星讯", link: "/products/stellvox/" },
+      { text: "Stellguard · 星盾", link: "/products/stellguard/" },
+      { text: "Stellkey · 星钥", link: "/products/stellkey/" }
+    ]
+  },
+  {
+    text: "体系规范",
+    items: [
+      { text: "可观测规范", link: "/products/observability-spec" }
+    ]
+  }
+];
+
+const topicItems = [
+  { text: "专题总览", link: "/topics/" },
+  { text: "为什么企业要自研中间件", link: "/topics/middleware-evolution" },
+  { text: "分布式系统中的一致性挑战及其解决路径", link: "/topics/distributed-consistency" }
 ];
 
 const productSectionItems = (link: string) => [
@@ -38,10 +55,23 @@ const productDetailSidebar = (link: string) => [
   }
 ];
 
+const observabilitySidebar = [
+  {
+    text: "可观测规范",
+    items: [
+      { text: "规范定位", link: "/products/observability-spec#规范定位" },
+      { text: "基础环境变量规范", link: "/products/observability-spec#第一部分基础环境变量规范" },
+      { text: "请求上下文规范", link: "/products/observability-spec#第二部分全局请求上下文规范" },
+      { text: "全局指标规范", link: "/products/observability-spec#第三部分全局指标规范" },
+      { text: "落地约束", link: "/products/observability-spec#第四部分平台与业务落地约束" }
+    ]
+  }
+];
+
 export default defineConfig({
   lang: "zh-CN",
-  title: "星级枢纽",
-  description: "Stell Hub（星级枢纽）体系的品牌、命名、仓库布局与运行规范文档站点。",
+  title: "星际枢纽",
+  description: "Stell Hub（星际枢纽）聚焦基础架构与微服务中间件最佳实践研究。",
   cleanUrls: true,
   lastUpdated: true,
   head: [
@@ -53,34 +83,44 @@ export default defineConfig({
     }
   },
   themeConfig: {
-    siteTitle: "星级枢纽",
+    siteTitle: "星际枢纽",
     logo: "/logo/logo.png",
     nav: [
       { text: "首页", link: "/" },
+      { text: "专题研究", link: "/topics/" },
       { text: "体系总览", link: "/overview" },
-      { text: "核心产品", items: productItems },
-      { text: "环境变量规范", link: "/environment-variable-spec" },
-      { text: "Header 与指标规范", link: "/request-header-and-metrics-spec" }
+      { text: "核心产品", items: productItems }
     ],
     sidebar: {
-      "/products/stellmap": productDetailSidebar("/products/stellmap"),
-      "/products/stellnula": productDetailSidebar("/products/stellnula"),
-      "/products/stelltrace": productDetailSidebar("/products/stelltrace"),
-      "/products/stellorbit": productDetailSidebar("/products/stellorbit"),
-      "/products/stellpulse": productDetailSidebar("/products/stellpulse"),
-      "/products/stellabe": productDetailSidebar("/products/stellabe"),
-      "/products/stellpoint": productDetailSidebar("/products/stellpoint"),
-      "/products/stellgate": productDetailSidebar("/products/stellgate"),
-      "/products/stellflow": productDetailSidebar("/products/stellflow"),
-      "/products/stellspec": productDetailSidebar("/products/stellspec"),
-      "/products/stellcon": productDetailSidebar("/products/stellcon"),
-      "/products/stellvox": productDetailSidebar("/products/stellvox"),
-      "/products/stellguard": productDetailSidebar("/products/stellguard"),
-      "/products/stellkey": productDetailSidebar("/products/stellkey"),
+      "/products/stellmap/": productDetailSidebar("/products/stellmap/"),
+      "/products/stellnula/": productDetailSidebar("/products/stellnula/"),
+      "/products/stelltrace/": productDetailSidebar("/products/stelltrace/"),
+      "/products/stellorbit/": productDetailSidebar("/products/stellorbit/"),
+      "/products/stellpulse/": productDetailSidebar("/products/stellpulse/"),
+      "/products/stellabe/": productDetailSidebar("/products/stellabe/"),
+      "/products/stellpoint/": productDetailSidebar("/products/stellpoint/"),
+      "/products/stellgate/": productDetailSidebar("/products/stellgate/"),
+      "/products/stellflow/": productDetailSidebar("/products/stellflow/"),
+      "/products/stellspec/": productDetailSidebar("/products/stellspec/"),
+      "/products/stellcon/": productDetailSidebar("/products/stellcon/"),
+      "/products/stellvox/": productDetailSidebar("/products/stellvox/"),
+      "/products/stellguard/": productDetailSidebar("/products/stellguard/"),
+      "/products/stellkey/": productDetailSidebar("/products/stellkey/"),
+      "/products/observability-spec": observabilitySidebar,
       "/products/": [
         {
           text: "核心产品矩阵",
-          items: productItems
+          items: productItems[0].items
+        },
+        {
+          text: "体系规范",
+          items: productItems[1].items
+        }
+      ],
+      "/topics/": [
+        {
+          text: "专题研究",
+          items: topicItems
         }
       ],
       "/": [
@@ -88,10 +128,12 @@ export default defineConfig({
           text: "文档导航",
           items: [
             { text: "首页", link: "/" },
+            { text: "专题研究总览", link: "/topics/" },
+            { text: "为什么企业要自研中间件", link: "/topics/middleware-evolution" },
+            { text: "分布式系统中的一致性挑战及其解决路径", link: "/topics/distributed-consistency" },
             { text: "体系总览", link: "/overview" },
             { text: "产品总览", link: "/products/" },
-            { text: "基础应用环境变量规范", link: "/environment-variable-spec" },
-            { text: "全局请求 Header 与指标规范", link: "/request-header-and-metrics-spec" },
+            { text: "可观测规范", link: "/products/observability-spec" },
             { text: "核心中间件矩阵图", link: "/core-middleware-matrix-dependency.svg" }
           ]
         }
