@@ -442,9 +442,9 @@ type StateMachine interface {
 
 ### 实现对应关系
 
-- [internal/transport/grpc/server.go](internal/transport/grpc/server.go) 同时注册 `RaftTransport` 与 `SnapshotService`，并把 protobuf 类型转换为本地 `RaftMessageBatch` / `SnapshotChunk`
-- [internal/runtime/transport_service.go](internal/runtime/transport_service.go) 中的 `InternalTransportService` 负责真正的消息处理：`SendRaftMessages` 调 `node.Step`，`InstallSnapshotChunk` 在内存中按 `term-index` 聚合分片，`DownloadSnapshot` 从本地快照存储切块返回
-- [internal/runtime/peer_transport.go](internal/runtime/peer_transport.go) 会把 `Ready.Messages` 按目标节点分组；普通消息走 `Client.Send`，`MsgSnap` 走 `splitSnapshotChunks + Client.InstallSnapshot`
+- [internal/transport/grpc/server.go](https://github.com/stellhub/stellmap/blob/main/internal/transport/grpc/server.go) 同时注册 `RaftTransport` 与 `SnapshotService`，并把 protobuf 类型转换为本地 `RaftMessageBatch` / `SnapshotChunk`
+- [internal/runtime/transport_service.go](https://github.com/stellhub/stellmap/blob/main/internal/runtime/transport_service.go) 中的 `InternalTransportService` 负责真正的消息处理：`SendRaftMessages` 调 `node.Step`，`InstallSnapshotChunk` 在内存中按 `term-index` 聚合分片，`DownloadSnapshot` 从本地快照存储切块返回
+- [internal/runtime/peer_transport.go](https://github.com/stellhub/stellmap/blob/main/internal/runtime/peer_transport.go) 会把 `Ready.Messages` 按目标节点分组；普通消息走 `Client.Send`，`MsgSnap` 走 `splitSnapshotChunks + Client.InstallSnapshot`
 
 ![StellMap gRPC 流程图](./images/grpc-flow.svg)
 
@@ -758,11 +758,11 @@ selector=color=gray,,version=v2
 
 安装脚本使用的配置模板可参考：
 
-- [stellmapd.toml](./config/stellmapd.toml)
+- [stellmapd.toml](https://github.com/stellhub/stellmap/blob/main/config/stellmapd.toml)
 
 注意：
 
-- 上面的 [stellmapd.toml](./config/stellmapd.toml) 现在是安装脚本使用的占位符模板
+- 上面的 [stellmapd.toml](https://github.com/stellhub/stellmap/blob/main/config/stellmapd.toml) 现在是安装脚本使用的占位符模板
 - 直接手工启动时，请参考下面这份“真实可用”的配置内容填写自己的节点参数
 
 一个最小示例如下：
