@@ -446,7 +446,7 @@ type StateMachine interface {
 - [internal/runtime/transport_service.go](internal/runtime/transport_service.go) 中的 `InternalTransportService` 负责真正的消息处理：`SendRaftMessages` 调 `node.Step`，`InstallSnapshotChunk` 在内存中按 `term-index` 聚合分片，`DownloadSnapshot` 从本地快照存储切块返回
 - [internal/runtime/peer_transport.go](internal/runtime/peer_transport.go) 会把 `Ready.Messages` 按目标节点分组；普通消息走 `Client.Send`，`MsgSnap` 走 `splitSnapshotChunks + Client.InstallSnapshot`
 
-![StellMap gRPC 流程图](docs/images/grpc-flow.svg)
+![StellMap gRPC 流程图](./images/grpc-flow.svg)
 
 ## 控制面设计
 
@@ -488,7 +488,7 @@ type StateMachine interface {
 
 独立的 `AdminAddr` 只承载 `/admin/v1` 控制面。
 
-![StellMap HTTP 流程图](docs/images/http-flow.svg)
+![StellMap HTTP 流程图](./images/http-flow.svg)
 
 ### 公共注册与发现接口
 
@@ -758,11 +758,11 @@ selector=color=gray,,version=v2
 
 安装脚本使用的配置模板可参考：
 
-- [stellmapd.toml](E:\PersonalCode\GoProject\StellMap\config\stellmapd.toml)
+- [stellmapd.toml](./config/stellmapd.toml)
 
 注意：
 
-- 上面的 [stellmapd.toml](E:\PersonalCode\GoProject\StellMap\config\stellmapd.toml) 现在是安装脚本使用的占位符模板
+- 上面的 [stellmapd.toml](./config/stellmapd.toml) 现在是安装脚本使用的占位符模板
 - 直接手工启动时，请参考下面这份“真实可用”的配置内容填写自己的节点参数
 
 一个最小示例如下：

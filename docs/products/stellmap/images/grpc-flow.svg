@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="940" viewBox="0 0 1360 940" role="img" aria-labelledby="title desc">
+  <title id="title">StellMap gRPC flow</title>
+  <desc id="desc">gRPC flow diagram for StellMap showing batched raft messages, snapshot install, and snapshot download.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbfcfe"/>
+      <stop offset="100%" stop-color="#eef5ff"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4d607a"/>
+    </marker>
+    <style>
+      .title { font: 700 30px 'Segoe UI', Arial, sans-serif; fill: #1d2736; }
+      .subtitle { font: 500 15px 'Segoe UI', Arial, sans-serif; fill: #5e6b7e; }
+      .lane { fill: #ffffff; stroke: #d6deea; stroke-width: 2; }
+      .lane-title { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #1f2a3a; }
+      .box-title { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #1f2a3a; }
+      .box-text { font: 500 13px 'Segoe UI', Arial, sans-serif; fill: #495a72; }
+      .transport { fill: #edf4ff; stroke: #97b3e5; stroke-width: 2; }
+      .service { fill: #eef9ef; stroke: #7bb283; stroke-width: 2; }
+      .state { fill: #fff2df; stroke: #d7b46e; stroke-width: 2; }
+      .storage { fill: #fdf0f0; stroke: #d39191; stroke-width: 2; }
+      .line { stroke: #4d607a; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .soft { stroke: #7a8aa4; stroke-width: 2; fill: none; stroke-dasharray: 8 6; marker-end: url(#arrow); }
+      .note { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #5c6980; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1360" height="940" fill="url(#bg)"/>
+  <text x="64" y="64" class="title">Internal gRPC Replication Flow</text>
+  <text x="64" y="92" class="subtitle">PeerTransport uses gRPC for batched raft messages and chunked snapshot transfer. The server adapter converts protobuf payloads into local transport types.</text>
+
+  <rect x="48" y="140" width="1264" height="236" rx="24" class="lane"/>
+  <text x="74" y="178" class="lane-title">1. Batched Raft Messages</text>
+
+  <rect x="82" y="214" width="196" height="116" rx="16" class="transport"/>
+  <text x="104" y="250" class="box-title">RaftNode Ready()</text>
+  <text x="104" y="276" class="box-text">messages emitted after local persist</text>
+  <text x="104" y="298" class="box-text">grouped by target node</text>
+
+  <rect x="340" y="214" width="210" height="116" rx="16" class="transport"/>
+  <text x="362" y="250" class="box-title">PeerTransport</text>
+  <text x="362" y="276" class="box-text">build RaftMessageBatch</text>
+  <text x="362" y="298" class="box-text">reuse peer client connection</text>
+
+  <rect x="612" y="214" width="212" height="116" rx="16" class="transport"/>
+  <text x="634" y="250" class="box-title">RaftTransport.Send</text>
+  <text x="634" y="276" class="box-text">RaftEnvelope{from,to,payload}</text>
+  <text x="634" y="298" class="box-text">empty ack on success</text>
+
+  <rect x="886" y="214" width="188" height="116" rx="16" class="service"/>
+  <text x="908" y="250" class="box-title">grpc.Server Adapter</text>
+  <text x="908" y="276" class="box-text">fromProtoRaftBatch</text>
+  <text x="908" y="298" class="box-text">delegate to Service</text>
+
+  <rect x="1136" y="214" width="142" height="116" rx="16" class="service"/>
+  <text x="1158" y="250" class="box-title">Step()</text>
+  <text x="1158" y="276" class="box-text">unmarshal payload</text>
+  <text x="1158" y="298" class="box-text">apply to raft</text>
+
+  <path d="M278 272 H330" class="line"/>
+  <path d="M550 272 H602" class="line"/>
+  <path d="M824 272 H876" class="line"/>
+  <path d="M1074 272 H1126" class="line"/>
+
+  <rect x="48" y="410" width="1264" height="250" rx="24" class="lane"/>
+  <text x="74" y="448" class="lane-title">2. Snapshot Install (MsgSnap)</text>
+
+  <rect x="82" y="486" width="196" height="128" rx="16" class="state"/>
+  <text x="104" y="522" class="box-title">Snapshot Message</text>
+  <text x="104" y="548" class="box-text">raftpb.MsgSnap from Ready</text>
+  <text x="104" y="570" class="box-text">contains raw snapshot bytes</text>
+
+  <rect x="340" y="486" width="210" height="128" rx="16" class="state"/>
+  <text x="362" y="522" class="box-title">PeerTransport</text>
+  <text x="362" y="548" class="box-text">splitSnapshotChunks(meta,data)</text>
+  <text x="362" y="570" class="box-text">default 64 KiB per chunk</text>
+
+  <rect x="612" y="486" width="212" height="128" rx="16" class="state"/>
+  <text x="634" y="522" class="box-title">SnapshotService.Install</text>
+  <text x="634" y="548" class="box-text">client streaming upload</text>
+  <text x="634" y="570" class="box-text">metadata + offset + eof</text>
+
+  <rect x="886" y="486" width="188" height="128" rx="16" class="service"/>
+  <text x="908" y="522" class="box-title">Server.Install</text>
+  <text x="908" y="548" class="box-text">forward each chunk</text>
+  <text x="908" y="570" class="box-text">close on EOF</text>
+
+  <rect x="1136" y="486" width="142" height="128" rx="16" class="service"/>
+  <text x="1158" y="522" class="box-title">InstallSnapshot</text>
+  <text x="1158" y="548" class="box-text">buffer by term-index</text>
+  <text x="1158" y="570" class="box-text">offset check + install</text>
+
+  <path d="M278 548 H330" class="line"/>
+  <path d="M550 548 H602" class="line"/>
+  <path d="M824 548 H876" class="line"/>
+  <path d="M1074 548 H1126" class="line"/>
+
+  <text x="636" y="634" class="note">EOF closes the stream and returns the installed snapshot term and index.</text>
+
+  <rect x="48" y="694" width="1264" height="198" rx="24" class="lane"/>
+  <text x="74" y="732" class="lane-title">3. Snapshot Download</text>
+
+  <rect x="82" y="768" width="196" height="88" rx="16" class="storage"/>
+  <text x="104" y="804" class="box-title">Peer Client</text>
+  <text x="104" y="830" class="box-text">Download(term,index)</text>
+
+  <rect x="340" y="768" width="210" height="88" rx="16" class="storage"/>
+  <text x="362" y="804" class="box-title">Server.Download</text>
+  <text x="362" y="830" class="box-text">request target snapshot</text>
+
+  <rect x="612" y="768" width="212" height="88" rx="16" class="storage"/>
+  <text x="634" y="804" class="box-title">InternalTransportService</text>
+  <text x="634" y="830" class="box-text">OpenLatest + split chunks</text>
+
+  <rect x="886" y="768" width="188" height="88" rx="16" class="storage"/>
+  <text x="908" y="804" class="box-title">Snapshot Store</text>
+  <text x="908" y="830" class="box-text">latest metadata + reader</text>
+
+  <rect x="1136" y="768" width="142" height="88" rx="16" class="storage"/>
+  <text x="1158" y="804" class="box-title">Chunk Stream</text>
+  <text x="1158" y="830" class="box-text">until eof</text>
+
+  <path d="M278 812 H330" class="line"/>
+  <path d="M550 812 H602" class="line"/>
+  <path d="M824 812 H876" class="line"/>
+  <path d="M1074 812 H1126" class="soft"/>
+
+  <text x="78" y="914" class="note">internal/transport/grpc/server.go only adapts generated protobuf services to a local Service interface; runtime.InternalTransportService owns the actual Step and snapshot install/download behavior.</text>
+</svg>

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="980" viewBox="0 0 1360 980" role="img" aria-labelledby="title desc">
+  <title id="title">StellMap HTTP flow</title>
+  <desc id="desc">HTTP flow diagram for StellMap covering public data plane, internal HTTP routes, and admin HTTP control plane.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbfcfe"/>
+      <stop offset="100%" stop-color="#eef4ff"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4d5f7a"/>
+    </marker>
+    <style>
+      .title { font: 700 30px 'Segoe UI', Arial, sans-serif; fill: #1d2736; }
+      .subtitle { font: 500 15px 'Segoe UI', Arial, sans-serif; fill: #5e6b7e; }
+      .lane { fill: #ffffff; stroke: #d6deea; stroke-width: 2; }
+      .lane-title { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #1f2a3a; }
+      .box-title { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #1f2a3a; }
+      .box-text { font: 500 13px 'Segoe UI', Arial, sans-serif; fill: #495a72; }
+      .public { fill: #edf4ff; stroke: #97b3e5; stroke-width: 2; }
+      .internal { fill: #eef9ef; stroke: #7bb283; stroke-width: 2; }
+      .admin { fill: #fff2df; stroke: #d7b46e; stroke-width: 2; }
+      .state { fill: #fdf0f0; stroke: #d39191; stroke-width: 2; }
+      .line { stroke: #4d5f7a; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .soft { stroke: #7a8aa4; stroke-width: 2; fill: none; stroke-dasharray: 8 6; marker-end: url(#arrow); }
+      .note { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #5c6980; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1360" height="980" fill="url(#bg)"/>
+  <text x="64" y="64" class="title">HTTP Request Flow</text>
+  <text x="64" y="92" class="subtitle">The HTTP listener at HTTPAddr serves public APIs, internal replication and Prometheus discovery routes, while AdminAddr serves localhost-only control APIs.</text>
+
+  <rect x="48" y="140" width="1264" height="232" rx="24" class="lane"/>
+  <text x="74" y="178" class="lane-title">Public Data Plane at HTTPAddr</text>
+
+  <rect x="82" y="212" width="176" height="114" rx="16" class="public"/>
+  <text x="104" y="248" class="box-title">Client</text>
+  <text x="104" y="274" class="box-text">POST register / deregister</text>
+  <text x="104" y="296" class="box-text">POST heartbeat</text>
+
+  <rect x="320" y="212" width="208" height="114" rx="16" class="public"/>
+  <text x="342" y="248" class="box-title">RegistryAPI</text>
+  <text x="342" y="274" class="box-text">decode + validate JSON</text>
+  <text x="342" y="296" class="box-text">ensure leader on write</text>
+
+  <rect x="590" y="212" width="214" height="114" rx="16" class="public"/>
+  <text x="612" y="248" class="box-title">RaftNode</text>
+  <text x="612" y="274" class="box-text">ProposeCommand / Get / Scan</text>
+  <text x="612" y="296" class="box-text">LinearizableRead before reads</text>
+
+  <rect x="866" y="212" width="196" height="114" rx="16" class="state"/>
+  <text x="888" y="248" class="box-title">State Machine</text>
+  <text x="888" y="274" class="box-text">Pebble + applied index</text>
+  <text x="888" y="296" class="box-text">query result / instance value</text>
+
+  <rect x="1124" y="212" width="154" height="114" rx="16" class="state"/>
+  <text x="1146" y="248" class="box-title">Response</text>
+  <text x="1146" y="274" class="box-text">JSON</text>
+  <text x="1146" y="296" class="box-text">or not_leader</text>
+
+  <path d="M258 269 H310" class="line"/>
+  <path d="M528 269 H580" class="line"/>
+  <path d="M804 269 H856" class="line"/>
+  <path d="M1062 269 H1114" class="line"/>
+
+  <rect x="82" y="332" width="176" height="40" rx="12" class="public"/>
+  <text x="104" y="358" class="box-text">GET instances / watch</text>
+  <path d="M258 352 H320" class="soft"/>
+  <text x="610" y="346" class="note">Watch uses SSE snapshot, upsert, delete events via WatchHub.</text>
+
+  <rect x="48" y="410" width="1264" height="226" rx="24" class="lane"/>
+  <text x="74" y="448" class="lane-title">Internal HTTP Routes on the Same HTTPAddr Listener</text>
+
+  <rect x="82" y="486" width="176" height="110" rx="16" class="internal"/>
+  <text x="104" y="522" class="box-title">Replication Peer</text>
+  <text x="104" y="548" class="box-text">GET /internal/v1/replication/watch</text>
+  <text x="104" y="570" class="box-text">Bearer replication token</text>
+
+  <rect x="320" y="486" width="208" height="110" rx="16" class="internal"/>
+  <text x="342" y="522" class="box-title">RegistryAPI</text>
+  <text x="342" y="548" class="box-text">SubscribeSince + snapshot fallback</text>
+  <text x="342" y="570" class="box-text">emit SSE by revision</text>
+
+  <rect x="590" y="486" width="214" height="110" rx="16" class="internal"/>
+  <text x="612" y="522" class="box-title">WatchHub / RaftNode</text>
+  <text x="612" y="548" class="box-text">replay buffered events</text>
+  <text x="612" y="570" class="box-text">build registry snapshot</text>
+
+  <rect x="866" y="486" width="196" height="110" rx="16" class="internal"/>
+  <text x="888" y="522" class="box-title">Prometheus</text>
+  <text x="888" y="548" class="box-text">GET /internal/v1/prometheus/sd</text>
+  <text x="888" y="570" class="box-text">Bearer sd token</text>
+
+  <rect x="1124" y="486" width="154" height="110" rx="16" class="internal"/>
+  <text x="1146" y="522" class="box-title">Target Groups</text>
+  <text x="1146" y="548" class="box-text">local / merged</text>
+  <text x="1146" y="570" class="box-text">JSON list</text>
+
+  <path d="M258 541 H310" class="line"/>
+  <path d="M528 541 H580" class="line"/>
+  <path d="M804 541 H856" class="soft"/>
+  <path d="M1062 541 H1114" class="line"/>
+
+  <text x="882" y="610" class="note">Prometheus SD can filter by namespace, service, zone, endpoint, selector, scope, and includeSelf.</text>
+
+  <rect x="48" y="674" width="1264" height="238" rx="24" class="lane"/>
+  <text x="74" y="712" class="lane-title">Admin Control Plane at AdminAddr</text>
+
+  <rect x="82" y="750" width="176" height="116" rx="16" class="admin"/>
+  <text x="104" y="786" class="box-title">stellmapctl</text>
+  <text x="104" y="812" class="box-text">status / replication status</text>
+  <text x="104" y="834" class="box-text">member / transfer leader</text>
+
+  <rect x="320" y="750" width="208" height="116" rx="16" class="admin"/>
+  <text x="342" y="786" class="box-title">Admin Auth</text>
+  <text x="342" y="812" class="box-text">127.0.0.1 only</text>
+  <text x="342" y="834" class="box-text">Authorization: Bearer token</text>
+
+  <rect x="590" y="750" width="214" height="116" rx="16" class="admin"/>
+  <text x="612" y="786" class="box-title">ControlAPI</text>
+  <text x="612" y="812" class="box-text">status / replication status</text>
+  <text x="612" y="834" class="box-text">ApplyConfChange / TransferLeadership</text>
+
+  <rect x="866" y="750" width="196" height="116" rx="16" class="state"/>
+  <text x="888" y="786" class="box-title">RaftNode + AddressBook</text>
+  <text x="888" y="812" class="box-text">leader check</text>
+  <text x="888" y="834" class="box-text">cluster topology snapshot</text>
+
+  <rect x="1124" y="750" width="154" height="116" rx="16" class="state"/>
+  <text x="1146" y="786" class="box-title">Result</text>
+  <text x="1146" y="812" class="box-text">JSON status</text>
+  <text x="1146" y="834" class="box-text">or control ack</text>
+
+  <path d="M258 807 H310" class="line"/>
+  <path d="M528 807 H580" class="line"/>
+  <path d="M804 807 H856" class="line"/>
+  <path d="M1062 807 H1114" class="line"/>
+
+  <text x="78" y="940" class="note">Write APIs return not_leader when the current node is not the leader. Query and heartbeat reads go through linearizable reads inside raftnode.Get or raftnode.Scan.</text>
+</svg>
