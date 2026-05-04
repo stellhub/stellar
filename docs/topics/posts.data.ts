@@ -52,7 +52,7 @@ export default createContentLoader("topics/*.md", {
         return {
           title: post.frontmatter.title ?? "",
           url: post.url,
-          category: post.frontmatter.category ?? "未分类",
+          category: post.frontmatter.category ?? "Uncategorized",
           summary: post.frontmatter.summary ?? "",
           tags: Array.isArray(post.frontmatter.tags) ? post.frontmatter.tags : [],
           readingDirection: post.frontmatter.readingDirection ?? "",

@@ -1,21 +1,29 @@
 ---
-title: Stellgate · 视界 · 架构组成
+title: Stellgate System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellgate · System Architecture
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-[返回产品首页](/products/stellgate/)
+## Component Model
 
-## 核心组件
+- Gateway Admin: manages route, certificate, and plugin configuration.
+- Gateway Runtime: performs forwarding, load balancing, and traffic control.
+- Plugin SDK: carries authentication, audit, and protocol-extension logic.
 
-- Gateway Admin：管理路由、证书和插件配置
-- Gateway Runtime：处理转发、负载和流量管控
-- Plugin SDK：承载鉴权、审计和协议扩展逻辑
+## Interaction Flow
 
-## 关键交互
+- The control plane publishes route and plugin strategy to runtime gateway nodes.
+- Requests are processed through the plugin chain before being forwarded to the target upstream service.
 
-- 控制面将路由和插件策略发布到运行时网关节点
-- 请求经过插件链处理后再转发至目标上游服务
+## Continue Reading
+
+- Start with the [Stellgate product overview](/products/stellgate/)
+- Previous: [Design Overview](/products/stellgate/summary-design)
+- Next: [Deployment Model](/products/stellgate/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellgate/architecture)

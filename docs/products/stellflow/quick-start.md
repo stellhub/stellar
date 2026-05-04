@@ -1,21 +1,29 @@
 ---
-title: Stellflow · 彗流 · 快速入门
+title: Stellflow Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellflow · Getting Started
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-[返回产品首页](/products/stellflow/)
+## Setup
 
-## 接入步骤
+1. Create a topic and a consumer group.
+2. Send business events through the SDK.
+3. Configure consumer retry, dead-letter handling, and offset-commit policy.
 
-1. 创建主题与消费组。
-2. 使用 SDK 发送业务事件。
-3. 配置消费者重试、死信和位点提交策略。
+## Validation
 
-## 首次验证
+- Send a test message and confirm that consumers can process it successfully.
+- Simulate consumption failure and verify retry queues and dead-letter queues behave as expected.
 
-- 发送一条测试消息并确认消费者可成功消费
-- 模拟消费失败，验证重试队列和死信队列是否符合预期
+## Continue Reading
+
+- Start with the [Stellflow product overview](/products/stellflow/)
+- Previous: [Deployment Model](/products/stellflow/deployment)
+- Next: [Configuration Guide](/products/stellflow/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellflow/quick-start)

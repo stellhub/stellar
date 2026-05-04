@@ -1,20 +1,28 @@
 ---
-title: Stellpulse · 脉冲 · 部署形态
+title: Stellpulse Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellpulse · Deployment Model
 
-> 流控熔断平台，负责热点保护、容量守卫、隔离舱和自适应降级。
+> A flow-control and circuit-breaking platform for hotspot protection, capacity guarding, bulkhead isolation, and adaptive degradation.
 
-[返回产品首页](/products/stellpulse/)
+## Deployment Topology
 
-## 推荐拓扑
+- The preferred mode is SDK-based embedding inside business applications, optionally combined with gateway-level rules.
+- For major promotion events, coordinate layered rate limiting with the gateway and service-governance platform.
 
-- 推荐以 SDK 方式嵌入业务应用，必要时辅以网关级规则
-- 对大促场景建议与网关、服务治理平台联动分层限流
+## Availability Strategy
 
-## 高可用策略
+- Local rule cache should remain effective even when the control plane is unavailable.
+- Rate-limiting and circuit-breaking rules should be deployed in multiple layers instead of concentrating on a single entry point.
 
-- 本地规则缓存应支持控制面异常时继续生效
-- 限流和熔断策略需分层布置，避免全部集中在单点入口
+## Continue Reading
+
+- Start with the [Stellpulse product overview](/products/stellpulse/)
+- Previous: [System Architecture](/products/stellpulse/architecture)
+- Next: [Getting Started](/products/stellpulse/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpulse/deployment)

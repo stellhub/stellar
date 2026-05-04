@@ -1,20 +1,27 @@
 ---
-title: Stellflow · 彗流 · 概要设计
+title: Stellflow Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellflow · Design Overview
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-[返回产品首页](/products/stellflow/)
+## Control Plane
 
-## 控制面设计
+- The governance layer manages topic configuration, quotas, audit, and event tracking.
+- Topics, consumer groups, and replication strategy are administered centrally.
 
-- 治理层负责主题配置、配额、审计和事件追踪
-- 主题、消费组和复制策略由控制面统一管理
+## Data Plane
 
-## 数据面设计
+- The write layer handles message durability, partition routing, and write acknowledgement.
+- The distribution layer handles consumer-group coordination, offset management, and rebalancing.
 
-- 写入层负责消息持久化、分区路由和写入确认
-- 分发层负责消费组协调、位点管理和重平衡
+## Continue Reading
+
+- Start with the [Stellflow product overview](/products/stellflow/)
+- Next: [System Architecture](/products/stellflow/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellflow/summary-design)

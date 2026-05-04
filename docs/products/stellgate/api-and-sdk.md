@@ -1,19 +1,27 @@
 ---
-title: Stellgate · 视界 · API 与 SDK
+title: Stellgate API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellgate · API Reference
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-[返回产品首页](/products/stellgate/)
+## API Surface
 
-## 接口分层
+- Expose route management, certificate management, plugin management, and release interfaces.
 
-- 提供路由管理、证书管理、插件管理和发布接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK provides a plugin-development framework and gateway extension context.
+- Plugin design should distinguish pre-authentication, pre-forward, and post-response stages.
 
-- SDK 提供插件开发框架和网关扩展上下文
-- 插件开发应区分前置鉴权、转发前处理和响应后处理阶段
+## Continue Reading
+
+- Start with the [Stellgate product overview](/products/stellgate/)
+- Previous: [Configuration Guide](/products/stellgate/configuration)
+- Next: [Observability Guide](/products/stellgate/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellgate/api-and-sdk)

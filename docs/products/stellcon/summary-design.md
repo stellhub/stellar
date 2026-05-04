@@ -1,21 +1,28 @@
 ---
-title: Stellcon · 星座 · 概要设计
+title: Stellcon Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellcon · Design Overview
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-[返回产品首页](/products/stellcon/)
+## Control Plane
 
-## 控制面设计
+- Collection rules, label boundaries, and dashboard templates are configured centrally.
+- SLO targets and aggregation standards are distributed from the control plane.
 
-- 采集规则、标签边界和看板模板由控制面统一配置
-- SLO 目标与聚合口径由控制面统一下发
+## Data Plane
 
-## 数据面设计
+- The collection layer handles scraping, pushing, and remote write ingestion.
+- The storage layer handles compression, sharding, and long-window aggregation.
+- The analysis layer handles alert queries, SLO computation, and trend forecasting.
 
-- 采集层负责指标拉取、推送和远程写入接入
-- 存储层负责压缩、分片和长周期聚合
-- 分析层负责告警查询、SLO 计算和趋势预测
+## Continue Reading
+
+- Start with the [Stellcon product overview](/products/stellcon/)
+- Next: [System Architecture](/products/stellcon/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellcon/summary-design)

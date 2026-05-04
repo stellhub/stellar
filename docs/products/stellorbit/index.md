@@ -1,61 +1,63 @@
 ---
-title: Stellorbit 详细设计
+title: Stellorbit Design
 outline: deep
 ---
 
-# Stellorbit · 星轨
+# Stellorbit · Orbit
 
 <div class="product-logo">
   <img src="/logo/stellorbit.png" alt="Stellorbit Logo">
 </div>
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellorbit 为服务间调用提供统一治理策略，解决灰度发布、地域路由、版本隔离和故障切换等动态治理问题。
+Stellorbit provides unified governance policies for service-to-service calls, solving dynamic control problems such as canary release, geo-routing, version isolation, and failover.
 
-### 适用边界
+### Boundaries
 
-- 面向服务调用链中的路由、重试、切流和故障隔离
-- 面向多版本、多地域、多租户的治理规则编排
-- 不直接承载注册和配置存储，而是消费外部契约信息
+- Designed for routing, retries, traffic shifting, and failure isolation in service call paths.
+- Designed for governance rule orchestration across multiple versions, regions, and tenants.
+- It does not store registry or configuration data directly; instead, it consumes those external contracts.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持权重路由、标签路由、版本路由和地域路由
-- 支持负载均衡、重试、超时和故障摘除编排
-- 支持治理规则的灰度生效和回滚
+- Supports weighted, label-based, version-based, and geo-based routing.
+- Supports load balancing, retries, timeout policy, and unhealthy-instance ejection.
+- Supports progressive activation and rollback of governance rules.
 
-### 设计价值
+### Engineering Value
 
-- 让流量治理从代码内嵌转为平台化编排
-- 提升灰度发布和多活切流的可控性
+- Moves traffic governance from embedded code to platform-level orchestration.
+- Improves control over canary release and active-active traffic switching.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellorbit/summary-design)
+- [System Architecture](/products/stellorbit/architecture)
+- [Deployment Model](/products/stellorbit/deployment)
+- [Getting Started](/products/stellorbit/quick-start)
+- [Configuration Guide](/products/stellorbit/configuration)
+- [API Reference](/products/stellorbit/api-and-sdk)
+- [Observability Guide](/products/stellorbit/observability)
 
-- [概要设计](/products/stellorbit/summary-design)
-- [架构组成](/products/stellorbit/architecture)
-- [部署形态](/products/stellorbit/deployment)
-- [快速入门](/products/stellorbit/quick-start)
-- [配置建议](/products/stellorbit/configuration)
-- [API 与 SDK](/products/stellorbit/api-and-sdk)
-- [可观测性](/products/stellorbit/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Canary release
+- Active-active traffic switching
 
-- 灰度发布
-- 多活切流
+### Platform Use Cases
 
-### 平台场景
+- Service failure isolation
+- Cross-cluster governance orchestration
 
-- 服务故障隔离
-- 跨集群治理编排
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellorbit/)

@@ -1,21 +1,29 @@
 ---
-title: Stelltrace · 星迹 · 快速入门
+title: Stelltrace Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stelltrace · Getting Started
 
-> 链路追踪平台，负责全链路 Trace、Span 采集、关联分析与问题定位。
+> A tracing platform for end-to-end trace collection, span analysis, cross-signal correlation, and issue localization.
 
-[返回产品首页](/products/stelltrace/)
+## Setup
 
-## 接入步骤
+1. Enable the Trace SDK inside the application.
+2. Configure the sampling strategy and reporting endpoint.
+3. Use Trace ID in the platform to retrieve the full call chain.
 
-1. 在应用中启用 Trace SDK。
-2. 配置采样策略和上报地址。
-3. 通过 Trace ID 在平台中检索完整调用链。
+## Validation
 
-## 首次验证
+- Trigger a cross-service request and confirm the full trace is visible.
+- Intentionally create a slow call and verify that slow-trace filtering works.
 
-- 发起一次跨服务调用并确认链路已完整展示
-- 故意制造慢调用，验证慢链路筛选是否生效
+## Continue Reading
+
+- Start with the [Stelltrace product overview](/products/stelltrace/)
+- Previous: [Deployment Model](/products/stelltrace/deployment)
+- Next: [Configuration Guide](/products/stelltrace/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stelltrace/quick-start)

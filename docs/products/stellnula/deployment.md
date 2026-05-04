@@ -1,20 +1,28 @@
 ---
-title: Stellnula · 星云 · 部署形态
+title: Stellnula Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellnula · Deployment Model
 
-> 配置中心，负责配置集中存储、版本管理、灰度发布与动态下发。
+> A configuration center responsible for centralized storage, version management, progressive release, and dynamic distribution.
 
-[返回产品首页](/products/stellnula/)
+## Deployment Topology
 
-## 推荐拓扑
+- Deploy the configuration center separately from the registry center so configuration traffic does not interfere with service discovery.
+- At larger scale, split the read-only query layer from the release execution layer.
 
-- 建议与注册中心分离部署，避免配置流量影响注册发现
-- 大规模场景可独立部署只读查询层和发布执行层
+## Availability Strategy
 
-## 高可用策略
+- Separate the release path from the query path to reduce mutual impact during heavy change windows.
+- Configuration snapshots should support cross-instance sharing and cold-start fallback.
 
-- 发布链路与查询链路分离，减少高峰变更时的相互影响
-- 配置快照应支持跨实例共享和冷启动回退
+## Continue Reading
+
+- Start with the [Stellnula product overview](/products/stellnula/)
+- Previous: [System Architecture](/products/stellnula/architecture)
+- Next: [Getting Started](/products/stellnula/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellnula/deployment)

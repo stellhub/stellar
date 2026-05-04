@@ -1,19 +1,27 @@
 ---
-title: Stellspec · 星谱 · API 与 SDK
+title: Stellspec API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellspec · API Reference
 
-> 日志平台，负责统一采集、结构化处理、检索分析与日志留存治理。
+> A log platform for unified collection, structured processing, search analysis, and retention governance.
 
-[返回产品首页](/products/stellspec/)
+## API Surface
 
-## 接口分层
+- Expose interfaces for log ingestion, search, index management, and lifecycle configuration.
 
-- 提供日志写入、检索、索引管理和生命周期配置接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK injects standard fields and bridges log context across application code.
+- Use it together with the Trace SDK so both signals share the same context fields.
 
-- SDK 提供标准字段注入和日志上下文桥接能力
-- 推荐与 Trace SDK 联动注入统一上下文字段
+## Continue Reading
+
+- Start with the [Stellspec product overview](/products/stellspec/)
+- Previous: [Configuration Guide](/products/stellspec/configuration)
+- Next: [Observability Guide](/products/stellspec/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellspec/api-and-sdk)

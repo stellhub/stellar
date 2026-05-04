@@ -1,20 +1,27 @@
 ---
-title: Stellkey · 星钥 · 概要设计
+title: Stellkey Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellkey · Design Overview
 
-> 密钥中心，负责密钥生命周期管理、机密分发、轮换审计与安全访问控制。
+> A secret-management center for key lifecycle management, secret distribution, rotation auditing, and secure access control.
 
-[返回产品首页](/products/stellkey/)
+## Control Plane
 
-## 控制面设计
+- The control layer manages approval flow, rotation plans, and secret policy.
+- Access boundaries, rotation cycles, and distribution policies are governed centrally.
 
-- 控制层负责审批流、轮换计划和密钥策略
-- 访问边界、轮换周期和分发策略由控制面统一管理
+## Data Plane
 
-## 数据面设计
+- The storage layer handles secret encryption, version management, and access isolation.
+- The distribution layer handles short-lived credential issuance, retrieval cache, and expiration invalidation.
 
-- 存储层负责机密加密、版本管理和访问隔离
-- 分发层负责短期凭证签发、拉取缓存和到期失效
+## Continue Reading
+
+- Start with the [Stellkey product overview](/products/stellkey/)
+- Next: [System Architecture](/products/stellkey/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellkey/summary-design)

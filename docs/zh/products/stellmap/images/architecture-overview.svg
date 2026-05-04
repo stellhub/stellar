@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="900" viewBox="0 0 1360 900" role="img" aria-labelledby="title desc">
+  <title id="title">StellMap architecture overview</title>
+  <desc id="desc">Architecture diagram for StellMap showing public HTTP, admin HTTP, internal gRPC, RaftNode, storage, and peer transport.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8fb"/>
+      <stop offset="100%" stop-color="#eef3ff"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fbff"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#51617a"/>
+    </marker>
+    <style>
+      .title { font: 700 30px 'Segoe UI', Arial, sans-serif; fill: #1d2736; }
+      .subtitle { font: 500 15px 'Segoe UI', Arial, sans-serif; fill: #5e6b7e; }
+      .section { font: 700 16px 'Segoe UI', Arial, sans-serif; fill: #1f2a3a; }
+      .box-title { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #1f2a3a; }
+      .box-text { font: 500 13px 'Segoe UI', Arial, sans-serif; fill: #4b5870; }
+      .small { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #546276; }
+      .panel { fill: url(#panel); stroke: #d7dfec; stroke-width: 2; }
+      .listener { fill: #edf4ff; stroke: #96b3e7; stroke-width: 2; }
+      .service { fill: #fff5dd; stroke: #d4b25d; stroke-width: 2; }
+      .infra { fill: #eef9ef; stroke: #7ab181; stroke-width: 2; }
+      .state { fill: #fdf0f0; stroke: #d28d8d; stroke-width: 2; }
+      .external { fill: #ffffff; stroke: #c5cedd; stroke-width: 2; }
+      .line { stroke: #51617a; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .soft-line { stroke: #7b8ba5; stroke-width: 2; fill: none; stroke-dasharray: 8 6; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1360" height="900" fill="url(#bg)"/>
+
+  <text x="68" y="64" class="title">StellMap Runtime Architecture</text>
+  <text x="68" y="92" class="subtitle">A single stellmapd node exposes public HTTP, admin HTTP, and internal gRPC on top of the same Raft-driven state machine.</text>
+
+  <rect x="46" y="150" width="210" height="116" rx="18" class="external"/>
+  <text x="70" y="192" class="box-title">Business Clients</text>
+  <text x="70" y="220" class="box-text">Register</text>
+  <text x="70" y="242" class="box-text">Query / Watch</text>
+
+  <rect x="46" y="352" width="210" height="116" rx="18" class="external"/>
+  <text x="70" y="394" class="box-title">stellmapctl</text>
+  <text x="70" y="422" class="box-text">Status</text>
+  <text x="70" y="444" class="box-text">ConfChange / Transfer</text>
+
+  <rect x="46" y="554" width="210" height="146" rx="18" class="external"/>
+  <text x="70" y="596" class="box-title">Peer Nodes</text>
+  <text x="70" y="624" class="box-text">RaftTransport.Send</text>
+  <text x="70" y="646" class="box-text">Snapshot Install / Download</text>
+  <text x="70" y="668" class="box-text">Replication Watch</text>
+
+  <rect x="308" y="118" width="1000" height="708" rx="28" class="panel"/>
+  <text x="342" y="158" class="section">StellMap Node (stellmapd)</text>
+  <text x="342" y="182" class="subtitle">cmd/stellmapd wires listeners, runtime services, address book, watch hub, and Raft-backed persistence.</text>
+
+  <rect x="342" y="220" width="234" height="92" rx="16" class="listener"/>
+  <text x="364" y="254" class="box-title">Public HTTP</text>
+  <text x="364" y="280" class="box-text">/api/v1 + /internal/v1</text>
+
+  <rect x="616" y="220" width="234" height="92" rx="16" class="listener"/>
+  <text x="638" y="254" class="box-title">Admin HTTP</text>
+  <text x="638" y="280" class="box-text">/admin/v1 on localhost</text>
+
+  <rect x="890" y="220" width="234" height="92" rx="16" class="listener"/>
+  <text x="912" y="254" class="box-title">Internal gRPC</text>
+  <text x="912" y="280" class="box-text">RaftTransport + SnapshotService</text>
+
+  <rect x="342" y="360" width="234" height="108" rx="16" class="service"/>
+  <text x="364" y="394" class="box-title">RegistryAPI</text>
+  <text x="364" y="420" class="box-text">register / deregister / heartbeat</text>
+  <text x="364" y="442" class="box-text">query / watch / internal watch</text>
+
+  <rect x="616" y="360" width="234" height="108" rx="16" class="service"/>
+  <text x="638" y="394" class="box-title">ControlAPI</text>
+  <text x="638" y="420" class="box-text">status / replication status</text>
+  <text x="638" y="442" class="box-text">conf change / transfer leader</text>
+
+  <rect x="890" y="360" width="234" height="108" rx="16" class="service"/>
+  <text x="912" y="394" class="box-title">InternalTransportService</text>
+  <text x="912" y="420" class="box-text">step raft messages</text>
+  <text x="912" y="442" class="box-text">install / download snapshot</text>
+
+  <rect x="1148" y="360" width="126" height="108" rx="16" class="service"/>
+  <text x="1170" y="394" class="box-title">HealthAPI</text>
+  <text x="1170" y="420" class="box-text">healthz</text>
+  <text x="1170" y="442" class="box-text">readyz / metrics</text>
+
+  <rect x="508" y="530" width="344" height="116" rx="18" class="infra"/>
+  <text x="532" y="570" class="box-title">RaftNode</text>
+  <text x="532" y="596" class="box-text">Propose / ReadIndex / Step</text>
+  <text x="532" y="618" class="box-text">ApplyConfChange / TransferLeadership</text>
+
+  <rect x="342" y="530" width="136" height="116" rx="18" class="infra"/>
+  <text x="364" y="570" class="box-title">WatchHub</text>
+  <text x="364" y="596" class="box-text">SSE fan-out</text>
+
+  <rect x="884" y="530" width="172" height="116" rx="18" class="infra"/>
+  <text x="906" y="570" class="box-title">AddressBook</text>
+  <text x="906" y="596" class="box-text">HTTP / gRPC / Admin</text>
+
+  <rect x="1084" y="530" width="190" height="116" rx="18" class="infra"/>
+  <text x="1106" y="570" class="box-title">PeerTransport</text>
+  <text x="1106" y="596" class="box-text">group Ready messages</text>
+  <text x="1106" y="618" class="box-text">chunk snapshots</text>
+
+  <rect x="374" y="698" width="188" height="90" rx="16" class="state"/>
+  <text x="396" y="736" class="box-title">Pebble</text>
+  <text x="396" y="760" class="box-text">state machine data</text>
+
+  <rect x="598" y="698" width="188" height="90" rx="16" class="state"/>
+  <text x="620" y="736" class="box-title">WAL</text>
+  <text x="620" y="760" class="box-text">raft entries + hard state</text>
+
+  <rect x="822" y="698" width="188" height="90" rx="16" class="state"/>
+  <text x="844" y="736" class="box-title">Snapshot Store</text>
+  <text x="844" y="760" class="box-text">create / install / download</text>
+
+  <path d="M256 208 H330" class="line"/>
+  <path d="M256 410 H604 V266" class="line"/>
+  <path d="M256 626 H878 V266" class="line"/>
+
+  <path d="M459 312 V348" class="line"/>
+  <path d="M733 312 V348" class="line"/>
+  <path d="M1007 312 V348" class="line"/>
+  <path d="M1211 312 V348" class="line"/>
+
+  <path d="M459 468 V514 H566" class="line"/>
+  <path d="M733 468 V514 H680" class="line"/>
+  <path d="M1007 468 V514 H794" class="line"/>
+  <path d="M1211 468 V514 H846" class="soft-line"/>
+
+  <path d="M478 588 H494" class="soft-line"/>
+  <path d="M852 588 H876" class="soft-line"/>
+  <path d="M1056 588 H1076" class="soft-line"/>
+
+  <path d="M680 646 V686" class="line"/>
+  <path d="M680 646 H468 V686" class="line"/>
+  <path d="M680 646 H692 V686" class="line"/>
+  <path d="M680 646 H916 V686" class="line"/>
+
+  <path d="M1178 530 V494 H1007 V468" class="soft-line"/>
+  <path d="M1178 646 V626 H256" class="soft-line"/>
+
+  <text x="1098" y="668" class="small">Ready fan-out to peers</text>
+  <text x="338" y="664" class="small">watch events</text>
+  <text x="888" y="664" class="small">peer address lookup</text>
+</svg>

@@ -1,19 +1,27 @@
 ---
-title: Stellguard · 星盾 · API 与 SDK
+title: Stellguard API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellguard · API Reference
 
-> 零信任安全平台，负责身份验证、访问控制、策略评估和服务间安全通信。
+> A zero-trust security platform for identity verification, access control, policy evaluation, and secure service-to-service communication.
 
-[返回产品首页](/products/stellguard/)
+## API Surface
 
-## 接口分层
+- Expose identity management, policy management, token issuance, and audit-query interfaces.
 
-- 提供身份管理、策略管理、令牌签发和审计查询接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK supplies auth interceptors, mTLS configuration, and context propagation.
+- Use the same context-attribute model on both the gateway and service side.
 
-- SDK 提供鉴权拦截器、mTLS 配置和上下文传递能力
-- 建议在网关和服务侧统一采用相同上下文属性模型
+## Continue Reading
+
+- Start with the [Stellguard product overview](/products/stellguard/)
+- Previous: [Configuration Guide](/products/stellguard/configuration)
+- Next: [Observability Guide](/products/stellguard/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellguard/api-and-sdk)

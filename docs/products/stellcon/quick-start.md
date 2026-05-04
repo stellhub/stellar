@@ -1,21 +1,29 @@
 ---
-title: Stellcon · 星座 · 快速入门
+title: Stellcon Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellcon · Getting Started
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-[返回产品首页](/products/stellcon/)
+## Setup
 
-## 接入步骤
+1. Integrate the metrics SDK or expose a standard scrape endpoint.
+2. Import the system's default dashboard templates.
+3. Create alerts and SLO targets for key metrics.
 
-1. 为应用接入指标 SDK 或暴露标准抓取端点。
-2. 导入系统默认看板模板。
-3. 为关键指标建立告警和 SLO 目标。
+## Validation
 
-## 首次验证
+- Check whether the application is reporting standard runtime metrics successfully.
+- Verify that a key SLO dashboard can render valid numbers.
 
-- 查看应用是否成功上报标准运行指标
-- 验证一个关键 SLO 图表是否能正常出数
+## Continue Reading
+
+- Start with the [Stellcon product overview](/products/stellcon/)
+- Previous: [Deployment Model](/products/stellcon/deployment)
+- Next: [Configuration Guide](/products/stellcon/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellcon/quick-start)

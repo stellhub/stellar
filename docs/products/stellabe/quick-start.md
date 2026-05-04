@@ -1,21 +1,29 @@
 ---
-title: Stellabe · 星盘 · 快速入门
+title: Stellabe Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellabe · Getting Started
 
-> 任务调度平台，负责定时任务编排、依赖调度、分片执行与运行治理。
+> A job-scheduling platform for timed orchestration, dependency scheduling, sharded execution, and runtime governance.
 
-[返回产品首页](/products/stellabe/)
+## Setup
 
-## 接入步骤
+1. Define tasks and executors.
+2. Configure cron schedules or DAG dependencies.
+3. Observe the latest execution log and retry history.
 
-1. 定义任务与执行器。
-2. 配置 Cron 或 DAG 依赖关系。
-3. 观察最近一次执行日志与重试记录。
+## Validation
 
-## 首次验证
+- Manually trigger a task and confirm that an executor can pick it up normally.
+- Simulate a failure and verify that retry and compensation chains work.
 
-- 手动触发一次任务并确认执行器能正常拉取
-- 模拟失败后验证重试和补偿链路是否生效
+## Continue Reading
+
+- Start with the [Stellabe product overview](/products/stellabe/)
+- Previous: [Deployment Model](/products/stellabe/deployment)
+- Next: [Configuration Guide](/products/stellabe/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellabe/quick-start)

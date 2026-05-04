@@ -1,20 +1,28 @@
 ---
-title: Stellvox · 星讯 · 部署形态
+title: Stellvox Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellvox · Deployment Model
 
-> 告警平台，负责告警规则、收敛降噪、通知编排和事件协同处置。
+> An alerting platform for alert rules, deduplication, notification orchestration, and incident coordination.
 
-[返回产品首页](/products/stellvox/)
+## Deployment Topology
 
-## 推荐拓扑
+- Deploy event computation separately from notification delivery to improve resilience during alert peaks.
+- For multi-region operation, support both local notification paths and a global aggregation channel.
 
-- 建议事件计算与通知发送分离部署，提高告警高峰期韧性
-- 多地域场景建议支持本地通知和全局汇总双通道
+## Availability Strategy
 
-## 高可用策略
+- Notification delivery should support retry, rate limiting, and multi-channel fallback.
+- On-call configuration and rule configuration both need versioning and rapid rollback.
 
-- 通知发送应具备失败重试、限速和多通道兜底能力
-- 值班配置与规则配置需要支持版本化和快速回滚
+## Continue Reading
+
+- Start with the [Stellvox product overview](/products/stellvox/)
+- Previous: [System Architecture](/products/stellvox/architecture)
+- Next: [Getting Started](/products/stellvox/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellvox/deployment)

@@ -1,20 +1,28 @@
 ---
-title: Stellmap · 星图 · 配置建议
+title: Stellmap Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellmap · Configuration Guide
 
-> 注册中心，负责服务实例注册、健康检查、发现订阅与拓扑变更推送。
+> A registry center that manages service instance registration, health checks, discovery subscriptions, and topology change propagation.
 
-[返回产品首页](/products/stellmap/)
+## Baseline Configuration
 
-## 基础配置
+- In production, separate registration timeout, removal threshold, and push batch size instead of relying on a single global timing model.
+- For cross-datacenter traffic, add region labels and nearest-routing policies.
 
-- 生产环境建议区分注册超时、摘除阈值和推送批大小
-- 对跨机房调用建议增加地域标签与就近路由策略
+## Production Guidance
 
-## 生产建议
+- Tune registration timeout and heartbeat intervals according to service startup time and network quality.
+- Balance push batch size and local cache refresh frequency against freshness and throughput.
 
-- 注册超时和续约周期需要按服务启动时间与网络质量调优
-- 推送批量与本地缓存刷新频率需要平衡实时性与吞吐
+## Continue Reading
+
+- Start with the [Stellmap product overview](/products/stellmap/)
+- Previous: [Getting Started](/products/stellmap/quick-start)
+- Next: [API Reference](/products/stellmap/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellmap/configuration)

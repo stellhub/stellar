@@ -1,19 +1,26 @@
 ---
-title: Stellorbit · 星轨 · 可观测性
+title: Stellorbit Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellorbit · Observability Guide
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-[返回产品首页](/products/stellorbit/)
+## Metrics
 
-## 关键指标
+- Focus on rule hit rate, retry amplification factor, circuit-break count, and traffic-switch latency.
 
-- 重点关注规则命中率、重试放大倍数、熔断次数和切流延迟
+## Operational Watchpoints
 
-## 运维重点
+- Watch for abnormal rule spread, switching delay, and rollback windows.
+- Watch for dependency amplification and distorted capacity caused by excessive retries.
 
-- 关注异常规则扩散、切流延迟和回滚窗口
-- 关注重试导致的依赖放大与容量失真
+## Continue Reading
+
+- Start with the [Stellorbit product overview](/products/stellorbit/)
+- Previous: [API Reference](/products/stellorbit/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellorbit/observability)

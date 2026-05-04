@@ -1,20 +1,28 @@
 ---
-title: Stellpoint · 奇点 · 部署形态
+title: Stellpoint Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellpoint · Deployment Model
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-[返回产品首页](/products/stellpoint/)
+## Deployment Topology
 
-## 推荐拓扑
+- Deploy an odd number of replicas, usually three to five nodes, to preserve quorum behavior.
+- For high-risk resources, use dedicated namespaces or separate lock clusters.
 
-- 建议三到五节点奇数副本部署，优先保障仲裁能力
-- 高风险资源建议独立命名空间和独立锁集群
+## Availability Strategy
 
-## 高可用策略
+- Session timeout and lease expiration must be tuned carefully to avoid accidental release.
+- For hotspot resources, split lock granularity and limit preemption frequency.
 
-- 会话超时和租约过期需谨慎配置，避免误释放
-- 热点资源可拆分锁粒度并限制抢占频率
+## Continue Reading
+
+- Start with the [Stellpoint product overview](/products/stellpoint/)
+- Previous: [System Architecture](/products/stellpoint/architecture)
+- Next: [Getting Started](/products/stellpoint/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpoint/deployment)

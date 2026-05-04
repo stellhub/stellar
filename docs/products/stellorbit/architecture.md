@@ -1,21 +1,29 @@
 ---
-title: Stellorbit · 星轨 · 架构组成
+title: Stellorbit System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellorbit · System Architecture
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-[返回产品首页](/products/stellorbit/)
+## Component Model
 
-## 核心组件
+- Rule Repository: stores routing and governance rules.
+- Execution Engine: enforces strategy at traffic ingress and client-call points.
+- State Synchronizer: reports instance health, capacity, and abnormal events.
 
-- 规则仓库：存储路由和治理规则
-- 执行引擎：在流量入口和调用客户端实施策略
-- 状态同步器：回传实例健康、容量和异常事件
+## Interaction Flow
 
-## 关键交互
+- Clients pull or receive governance rules and execute them immediately in the request path.
+- Execution results and instance status are sent back for policy optimization.
 
-- 客户端拉取或接收治理规则后在请求路径中即时执行
-- 执行结果和实例状态回传至治理中心用于策略优化
+## Continue Reading
+
+- Start with the [Stellorbit product overview](/products/stellorbit/)
+- Previous: [Design Overview](/products/stellorbit/summary-design)
+- Next: [Deployment Model](/products/stellorbit/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellorbit/architecture)

@@ -1,19 +1,27 @@
 ---
-title: Stellflow · 彗流 · API 与 SDK
+title: Stellflow API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellflow · API Reference
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-[返回产品首页](/products/stellflow/)
+## API Surface
 
-## 接口分层
+- Expose topic management, message delivery, consumer offset, and audit-query interfaces.
 
-- 提供主题管理、消息投递、消费位点和审计查询接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK supports synchronous, asynchronous, batch, and transactional message models.
+- Consumers should support batch pull, manual commit, and exception rollback strategy.
 
-- SDK 提供同步、异步、批量和事务消息模型
-- 消费端需支持批量拉取、手动提交和异常回退策略
+## Continue Reading
+
+- Start with the [Stellflow product overview](/products/stellflow/)
+- Previous: [Configuration Guide](/products/stellflow/configuration)
+- Next: [Observability Guide](/products/stellflow/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellflow/api-and-sdk)

@@ -1,21 +1,29 @@
 ---
-title: Stellorbit · 星轨 · 快速入门
+title: Stellorbit Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellorbit · Getting Started
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-[返回产品首页](/products/stellorbit/)
+## Setup
 
-## 接入步骤
+1. Define version labels and traffic groups for the service.
+2. Configure baseline timeout, retry, and load-balancing policies.
+3. Publish a canary routing rule and observe governance metrics.
 
-1. 为服务定义版本标签与流量分组。
-2. 配置基础超时、重试和负载策略。
-3. 发布灰度路由规则并观察治理指标。
+## Validation
 
-## 首次验证
+- Roll out a canary rule to a small amount of traffic and verify hit behavior.
+- Simulate an unhealthy instance and confirm ejection and traffic switching behave as expected.
 
-- 对一条灰度路由规则做小流量发布并核对命中情况
-- 模拟实例异常，验证摘除和切流是否符合预期
+## Continue Reading
+
+- Start with the [Stellorbit product overview](/products/stellorbit/)
+- Previous: [Deployment Model](/products/stellorbit/deployment)
+- Next: [Configuration Guide](/products/stellorbit/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellorbit/quick-start)

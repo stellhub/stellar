@@ -1,21 +1,29 @@
 ---
-title: Stellflow · 彗流 · 架构组成
+title: Stellflow System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellflow · System Architecture
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-[返回产品首页](/products/stellflow/)
+## Component Model
 
-## 核心组件
+- Broker: handles message write, storage, and distribution.
+- Controller: manages topics, partitions, replicas, and failover.
+- Client SDK: provides producer, consumer, and transactional-message capability.
 
-- Broker：承载消息写入、存储与分发
-- Controller：管理主题、分区、副本和故障转移
-- Client SDK：提供生产、消费和事务消息能力
+## Interaction Flow
 
-## 关键交互
+- Producers write messages to brokers and receive acknowledgement results.
+- Consumer groups obtain partition ownership through offset management and rebalancing.
 
-- 生产端将消息写入 Broker 并获得确认结果
-- 消费组通过位点管理和重平衡机制获取分区消费权
+## Continue Reading
+
+- Start with the [Stellflow product overview](/products/stellflow/)
+- Previous: [Design Overview](/products/stellflow/summary-design)
+- Next: [Deployment Model](/products/stellflow/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellflow/architecture)

@@ -1,20 +1,27 @@
 ---
-title: Stellpulse · 脉冲 · 概要设计
+title: Stellpulse Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellpulse · Design Overview
 
-> 流控熔断平台，负责热点保护、容量守卫、隔离舱和自适应降级。
+> A flow-control and circuit-breaking platform for hotspot protection, capacity guarding, bulkhead isolation, and adaptive degradation.
 
-[返回产品首页](/products/stellpulse/)
+## Control Plane
 
-## 控制面设计
+- The strategy center manages rule configuration, dynamic push, and version control.
+- Rule publishing, canary rollout, and rollback are handled centrally.
 
-- 策略中心负责规则配置、动态推送和版本管理
-- 规则的发布、灰度和回滚由控制面统一处理
+## Data Plane
 
-## 数据面设计
+- The runtime engine makes in-process decisions quickly to keep limiting overhead low.
+- A status-reporting module reports circuit windows, hotspot statistics, and system load.
 
-- 执行引擎在进程内快速判定，保证低开销限流
-- 状态回传模块负责熔断窗口、热点统计和系统负载上报
+## Continue Reading
+
+- Start with the [Stellpulse product overview](/products/stellpulse/)
+- Next: [System Architecture](/products/stellpulse/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpulse/summary-design)

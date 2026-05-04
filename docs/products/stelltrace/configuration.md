@@ -1,20 +1,28 @@
 ---
-title: Stelltrace · 星迹 · 配置建议
+title: Stelltrace Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stelltrace · Configuration Guide
 
-> 链路追踪平台，负责全链路 Trace、Span 采集、关联分析与问题定位。
+> A tracing platform for end-to-end trace collection, span analysis, cross-signal correlation, and issue localization.
 
-[返回产品首页](/products/stelltrace/)
+## Baseline Configuration
 
-## 基础配置
+- Use layered sampling in production and prioritize keeping errors and slow requests.
+- Enable high-cardinality label allowlists for critical business paths.
 
-- 生产环境采用分层采样，优先保留错误与慢请求
-- 对关键业务链路建议开启高基数标签白名单
+## Production Guidance
 
-## 生产建议
+- Use adaptive sampling on ingress traffic to balance cost and issue coverage.
+- For asynchronous chains, enforce explicit consistency in context propagation.
 
-- 对入口流量采用自适应采样，平衡成本与问题覆盖率
-- 对异步链路需显式保证上下文透传的一致性
+## Continue Reading
+
+- Start with the [Stelltrace product overview](/products/stelltrace/)
+- Previous: [Getting Started](/products/stelltrace/quick-start)
+- Next: [API Reference](/products/stelltrace/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stelltrace/configuration)

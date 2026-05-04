@@ -1,19 +1,26 @@
 ---
-title: Stellpulse · 脉冲 · 可观测性
+title: Stellpulse Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellpulse · Observability Guide
 
-> 流控熔断平台，负责热点保护、容量守卫、隔离舱和自适应降级。
+> A flow-control and circuit-breaking platform for hotspot protection, capacity guarding, bulkhead isolation, and adaptive degradation.
 
-[返回产品首页](/products/stellpulse/)
+## Metrics
 
-## 关键指标
+- Focus on rejection rate, circuit-break duration, hotspot distribution, and system load.
 
-- 重点关注拒绝率、熔断持续时长、热点分布和系统负载
+## Operational Watchpoints
 
-## 运维重点
+- Watch for false-positive rule hits, hotspot spikes, and sudden load surges.
+- Watch whether circuit recovery pacing matches dependency recovery pacing.
 
-- 关注规则误伤率、热点参数突刺和系统负载突增
-- 关注熔断恢复节奏是否与依赖恢复节奏匹配
+## Continue Reading
+
+- Start with the [Stellpulse product overview](/products/stellpulse/)
+- Previous: [API Reference](/products/stellpulse/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpulse/observability)

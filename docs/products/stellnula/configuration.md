@@ -1,20 +1,28 @@
 ---
-title: Stellnula · 星云 · 配置建议
+title: Stellnula Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellnula · Configuration Guide
 
-> 配置中心，负责配置集中存储、版本管理、灰度发布与动态下发。
+> A configuration center responsible for centralized storage, version management, progressive release, and dynamic distribution.
 
-[返回产品首页](/products/stellnula/)
+## Baseline Configuration
 
-## 基础配置
+- Manage core configuration through layered categories such as `base configuration / secret references / environment differences`.
+- Store only reference identifiers for sensitive values and let the secret-management center handle decryption.
 
-- 核心配置按 `基础配置 / 密钥引用 / 环境差异` 分层管理
-- 敏感值建议只保存引用标识，由密钥中心负责解密
+## Production Guidance
 
-## 生产建议
+- Keep configuration names stable and traceable to avoid ambiguity across teams.
+- During progressive rollout, validate with a small traffic segment first and expand gradually.
 
-- 配置命名建议稳定且可追踪，避免跨团队歧义
-- 灰度发布时先小流量验证再逐步扩大发布范围
+## Continue Reading
+
+- Start with the [Stellnula product overview](/products/stellnula/)
+- Previous: [Getting Started](/products/stellnula/quick-start)
+- Next: [API Reference](/products/stellnula/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellnula/configuration)

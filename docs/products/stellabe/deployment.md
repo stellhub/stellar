@@ -1,20 +1,28 @@
 ---
-title: Stellabe · 星盘 · 部署形态
+title: Stellabe Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellabe · Deployment Model
 
-> 任务调度平台，负责定时任务编排、依赖调度、分片执行与运行治理。
+> A job-scheduling platform for timed orchestration, dependency scheduling, sharded execution, and runtime governance.
 
-[返回产品首页](/products/stellabe/)
+## Deployment Topology
 
-## 推荐拓扑
+- Deploy the control plane separately from the execution plane so job peaks do not impact the management console.
+- For heavy workloads, split worker clusters by queue type or workload type.
 
-- 建议控制面与执行面拆分部署，避免任务高峰冲击管理后台
-- 对重任务场景建议按队列类型划分 Worker 集群
+## Availability Strategy
 
-## 高可用策略
+- Schedulers must guarantee single-trigger semantics and support preemption recovery.
+- Executors should isolate resource pools by workload type to avoid mutual interference.
 
-- 调度器需要保证单任务单次触发语义和抢占恢复能力
-- 执行器建议按任务类型隔离资源池，防止互相影响
+## Continue Reading
+
+- Start with the [Stellabe product overview](/products/stellabe/)
+- Previous: [System Architecture](/products/stellabe/architecture)
+- Next: [Getting Started](/products/stellabe/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellabe/deployment)

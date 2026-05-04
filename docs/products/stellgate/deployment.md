@@ -1,20 +1,28 @@
 ---
-title: Stellgate · 视界 · 部署形态
+title: Stellgate Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellgate · Deployment Model
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-[返回产品首页](/products/stellgate/)
+## Deployment Topology
 
-## 推荐拓扑
+- Deploy external and internal gateways in separate layers.
+- Edge nodes should connect locally and receive routes from the configuration center.
 
-- 外部网关与内部网关建议分层部署
-- 边缘节点建议就近接入并通过配置中心统一下发路由
+## Availability Strategy
 
-## 高可用策略
+- Gateway nodes should be deployed statelessly and combined with elastic scaling.
+- Certificates, routes, and plugins should all support canary release and fast rollback.
 
-- 网关节点建议无状态部署并结合弹性扩缩容
-- 证书、路由和插件配置需要具备灰度发布与快速回滚能力
+## Continue Reading
+
+- Start with the [Stellgate product overview](/products/stellgate/)
+- Previous: [System Architecture](/products/stellgate/architecture)
+- Next: [Getting Started](/products/stellgate/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellgate/deployment)

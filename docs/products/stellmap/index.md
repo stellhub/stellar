@@ -1,61 +1,63 @@
 ---
-title: Stellmap 详细设计
+title: Stellmap Design
 outline: deep
 ---
 
-# Stellmap · 星图
+# Stellmap · StarMap
 
 <div class="product-logo">
   <img src="/logo/stellmap.png" alt="Stellmap Logo">
 </div>
 
-> 注册中心，负责服务实例注册、健康检查、发现订阅与拓扑变更推送。
+> A registry center that manages service instance registration, health checks, discovery subscriptions, and topology change propagation.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellmap 面向微服务与基础设施组件提供统一注册发现能力，解决服务地址漂移、环境切换、实例伸缩和多集群路由等问题。
+Stellmap provides unified service registration and discovery for microservices and infrastructure components, helping teams handle endpoint drift, environment switching, elastic scaling, and multi-cluster routing.
 
-### 适用边界
+### Boundaries
 
-- 面向服务注册、实例发现和订阅推送场景
-- 面向多环境、多集群和灰度路由的服务目录管理
-- 不承载业务配置和应用层流量治理逻辑
+- Designed for service registration, instance discovery, and subscription-driven change propagation.
+- Designed for service directory governance across multiple environments, clusters, and canary routing scenarios.
+- It does not carry business configuration or application-layer traffic governance logic.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持服务注册、实例摘除、心跳续约与健康检查
-- 支持命名空间、集群、标签和版本维度的实例隔离
-- 支持订阅推送与本地缓存，降低查询延迟
+- Supports service registration, instance deregistration, heartbeat renewal, and health checking.
+- Supports namespace, cluster, label, and version-based instance isolation.
+- Supports subscription push and local client caching to reduce lookup latency.
 
-### 设计价值
+### Engineering Value
 
-- 通过注册发现统一服务入口，降低人工维护地址成本
-- 通过标签和版本隔离支撑灰度发布与跨地域路由
+- Standardizes how service entry points are discovered, reducing the operational cost of maintaining endpoints manually.
+- Uses labels and versions to support canary rollout and cross-region routing.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellmap/summary-design)
+- [System Architecture](/products/stellmap/architecture)
+- [Deployment Model](/products/stellmap/deployment)
+- [Getting Started](/products/stellmap/quick-start)
+- [Configuration Guide](/products/stellmap/configuration)
+- [API Reference](/products/stellmap/api-and-sdk)
+- [Observability Guide](/products/stellmap/observability)
 
-- [概要设计](/products/stellmap/summary-design)
-- [架构组成](/products/stellmap/architecture)
-- [部署形态](/products/stellmap/deployment)
-- [快速入门](/products/stellmap/quick-start)
-- [配置建议](/products/stellmap/configuration)
-- [API 与 SDK](/products/stellmap/api-and-sdk)
-- [可观测性](/products/stellmap/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Microservice instance discovery
+- Multi-cluster canary routing
 
-- 微服务实例发现
-- 多集群灰度路由
+### Platform Use Cases
 
-### 平台场景
+- Infrastructure node directory management
+- Unified service catalog governance
 
-- 基础设施节点目录管理
-- 统一服务目录治理
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellmap/)

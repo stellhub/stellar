@@ -1,61 +1,63 @@
 ---
-title: Stelltrace 详细设计
+title: Stelltrace Design
 outline: deep
 ---
 
-# Stelltrace · 星迹
+# Stelltrace · StarTrace
 
 <div class="product-logo">
   <img src="/logo/stelltrace.png" alt="Stelltrace Logo">
 </div>
 
-> 链路追踪平台，负责全链路 Trace、Span 采集、关联分析与问题定位。
+> A tracing platform for end-to-end trace collection, span analysis, cross-signal correlation, and issue localization.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stelltrace 面向服务调用链、异步任务链和跨网关请求链提供统一追踪能力，帮助研发和运维快速识别慢请求、异常传播和跨系统依赖问题。
+Stelltrace provides unified tracing for service call graphs, asynchronous tasks, and cross-gateway requests so engineering and operations teams can quickly identify slow requests, error propagation, and cross-system dependencies.
 
-### 适用边界
+### Boundaries
 
-- 面向请求链路、异步消息链路和定时任务链路追踪
-- 面向问题定位、拓扑分析和跨系统依赖排查
-- 不替代日志平台和指标平台，而是作为关联主线
+- Designed for request tracing across synchronous calls, asynchronous messaging, and scheduled tasks.
+- Designed for troubleshooting, topology analysis, and cross-system dependency investigation.
+- It does not replace the log platform or metrics platform; instead, it acts as their correlation backbone.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持 HTTP、gRPC、MQ、定时任务等链路追踪
-- 支持采样策略、异常聚类和拓扑依赖视图
-- 支持日志、指标和告警的 Trace 关联查询
+- Supports tracing across HTTP, gRPC, MQ, scheduled tasks, and other request paths.
+- Supports sampling policies, anomaly clustering, and dependency-topology views.
+- Supports trace-correlated queries across logs, metrics, and alerts.
 
-### 设计价值
+### Engineering Value
 
-- 以 Trace ID 为中心串联多类观测数据
-- 提升慢请求和异常传播的定位效率
+- Uses Trace ID as the centerline that connects multiple observability signals.
+- Improves troubleshooting efficiency for slow requests and abnormal propagation.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stelltrace/summary-design)
+- [System Architecture](/products/stelltrace/architecture)
+- [Deployment Model](/products/stelltrace/deployment)
+- [Getting Started](/products/stelltrace/quick-start)
+- [Configuration Guide](/products/stelltrace/configuration)
+- [API Reference](/products/stelltrace/api-and-sdk)
+- [Observability Guide](/products/stelltrace/observability)
 
-- [概要设计](/products/stelltrace/summary-design)
-- [架构组成](/products/stelltrace/architecture)
-- [部署形态](/products/stelltrace/deployment)
-- [快速入门](/products/stelltrace/quick-start)
-- [配置建议](/products/stelltrace/configuration)
-- [API 与 SDK](/products/stelltrace/api-and-sdk)
-- [可观测性](/products/stelltrace/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Slow request troubleshooting
+- Root-cause analysis for anomalies
 
-- 慢请求排查
-- 异常根因定位
+### Platform Use Cases
 
-### 平台场景
+- Service dependency topology governance
+- Full-path observability correlation analysis
 
-- 服务依赖拓扑治理
-- 全链路观测关联分析
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stelltrace/)

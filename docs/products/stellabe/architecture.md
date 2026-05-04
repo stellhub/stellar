@@ -1,21 +1,29 @@
 ---
-title: Stellabe · 星盘 · 架构组成
+title: Stellabe System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellabe · System Architecture
 
-> 任务调度平台，负责定时任务编排、依赖调度、分片执行与运行治理。
+> A job-scheduling platform for timed orchestration, dependency scheduling, sharded execution, and runtime governance.
 
-[返回产品首页](/products/stellabe/)
+## Component Model
 
-## 核心组件
+- Scheduler: triggers jobs and computes execution plans.
+- Executor: pulls jobs, executes them, and reports results.
+- Workflow Store: stores job definitions, run records, and audit information.
 
-- Scheduler：触发任务并计算执行计划
-- Executor：拉取任务、执行并回报结果
-- Workflow Store：保存任务定义、运行记录和审计信息
+## Interaction Flow
 
-## 关键交互
+- The scheduler generates execution plans according to trigger conditions and dispatches them to executors.
+- Executors report execution state and logs to form a full runtime record.
 
-- Scheduler 依据触发条件生成执行计划并分派到 Executor
-- Executor 上报执行状态和日志，形成完整运行记录
+## Continue Reading
+
+- Start with the [Stellabe product overview](/products/stellabe/)
+- Previous: [Design Overview](/products/stellabe/summary-design)
+- Next: [Deployment Model](/products/stellabe/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellabe/architecture)

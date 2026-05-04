@@ -1,20 +1,28 @@
 ---
-title: Stellabe · 星盘 · 配置建议
+title: Stellabe Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellabe · Configuration Guide
 
-> 任务调度平台，负责定时任务编排、依赖调度、分片执行与运行治理。
+> A job-scheduling platform for timed orchestration, dependency scheduling, sharded execution, and runtime governance.
 
-[返回产品首页](/products/stellabe/)
+## Baseline Configuration
 
-## 基础配置
+- Task timeout, retry count, and concurrency should be configured independently by task type.
+- For backfill tasks, define time windows and resource ceilings.
 
-- 任务超时、重试次数和并发度应按任务类型独立配置
-- 对补数任务建议设置时间窗口和资源上限
+## Production Guidance
 
-## 生产建议
+- Critical tasks must define explicit idempotency and failure-compensation logic.
+- Limit DAG depth and fan-out width to avoid scheduling storms.
 
-- 关键任务需明确幂等策略和失败补偿逻辑
-- DAG 任务建议限制深度和并发宽度，防止调度风暴
+## Continue Reading
+
+- Start with the [Stellabe product overview](/products/stellabe/)
+- Previous: [Getting Started](/products/stellabe/quick-start)
+- Next: [API Reference](/products/stellabe/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellabe/configuration)

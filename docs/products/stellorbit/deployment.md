@@ -1,20 +1,28 @@
 ---
-title: Stellorbit · 星轨 · 部署形态
+title: Stellorbit Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellorbit · Deployment Model
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-[返回产品首页](/products/stellorbit/)
+## Deployment Topology
 
-## 推荐拓扑
+- Support three governance modes: pure SDK, sidecar, and gateway-integrated governance.
+- Deploy the core control plane with multiple replicas to keep rule publication continuous.
 
-- 支持纯 SDK、Sidecar 和网关联动三种治理模式
-- 核心控制面建议多副本部署，保证规则发布连续性
+## Availability Strategy
 
-## 高可用策略
+- Rule cache must support local persistence and disconnect tolerance.
+- Gateway-side and service-side governance can be combined to reduce single-point policy failure.
 
-- 规则缓存需要具备本地持久化和断连容忍
-- 网关与服务侧治理可组合部署，减少单点策略失效影响
+## Continue Reading
+
+- Start with the [Stellorbit product overview](/products/stellorbit/)
+- Previous: [System Architecture](/products/stellorbit/architecture)
+- Next: [Getting Started](/products/stellorbit/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellorbit/deployment)

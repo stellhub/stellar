@@ -1,61 +1,63 @@
 ---
-title: Stellspec 详细设计
+title: Stellspec Design
 outline: deep
 ---
 
-# Stellspec · 星谱
+# Stellspec · Spectrum
 
 <div class="product-logo">
   <img src="/logo/stellspec.png" alt="Stellspec Logo">
 </div>
 
-> 日志平台，负责统一采集、结构化处理、检索分析与日志留存治理。
+> A log platform for unified collection, structured processing, search analysis, and retention governance.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellspec 为业务日志、审计日志和平台日志提供统一采集与检索能力，帮助团队建立标准化日志规范和快速排障路径。
+Stellspec provides unified ingestion and retrieval for business logs, audit logs, and platform logs so teams can establish consistent logging standards and faster troubleshooting paths.
 
-### 适用边界
+### Boundaries
 
-- 面向应用日志、审计日志和平台运行日志统一治理
-- 面向日志检索、追踪关联和留存策略管理
-- 不替代指标与链路追踪，而是承接全文检索和上下文还原
+- Designed for unified governance of application logs, audit logs, and platform runtime logs.
+- Designed for log search, trace correlation, and retention-policy management.
+- It does not replace metrics or tracing; it focuses on full-text search and contextual reconstruction.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持文本日志、结构化日志和审计日志统一采集
-- 支持字段解析、脱敏、索引路由和生命周期管理
-- 支持 Trace 关联、日志聚类和异常模式检索
+- Supports unified ingestion of plain-text logs, structured logs, and audit logs.
+- Supports field parsing, desensitization, index routing, and lifecycle management.
+- Supports trace correlation, log clustering, and anomaly-pattern search.
 
-### 设计价值
+### Engineering Value
 
-- 建立统一日志规范，降低检索和定位成本
-- 通过脱敏和生命周期管理兼顾安全与成本
+- Creates consistent logging conventions and reduces search and troubleshooting cost.
+- Balances security and cost through desensitization and lifecycle management.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellspec/summary-design)
+- [System Architecture](/products/stellspec/architecture)
+- [Deployment Model](/products/stellspec/deployment)
+- [Getting Started](/products/stellspec/quick-start)
+- [Configuration Guide](/products/stellspec/configuration)
+- [API Reference](/products/stellspec/api-and-sdk)
+- [Observability Guide](/products/stellspec/observability)
 
-- [概要设计](/products/stellspec/summary-design)
-- [架构组成](/products/stellspec/architecture)
-- [部署形态](/products/stellspec/deployment)
-- [快速入门](/products/stellspec/quick-start)
-- [配置建议](/products/stellspec/configuration)
-- [API 与 SDK](/products/stellspec/api-and-sdk)
-- [可观测性](/products/stellspec/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Application log search
+- Troubleshooting and root-cause analysis
 
-- 应用日志检索
-- 故障排查与根因定位
+### Platform Use Cases
 
-### 平台场景
+- Audit tracing
+- Platform-level retention governance
 
-- 审计追踪
-- 平台级日志留存治理
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellspec/)

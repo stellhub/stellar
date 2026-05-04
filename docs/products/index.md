@@ -1,126 +1,121 @@
 ---
-title: 核心产品总览
+title: Core Product Overview
 outline: deep
 ---
 
-# 核心产品总览
+# Core Product Overview
 
-本页汇总 `Stell Hub（星际枢纽）` 核心中间件矩阵中的产品入口。每个中间件在 `products` 目录下都拥有独立目录，便于后续持续扩展子文档、部署说明和实践案例。
+This page turns the Stell Hub middleware stack into product-level entry points. Each card leads to the same documentation structure, so architecture, deployment, integration, and observability material stay predictable across the English reference site.
 
-## 产品矩阵
+## Product Entry Points
 
 <div class="product-grid">
   <a class="product-card" href="/products/stellmap/">
     <div class="product-card-logo"><img src="/logo/stellmap.png" alt="Stellmap Logo"></div>
-    <span class="product-card-domain">注册中心</span>
-    <h3 class="product-card-title">Stellmap · 星图</h3>
-    <p class="product-card-desc">统一管理服务注册、健康探测、实例发现与拓扑变更推送。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Registry Center</span>
+    <h3 class="product-card-title">Stellmap · StarMap</h3>
+    <p class="product-card-desc">Provides unified service registration and discovery for instance health, subscriptions, and topology change propagation.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellnula/">
     <div class="product-card-logo"><img src="/logo/stellnula.png" alt="Stellnula Logo"></div>
-    <span class="product-card-domain">配置中心</span>
-    <h3 class="product-card-title">Stellnula · 星云</h3>
-    <p class="product-card-desc">承载配置集中存储、灰度发布、动态下发与变更审计能力。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Configuration Center</span>
+    <h3 class="product-card-title">Stellnula · Nebula</h3>
+    <p class="product-card-desc">Provides centralized configuration storage, controlled rollout, dynamic distribution, and change-audit capabilities.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stelltrace/">
     <div class="product-card-logo"><img src="/logo/stelltrace.png" alt="Stelltrace Logo"></div>
-    <span class="product-card-domain">链路追踪</span>
-    <h3 class="product-card-title">Stelltrace · 星迹</h3>
-    <p class="product-card-desc">面向分布式请求链路提供 Trace 采集、检索、分析和定位能力。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Distributed Tracing</span>
+    <h3 class="product-card-title">Stelltrace · StarTrace</h3>
+    <p class="product-card-desc">Provides trace collection, retrieval, and diagnostic analysis for distributed request paths.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellorbit/">
     <div class="product-card-logo"><img src="/logo/stellorbit.png" alt="Stellorbit Logo"></div>
-    <span class="product-card-domain">服务治理</span>
-    <h3 class="product-card-title">Stellorbit · 星轨</h3>
-    <p class="product-card-desc">统一编排路由、负载、重试、切流与服务生命周期治理策略。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Service Governance</span>
+    <h3 class="product-card-title">Stellorbit · Orbit</h3>
+    <p class="product-card-desc">Provides runtime routing, load balancing, retry, and traffic-governance controls across service lifecycles.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellpulse/">
     <div class="product-card-logo"><img src="/logo/stellpulse.png" alt="Stellpulse Logo"></div>
-    <span class="product-card-domain">流控熔断</span>
-    <h3 class="product-card-title">Stellpulse · 脉冲</h3>
-    <p class="product-card-desc">提供限流、熔断、降级、隔离舱和热点保护等高可用能力。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Rate Limiting and Circuit Breaking</span>
+    <h3 class="product-card-title">Stellpulse · Pulsar</h3>
+    <p class="product-card-desc">Provides rate limiting, circuit breaking, degradation, and hotspot protection for service availability.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellabe/">
     <div class="product-card-logo"><img src="/logo/stellabe.png" alt="Stellabe Logo"></div>
-    <span class="product-card-domain">任务调度</span>
-    <h3 class="product-card-title">Stellabe · 星盘</h3>
-    <p class="product-card-desc">支持定时任务、工作流编排、分片执行和失败恢复治理。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Job Scheduling</span>
+    <h3 class="product-card-title">Stellabe · Astrolabe</h3>
+    <p class="product-card-desc">Provides timed scheduling, workflow orchestration, sharded execution, and coordinated failure recovery.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellpoint/">
     <div class="product-card-logo"><img src="/logo/stellpoint.png" alt="Stellpoint Logo"></div>
-    <span class="product-card-domain">分布式锁</span>
-    <h3 class="product-card-title">Stellpoint · 奇点</h3>
-    <p class="product-card-desc">提供租约锁、选主锁、协调原语与关键资源互斥访问能力。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Distributed Lock</span>
+    <h3 class="product-card-title">Stellpoint · Singularity</h3>
+    <p class="product-card-desc">Provides lease locks, leader election, and coordination primitives for mutually exclusive access to critical resources.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellgate/">
     <div class="product-card-logo"><img src="/logo/stellgate.png" alt="Stellgate Logo"></div>
-    <span class="product-card-domain">网关入口</span>
-    <h3 class="product-card-title">Stellgate · 视界</h3>
-    <p class="product-card-desc">统一承接入口流量，提供认证鉴权、协议转换和 API 暴露能力。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Gateway</span>
+    <h3 class="product-card-title">Stellgate · Event Horizon</h3>
+    <p class="product-card-desc">Provides ingress traffic management, authentication, protocol translation, and controlled API exposure.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellflow/">
     <div class="product-card-logo"><img src="/logo/stellflow.png" alt="Stellflow Logo"></div>
-    <span class="product-card-domain">消息队列</span>
-    <h3 class="product-card-title">Stellflow · 彗流</h3>
-    <p class="product-card-desc">支撑异步解耦、事件驱动、流式分发和削峰填谷等消息场景。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Message Queue</span>
+    <h3 class="product-card-title">Stellflow · CometFlow</h3>
+    <p class="product-card-desc">Provides asynchronous decoupling, event delivery, stream distribution, and traffic smoothing for message workloads.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellspec/">
     <div class="product-card-logo"><img src="/logo/stellspec.png" alt="Stellspec Logo"></div>
-    <span class="product-card-domain">日志平台</span>
-    <h3 class="product-card-title">Stellspec · 星谱</h3>
-    <p class="product-card-desc">统一采集、解析、检索和留存应用日志、审计日志与平台日志。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Log Platform</span>
+    <h3 class="product-card-title">Stellspec · Spectrum</h3>
+    <p class="product-card-desc">Provides unified collection, parsing, retrieval, and retention for application, audit, and platform logs.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellcon/">
     <div class="product-card-logo"><img src="/logo/stellcon.png" alt="Stellcon Logo"></div>
-    <span class="product-card-domain">指标平台</span>
-    <h3 class="product-card-title">Stellcon · 星座</h3>
-    <p class="product-card-desc">提供统一指标采集、聚合分析、容量看板和 SLO 观测能力。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Metrics Platform</span>
+    <h3 class="product-card-title">Stellcon · Constellation</h3>
+    <p class="product-card-desc">Provides metric collection, aggregation, capacity analysis, and SLO-oriented observability.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellvox/">
     <div class="product-card-logo"><img src="/logo/stellvox.png" alt="Stellvox Logo"></div>
-    <span class="product-card-domain">告警平台</span>
-    <h3 class="product-card-title">Stellvox · 星讯</h3>
-    <p class="product-card-desc">统一处理规则触发、收敛降噪、值班通知和事件协同处置。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Alerting Platform</span>
+    <h3 class="product-card-title">Stellvox · NovaSignal</h3>
+    <p class="product-card-desc">Provides alert evaluation, deduplication, on-call notification, and incident-coordination workflows.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellguard/">
     <div class="product-card-logo"><img src="/logo/stellguard.png" alt="Stellguard Logo"></div>
-    <span class="product-card-domain">零信平台</span>
-    <h3 class="product-card-title">Stellguard · 星盾</h3>
-    <p class="product-card-desc">面向身份、访问控制、mTLS 和持续验证的零信任安全中枢。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Zero Trust Platform</span>
+    <h3 class="product-card-title">Stellguard · StarShield</h3>
+    <p class="product-card-desc">Provides identity, access control, mTLS, and continuous verification for zero-trust security programs.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
   <a class="product-card" href="/products/stellkey/">
     <div class="product-card-logo"><img src="/logo/stellkey.png" alt="Stellkey Logo"></div>
-    <span class="product-card-domain">密钥中心</span>
-    <h3 class="product-card-title">Stellkey · 星钥</h3>
-    <p class="product-card-desc">统一托管机密、证书和访问策略，支撑轮换、分发和安全审计。</p>
-    <span class="product-card-link">查看详细设计</span>
+    <span class="product-card-domain">Key Management Center</span>
+    <h3 class="product-card-title">Stellkey · StarKey</h3>
+    <p class="product-card-desc">Provides centralized secret, certificate, and access-policy management with rotation and audit support.</p>
+    <span class="product-card-link">Read Reference</span>
   </a>
 </div>
 
-## 文档结构约定
+## Documentation Convention
 
-当前每个中间件目录已拆分为“首页概览 + 独立专题子页”的结构：
+Each product follows the same structure:
 
-- 首页概览：产品定位、核心能力、典型场景
-- 独立子页：概要设计
-- 独立子页：架构组成
-- 独立子页：部署形态
-- 独立子页：快速入门
-- 独立子页：配置建议
-- 独立子页：API 与 SDK
-- 独立子页：可观测性
+- Overview page: positioning, core capabilities, and typical scenarios
+- Sub-pages: design overview, system architecture, deployment model, getting started, configuration guide, API reference, and observability guide
+- Chinese reference: every English page points to its original Chinese counterpart under `/zh`
 
-这套结构兼顾了产品概览阅读和后续按专题持续扩展，也更适合继续沉淀部署说明、实践案例和版本化设计文档。
+This keeps the English reference layer consistent while preserving the full Chinese knowledge base.

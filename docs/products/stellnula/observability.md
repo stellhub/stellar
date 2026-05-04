@@ -1,19 +1,26 @@
 ---
-title: Stellnula · 星云 · 可观测性
+title: Stellnula Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellnula · Observability Guide
 
-> 配置中心，负责配置集中存储、版本管理、灰度发布与动态下发。
+> A configuration center responsible for centralized storage, version management, progressive release, and dynamic distribution.
 
-[返回产品首页](/products/stellnula/)
+## Metrics
 
-## 关键指标
+- Focus on release success rate, client latency, rollback count, and configuration drift.
 
-- 重点关注发布成功率、客户端延迟、回滚次数和配置漂移
+## Operational Watchpoints
 
-## 运维重点
+- Watch for failed releases, listener backlog, and clients that have not refreshed for a long time.
+- Watch for drift and inconsistency for the same configuration across environments.
 
-- 关注失败发布、监听堆积和客户端长期未更新实例
-- 关注同一配置在多环境之间的漂移与不一致
+## Continue Reading
+
+- Start with the [Stellnula product overview](/products/stellnula/)
+- Previous: [API Reference](/products/stellnula/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellnula/observability)

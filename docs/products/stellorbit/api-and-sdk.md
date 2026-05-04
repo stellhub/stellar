@@ -1,19 +1,27 @@
 ---
-title: Stellorbit · 星轨 · API 与 SDK
+title: Stellorbit API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellorbit · API Reference
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-[返回产品首页](/products/stellorbit/)
+## API Surface
 
-## 接口分层
+- Expose governance rule query, canary publishing, and state-reporting interfaces.
 
-- 提供治理规则查询、灰度发布和状态回传接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK exposes extensions for load balancing, routing, circuit breaking, and retries.
+- In sidecar deployments, public rules and business rules should be managed in separate layers.
 
-- SDK 暴露负载、路由、熔断和重试扩展点
-- Sidecar 场景下建议将公共规则与业务规则分层管理
+## Continue Reading
+
+- Start with the [Stellorbit product overview](/products/stellorbit/)
+- Previous: [Configuration Guide](/products/stellorbit/configuration)
+- Next: [Observability Guide](/products/stellorbit/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellorbit/api-and-sdk)

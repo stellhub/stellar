@@ -1,19 +1,26 @@
 ---
-title: Stellabe · 星盘 · 可观测性
+title: Stellabe Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellabe · Observability Guide
 
-> 任务调度平台，负责定时任务编排、依赖调度、分片执行与运行治理。
+> A job-scheduling platform for timed orchestration, dependency scheduling, sharded execution, and runtime governance.
 
-[返回产品首页](/products/stellabe/)
+## Metrics
 
-## 关键指标
+- Focus on trigger latency, success rate, retry depth, and executor utilization.
 
-- 重点关注触发延迟、成功率、重试深度和执行器利用率
+## Operational Watchpoints
 
-## 运维重点
+- Watch for task backlog, executor disconnects, and retry avalanches.
+- Watch how failures at key DAG nodes propagate to downstream paths.
 
-- 关注任务积压、执行器失联和重试雪崩
-- 关注关键 DAG 节点失败对下游链路的传播影响
+## Continue Reading
+
+- Start with the [Stellabe product overview](/products/stellabe/)
+- Previous: [API Reference](/products/stellabe/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellabe/observability)

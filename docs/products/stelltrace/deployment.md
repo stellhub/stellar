@@ -1,20 +1,28 @@
 ---
-title: Stelltrace · 星迹 · 部署形态
+title: Stelltrace Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stelltrace · Deployment Model
 
-> 链路追踪平台，负责全链路 Trace、Span 采集、关联分析与问题定位。
+> A tracing platform for end-to-end trace collection, span analysis, cross-signal correlation, and issue localization.
 
-[返回产品首页](/products/stelltrace/)
+## Deployment Topology
 
-## 推荐拓扑
+- Decouple the ingestion layer from the storage layer so collectors can scale horizontally.
+- Store hot and cold data in different tiers to control long-term retention cost.
 
-- 建议采集层与存储层解耦，Collector 可水平扩容
-- 冷热数据建议分层存储，控制长期留存成本
+## Availability Strategy
 
-## 高可用策略
+- Collector clusters should support batch buffering and failover.
+- Query nodes should be separated from index nodes to avoid resource contention.
 
-- Collector 集群需支持批量缓冲和故障转移
-- 查询节点建议与索引节点分离，避免相互争抢资源
+## Continue Reading
+
+- Start with the [Stelltrace product overview](/products/stelltrace/)
+- Previous: [System Architecture](/products/stelltrace/architecture)
+- Next: [Getting Started](/products/stelltrace/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stelltrace/deployment)

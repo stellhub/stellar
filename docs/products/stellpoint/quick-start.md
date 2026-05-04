@@ -1,21 +1,29 @@
 ---
-title: Stellpoint · 奇点 · 快速入门
+title: Stellpoint Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellpoint · Getting Started
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-[返回产品首页](/products/stellpoint/)
+## Setup
 
-## 接入步骤
+1. Define the resource path and lease duration.
+2. Acquire the lock inside business code and execute the critical logic.
+3. Use fencing tokens to prevent stale holders from writing.
 
-1. 定义资源路径和租约时长。
-2. 在业务代码中获取锁并执行业务逻辑。
-3. 使用 fencing token 防止旧持有者误写。
+## Validation
 
-## 首次验证
+- Simulate two instances competing for the same resource and confirm only one gets the lock.
+- Simulate an abnormal exit of the lock holder and confirm the lease is reclaimed after expiration.
 
-- 模拟两个实例竞争同一资源，确认只有一个持有锁
-- 模拟持锁实例异常退出，确认租约到期后可被回收
+## Continue Reading
+
+- Start with the [Stellpoint product overview](/products/stellpoint/)
+- Previous: [Deployment Model](/products/stellpoint/deployment)
+- Next: [Configuration Guide](/products/stellpoint/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpoint/quick-start)

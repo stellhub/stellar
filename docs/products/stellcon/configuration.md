@@ -1,20 +1,28 @@
 ---
-title: Stellcon · 星座 · 配置建议
+title: Stellcon Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellcon · Configuration Guide
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-[返回产品首页](/products/stellcon/)
+## Baseline Configuration
 
-## 基础配置
+- Keep metric labels within a governable scope to avoid unbounded growth.
+- Design histogram bucket boundaries according to actual latency distributions.
 
-- 指标标签控制在可治理范围内，避免无限膨胀
-- 直方图桶边界应按业务延迟分布设计
+## Production Guidance
 
-## 生产建议
+- Control high-cardinality labels through allowlists or dimension reduction.
+- Layer retention periods and aggregation granularity according to cost and diagnostic need.
 
-- 高基数标签需通过白名单或降维手段控制
-- 指标保留周期与聚合粒度应按成本和诊断需求分层设计
+## Continue Reading
+
+- Start with the [Stellcon product overview](/products/stellcon/)
+- Previous: [Getting Started](/products/stellcon/quick-start)
+- Next: [API Reference](/products/stellcon/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellcon/configuration)

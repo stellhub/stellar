@@ -1,20 +1,28 @@
 ---
-title: Stellvox · 星讯 · 配置建议
+title: Stellvox Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellvox · Configuration Guide
 
-> 告警平台，负责告警规则、收敛降噪、通知编排和事件协同处置。
+> An alerting platform for alert rules, deduplication, notification orchestration, and incident coordination.
 
-[返回产品首页](/products/stellvox/)
+## Baseline Configuration
 
-## 基础配置
+- Alert-convergence windows should be tuned by failure type to avoid storm-style notification.
+- Critical alerts should be linked to a runbook and responsible team.
 
-- 告警收敛窗口应按故障类型设置，避免风暴式通知
-- 核心告警建议绑定 runbook 与责任团队
+## Production Guidance
 
-## 生产建议
+- Rule granularity and notification frequency must balance response speed against noise control.
+- High-priority alerts should use multi-channel delivery and escalation.
 
-- 规则粒度和通知频率需要平衡响应速度与噪声控制
-- 高优先级告警建议配置多通道和升级机制
+## Continue Reading
+
+- Start with the [Stellvox product overview](/products/stellvox/)
+- Previous: [Getting Started](/products/stellvox/quick-start)
+- Next: [API Reference](/products/stellvox/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellvox/configuration)

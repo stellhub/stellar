@@ -1,20 +1,28 @@
 ---
-title: Stellflow · 彗流 · 部署形态
+title: Stellflow Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellflow · Deployment Model
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-[返回产品首页](/products/stellflow/)
+## Deployment Topology
 
-## 推荐拓扑
+- Plan topics and partitions by business domain to avoid hotspot concentration.
+- For cross-region traffic, deploy mirror replication or event-bridge channels.
 
-- 建议按业务域划分主题和分区，避免热点集中
-- 跨地域场景可部署镜像复制或事件桥接通道
+## Availability Strategy
 
-## 高可用策略
+- Replica strategy must tolerate both single-node failures and single-availability-zone failures.
+- Hot topics should use dedicated clusters or isolated resource pools.
 
-- 副本策略应覆盖单节点故障和单可用区故障
-- 热点主题建议独立集群或独立资源池托管
+## Continue Reading
+
+- Start with the [Stellflow product overview](/products/stellflow/)
+- Previous: [System Architecture](/products/stellflow/architecture)
+- Next: [Getting Started](/products/stellflow/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellflow/deployment)

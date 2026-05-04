@@ -1,19 +1,27 @@
 ---
-title: Stellkey · 星钥 · API 与 SDK
+title: Stellkey API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellkey · API Reference
 
-> 密钥中心，负责密钥生命周期管理、机密分发、轮换审计与安全访问控制。
+> A secret-management center for key lifecycle management, secret distribution, rotation auditing, and secure access control.
 
-[返回产品首页](/products/stellkey/)
+## API Surface
 
-## 接口分层
+- Expose secret management, version management, approval, rotation, and audit interfaces.
 
-- 提供机密管理、版本管理、审批、轮换和审计接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK supports secret retrieval, cache refresh, and invalidation listeners.
+- Applications should have fallback behavior for refresh failures both at startup and runtime.
 
-- SDK 提供机密拉取、缓存刷新和失效监听能力
-- 建议应用在启动和运行时都具备刷新失败兜底能力
+## Continue Reading
+
+- Start with the [Stellkey product overview](/products/stellkey/)
+- Previous: [Configuration Guide](/products/stellkey/configuration)
+- Next: [Observability Guide](/products/stellkey/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellkey/api-and-sdk)

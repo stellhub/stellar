@@ -1,61 +1,63 @@
 ---
-title: Stellpoint 详细设计
+title: Stellpoint Design
 outline: deep
 ---
 
-# Stellpoint · 奇点
+# Stellpoint · Singularity
 
 <div class="product-logo">
   <img src="/logo/stellpoint.png" alt="Stellpoint Logo">
 </div>
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellpoint 面向分布式系统中的共享资源竞争问题，提供统一锁服务、租约模型和协调原语，降低重复造轮子成本。
+Stellpoint addresses shared-resource contention in distributed systems by providing a unified lock service, lease model, and coordination primitives, reducing repeated one-off implementations.
 
-### 适用边界
+### Boundaries
 
-- 面向互斥执行、领导者选举和顺序控制场景
-- 面向共享资源写入保护和关键任务串行化
-- 不替代业务事务，而是提供分布式协调基础能力
+- Designed for mutual exclusion, leader election, and ordered execution.
+- Designed for shared-resource write protection and serialization of critical tasks.
+- It does not replace business transactions; it provides foundational distributed coordination.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持可重入锁、读写锁、租约锁和选主锁
-- 支持锁续约、抢占、超时释放和死锁预防
-- 支持基于资源路径的命名空间隔离和审计
+- Supports reentrant locks, read-write locks, lease locks, and leader-election locks.
+- Supports lock renewal, preemption, timeout release, and deadlock prevention.
+- Supports namespace isolation and auditability based on resource paths.
 
-### 设计价值
+### Engineering Value
 
-- 统一分布式锁语义，减少各业务重复实现
-- 用租约和 fencing token 降低误锁和脏写风险
+- Unifies distributed-lock semantics and avoids repeated custom implementations in business systems.
+- Uses leases and fencing tokens to reduce accidental lock misuse and dirty writes.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellpoint/summary-design)
+- [System Architecture](/products/stellpoint/architecture)
+- [Deployment Model](/products/stellpoint/deployment)
+- [Getting Started](/products/stellpoint/quick-start)
+- [Configuration Guide](/products/stellpoint/configuration)
+- [API Reference](/products/stellpoint/api-and-sdk)
+- [Observability Guide](/products/stellpoint/observability)
 
-- [概要设计](/products/stellpoint/summary-design)
-- [架构组成](/products/stellpoint/architecture)
-- [部署形态](/products/stellpoint/deployment)
-- [快速入门](/products/stellpoint/quick-start)
-- [配置建议](/products/stellpoint/configuration)
-- [API 与 SDK](/products/stellpoint/api-and-sdk)
-- [可观测性](/products/stellpoint/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Serialized inventory deduction
+- Mutual exclusion for scheduled tasks
 
-- 库存扣减串行化
-- 定时任务互斥
+### Platform Use Cases
 
-### 平台场景
+- Leader election
+- Distributed coordination center
 
-- 主节点选举
-- 分布式协调中心
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellpoint/)

@@ -1,19 +1,26 @@
 ---
-title: Stellkey · 星钥 · 可观测性
+title: Stellkey Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellkey · Observability Guide
 
-> 密钥中心，负责密钥生命周期管理、机密分发、轮换审计与安全访问控制。
+> A secret-management center for key lifecycle management, secret distribution, rotation auditing, and secure access control.
 
-[返回产品首页](/products/stellkey/)
+## Metrics
 
-## 关键指标
+- Focus on secret access volume, rotation success rate, expiry risk, and audit anomalies.
 
-- 重点关注机密访问量、轮换成功率、过期风险和审计异常
+## Operational Watchpoints
 
-## 运维重点
+- Watch for abnormal access, approval backlog, and rotation failure rate.
+- Watch for certificate expiry, cache invalidation issues, and multi-environment reference drift.
 
-- 关注异常访问、审批积压和轮换失败率
-- 关注证书到期、缓存失效和多环境引用漂移
+## Continue Reading
+
+- Start with the [Stellkey product overview](/products/stellkey/)
+- Previous: [API Reference](/products/stellkey/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellkey/observability)

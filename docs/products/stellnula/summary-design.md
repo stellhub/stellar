@@ -1,20 +1,27 @@
 ---
-title: Stellnula · 星云 · 概要设计
+title: Stellnula Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellnula · Design Overview
 
-> 配置中心，负责配置集中存储、版本管理、灰度发布与动态下发。
+> A configuration center responsible for centralized storage, version management, progressive release, and dynamic distribution.
 
-[返回产品首页](/products/stellnula/)
+## Control Plane
 
-## 控制面设计
+- The control plane handles configuration orchestration, approval flows, and release-plan management.
+- Configuration layering and environment isolation are defined centrally.
 
-- 控制面负责配置编排、审批流和发布计划管理
-- 配置分层与环境隔离由控制面统一定义
+## Data Plane
 
-## 数据面设计
+- The storage layer keeps both text and structured configuration in a versioned model.
+- Clients consume incremental updates and local disaster-recovery fallbacks through watch channels.
 
-- 存储层以版本化模型保存文本配置和结构化配置
-- 客户端侧通过监听通道实现增量更新和本地容灾
+## Continue Reading
+
+- Start with the [Stellnula product overview](/products/stellnula/)
+- Next: [System Architecture](/products/stellnula/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellnula/summary-design)

@@ -1,20 +1,27 @@
 ---
-title: Stellguard · 星盾 · 概要设计
+title: Stellguard Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellguard · Design Overview
 
-> 零信任安全平台，负责身份验证、访问控制、策略评估和服务间安全通信。
+> A zero-trust security platform for identity verification, access control, policy evaluation, and secure service-to-service communication.
 
-[返回产品首页](/products/stellguard/)
+## Control Plane
 
-## 控制面设计
+- The identity layer handles principal registration, credential issuance, and identity mapping.
+- The policy layer makes context-based authorization decisions and risk assessments.
 
-- 身份层负责主体注册、凭证签发和身份映射
-- 策略层负责基于上下文的授权决策与风险评估
+## Data Plane
 
-## 数据面设计
+- The enforcement layer applies interception uniformly across gateways, sidecars, and SDKs.
+- Service-to-service communication is validated through mTLS, tokens, and context attributes.
 
-- 执行层负责网关、Sidecar 和 SDK 的统一拦截落地
-- 服务间通信通过 mTLS、令牌和上下文属性完成校验
+## Continue Reading
+
+- Start with the [Stellguard product overview](/products/stellguard/)
+- Next: [System Architecture](/products/stellguard/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellguard/summary-design)

@@ -1,19 +1,26 @@
 ---
-title: Stellspec · 星谱 · 可观测性
+title: Stellspec Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellspec · Observability Guide
 
-> 日志平台，负责统一采集、结构化处理、检索分析与日志留存治理。
+> A log platform for unified collection, structured processing, search analysis, and retention governance.
 
-[返回产品首页](/products/stellspec/)
+## Metrics
 
-## 关键指标
+- Focus on collection success rate, index latency, query latency, and storage growth.
 
-- 重点关注采集成功率、索引延迟、查询耗时和存储增长率
+## Operational Watchpoints
 
-## 运维重点
+- Watch for collection loss, index backlog, and hotspot query fields.
+- Watch for storage expansion, hot-cold migration issues, and failed desensitization rules.
 
-- 关注采集丢失、索引积压和查询热点字段
-- 关注存储膨胀、冷热数据迁移和脱敏规则失效
+## Continue Reading
+
+- Start with the [Stellspec product overview](/products/stellspec/)
+- Previous: [API Reference](/products/stellspec/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellspec/observability)

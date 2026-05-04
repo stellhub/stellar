@@ -1,19 +1,27 @@
 ---
-title: Stellpoint · 奇点 · API 与 SDK
+title: Stellpoint API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellpoint · API Reference
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-[返回产品首页](/products/stellpoint/)
+## API Surface
 
-## 接口分层
+- Expose interfaces for lock management, leader-election watches, and lease queries.
 
-- 提供锁管理、选主监听和租约查询接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK supports synchronous, asynchronous, and annotation-based locking.
+- Use fencing tokens together with business version numbers for double protection.
 
-- SDK 提供同步、异步和注解式加锁能力
-- 推荐结合 fencing token 和业务版本号做双重保护
+## Continue Reading
+
+- Start with the [Stellpoint product overview](/products/stellpoint/)
+- Previous: [Configuration Guide](/products/stellpoint/configuration)
+- Next: [Observability Guide](/products/stellpoint/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpoint/api-and-sdk)

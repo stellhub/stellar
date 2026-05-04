@@ -1,21 +1,29 @@
 ---
-title: Stellnula · 星云 · 快速入门
+title: Stellnula Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellnula · Getting Started
 
-> 配置中心，负责配置集中存储、版本管理、灰度发布与动态下发。
+> A configuration center responsible for centralized storage, version management, progressive release, and dynamic distribution.
 
-[返回产品首页](/products/stellnula/)
+## Setup
 
-## 接入步骤
+1. Create the application and environment.
+2. Publish the first configuration version and define a rollback point.
+3. Integrate `stellnula-client` into the application to listen for changes.
 
-1. 创建应用与环境。
-2. 发布首个配置版本并设置回滚点。
-3. 在应用中接入 `stellnula-client` 监听变更。
+## Validation
 
-## 首次验证
+- Change a non-sensitive configuration item and confirm that the client hot reloads successfully.
+- Roll back and verify that the client returns to the previous stable version.
 
-- 修改一个非敏感配置项并观察客户端是否热更新成功
-- 验证回滚后客户端是否能恢复到上一稳定版本
+## Continue Reading
+
+- Start with the [Stellnula product overview](/products/stellnula/)
+- Previous: [Deployment Model](/products/stellnula/deployment)
+- Next: [Configuration Guide](/products/stellnula/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellnula/quick-start)

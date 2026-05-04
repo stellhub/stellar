@@ -1,20 +1,28 @@
 ---
-title: Stellpoint · 奇点 · 配置建议
+title: Stellpoint Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellpoint · Configuration Guide
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-[返回产品首页](/products/stellpoint/)
+## Baseline Configuration
 
-## 基础配置
+- Long-running transactions should coordinate automatic lease renewal with business timeout behavior.
+- For hotspot resources, add backoff retries and concurrency quotas.
 
-- 对长事务要设置自动续约与业务超时联动
-- 对热点资源建议增加退避重试与并发配额
+## Production Guidance
 
-## 生产建议
+- Lock granularity should be designed together with business idempotency strategy.
+- Critical resources should emit audit logs and abnormal-alert signals.
 
-- 锁粒度需与业务幂等策略配套设计
-- 关键资源建议增加审计日志和异常告警
+## Continue Reading
+
+- Start with the [Stellpoint product overview](/products/stellpoint/)
+- Previous: [Getting Started](/products/stellpoint/quick-start)
+- Next: [API Reference](/products/stellpoint/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpoint/configuration)

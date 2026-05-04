@@ -1,20 +1,27 @@
 ---
-title: Stellabe · 星盘 · 概要设计
+title: Stellabe Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellabe · Design Overview
 
-> 任务调度平台，负责定时任务编排、依赖调度、分片执行与运行治理。
+> A job-scheduling platform for timed orchestration, dependency scheduling, sharded execution, and runtime governance.
 
-[返回产品首页](/products/stellabe/)
+## Control Plane
 
-## 控制面设计
+- The orchestration layer defines workflows, analyzes dependencies, and publishes tasks.
+- Task versions, approval flow, and release process are managed centrally.
 
-- 编排层负责工作流定义、依赖分析和任务发布
-- 任务版本、审批和发布过程统一由控制面管理
+## Data Plane
 
-## 数据面设计
+- The scheduling layer computes triggers, allocates shards, and controls execution windows.
+- The execution layer handles worker registration, status reporting, and failure recovery.
 
-- 调度层负责触发计算、分片分配和执行窗口控制
-- 执行层负责 Worker 注册、状态回报和失败恢复
+## Continue Reading
+
+- Start with the [Stellabe product overview](/products/stellabe/)
+- Next: [System Architecture](/products/stellabe/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellabe/summary-design)

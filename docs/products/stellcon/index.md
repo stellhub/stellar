@@ -1,61 +1,63 @@
 ---
-title: Stellcon 详细设计
+title: Stellcon Design
 outline: deep
 ---
 
-# Stellcon · 星座
+# Stellcon · Constellation
 
 <div class="product-logo">
   <img src="/logo/stellcon.png" alt="Stellcon Logo">
 </div>
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellcon 为应用、网关、中间件和基础设施提供统一指标体系，支撑容量评估、SLO 观测和告警阈值计算。
+Stellcon provides a unified metrics system for applications, gateways, middleware, and infrastructure, supporting capacity estimation, SLO tracking, and alert-threshold computation.
 
-### 适用边界
+### Boundaries
 
-- 面向系统运行指标、业务指标和平台资源指标治理
-- 面向趋势分析、容量规划和 SLO 目标管理
-- 不替代日志检索，而是聚焦时序指标采集与聚合查询
+- Designed for governance of runtime metrics, business metrics, and platform resource metrics.
+- Designed for trend analysis, capacity planning, and SLO target management.
+- It does not replace log search; it focuses on time-series collection and aggregated query.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持 Counter、Gauge、Histogram 和 Summary 指标模型
-- 支持统一标签规范、聚合规则和多维查询
-- 支持看板模板、SLO 计算和容量趋势分析
+- Supports Counter, Gauge, Histogram, and Summary metric models.
+- Supports unified label conventions, aggregation rules, and multidimensional queries.
+- Supports dashboard templates, SLO calculation, and capacity-trend analysis.
 
-### 设计价值
+### Engineering Value
 
-- 形成统一指标口径，减少各系统观测语义分裂
-- 为告警、容量和稳定性治理提供统一数据底座
+- Creates consistent metric semantics and reduces fragmentation across systems.
+- Provides a unified data foundation for alerting, capacity planning, and reliability governance.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellcon/summary-design)
+- [System Architecture](/products/stellcon/architecture)
+- [Deployment Model](/products/stellcon/deployment)
+- [Getting Started](/products/stellcon/quick-start)
+- [Configuration Guide](/products/stellcon/configuration)
+- [API Reference](/products/stellcon/api-and-sdk)
+- [Observability Guide](/products/stellcon/observability)
 
-- [概要设计](/products/stellcon/summary-design)
-- [架构组成](/products/stellcon/architecture)
-- [部署形态](/products/stellcon/deployment)
-- [快速入门](/products/stellcon/quick-start)
-- [配置建议](/products/stellcon/configuration)
-- [API 与 SDK](/products/stellcon/api-and-sdk)
-- [可观测性](/products/stellcon/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- SLO observation
+- Capacity planning
 
-- SLO 观测
-- 容量规划
+### Platform Use Cases
 
-### 平台场景
+- Unified monitoring dashboards
+- Multi-tenant metrics governance
 
-- 统一监控看板
-- 多租户指标治理
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellcon/)

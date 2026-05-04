@@ -1,21 +1,29 @@
 ---
-title: Stellvox · 星讯 · 快速入门
+title: Stellvox Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellvox · Getting Started
 
-> 告警平台，负责告警规则、收敛降噪、通知编排和事件协同处置。
+> An alerting platform for alert rules, deduplication, notification orchestration, and incident coordination.
 
-[返回产品首页](/products/stellvox/)
+## Setup
 
-## 接入步骤
+1. Connect metrics, log, and trace event sources.
+2. Create key alert rules and notification policies.
+3. Configure on-call groups and escalation paths.
 
-1. 接入指标、日志和 Trace 事件源。
-2. 创建关键告警规则与通知策略。
-3. 配置值班组和升级链路。
+## Validation
 
-## 首次验证
+- Trigger a test alert and confirm grouping and the notification chain work.
+- Verify that acknowledgement, silence, and escalation flows behave as expected.
 
-- 触发一条测试告警，确认分组和通知链路已生效
-- 验证确认、静默和升级流程是否符合预期
+## Continue Reading
+
+- Start with the [Stellvox product overview](/products/stellvox/)
+- Previous: [Deployment Model](/products/stellvox/deployment)
+- Next: [Configuration Guide](/products/stellvox/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellvox/quick-start)

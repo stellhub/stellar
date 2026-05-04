@@ -1,21 +1,29 @@
 ---
-title: Stellguard · 星盾 · 快速入门
+title: Stellguard Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellguard · Getting Started
 
-> 零信任安全平台，负责身份验证、访问控制、策略评估和服务间安全通信。
+> A zero-trust security platform for identity verification, access control, policy evaluation, and secure service-to-service communication.
 
-[返回产品首页](/products/stellguard/)
+## Setup
 
-## 接入步骤
+1. Register service identities and user identity sources.
+2. Configure baseline access policies and certificate issuance chains.
+3. Enable enforcement points in a gateway or sidecar.
 
-1. 注册服务身份与用户身份源。
-2. 配置基础访问策略和证书签发链。
-3. 在网关或 Sidecar 中启用策略执行点。
+## Validation
 
-## 首次验证
+- Send a controlled access request and confirm the authentication and authorization path works.
+- Simulate an abnormal source and verify risk interception and audit records.
 
-- 发起一次受控访问请求，确认鉴权和授权链路生效
-- 模拟异常来源，验证风险拦截与审计记录是否正确
+## Continue Reading
+
+- Start with the [Stellguard product overview](/products/stellguard/)
+- Previous: [Deployment Model](/products/stellguard/deployment)
+- Next: [Configuration Guide](/products/stellguard/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellguard/quick-start)

@@ -1,21 +1,29 @@
 ---
-title: Stellmap · 星图 · 快速入门
+title: Stellmap Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellmap · Getting Started
 
-> 注册中心，负责服务实例注册、健康检查、发现订阅与拓扑变更推送。
+> A registry center that manages service instance registration, health checks, discovery subscriptions, and topology change propagation.
 
-[返回产品首页](/products/stellmap/)
+## Setup
 
-## 接入步骤
+1. Create a namespace and a normalized service identity.
+2. Integrate `stellmap-client` into the application and enable heartbeat renewal.
+3. Enable service subscription and local cache support on the caller side.
 
-1. 创建命名空间与服务标识。
-2. 为应用接入 `stellmap-client` 并开启心跳续约。
-3. 在调用方启用服务订阅与本地缓存。
+## Validation
 
-## 首次验证
+- Check through the console or API that the instance has been registered successfully.
+- Simulate instance removal and confirm that subscribers receive the change event.
 
-- 通过控制台或 API 查看实例是否已注册成功
-- 模拟实例摘除并确认订阅方是否收到变更事件
+## Continue Reading
+
+- Start with the [Stellmap product overview](/products/stellmap/)
+- Previous: [Deployment Model](/products/stellmap/deployment)
+- Next: [Configuration Guide](/products/stellmap/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellmap/quick-start)

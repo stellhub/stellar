@@ -1,20 +1,28 @@
 ---
-title: Stellguard · 星盾 · 配置建议
+title: Stellguard Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellguard · Configuration Guide
 
-> 零信任安全平台，负责身份验证、访问控制、策略评估和服务间安全通信。
+> A zero-trust security platform for identity verification, access control, policy evaluation, and secure service-to-service communication.
 
-[返回产品首页](/products/stellguard/)
+## Baseline Configuration
 
-## 基础配置
+- Default policy should deny unknown sources and declare allowed ranges explicitly.
+- Certificate rotation cycles should be decoupled from business release windows.
 
-- 默认策略建议拒绝未知来源，并显式声明放通范围
-- 证书轮换周期应与业务发布窗口解耦
+## Production Guidance
 
-## 生产建议
+- Manage service identities and user identities in separate domains to reduce permission crossover.
+- Highly sensitive interfaces should add stricter dynamic risk-validation policy.
 
-- 服务身份和用户身份建议分域管理，减少权限串扰
-- 高敏接口应叠加更严格的动态风险校验策略
+## Continue Reading
+
+- Start with the [Stellguard product overview](/products/stellguard/)
+- Previous: [Getting Started](/products/stellguard/quick-start)
+- Next: [API Reference](/products/stellguard/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellguard/configuration)

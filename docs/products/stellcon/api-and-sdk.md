@@ -1,19 +1,27 @@
 ---
-title: Stellcon · 星座 · API 与 SDK
+title: Stellcon API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellcon · API Reference
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-[返回产品首页](/products/stellcon/)
+## API Surface
 
-## 接口分层
+- Expose query, aggregation, rule-management, and dashboard-template interfaces.
 
-- 提供查询、聚合、规则管理和看板模板接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK injects standard business metrics and platform metadata.
+- Inject base labels such as service name, environment, and version consistently.
 
-- SDK 提供标准业务指标和平台元数据注入能力
-- 建议统一注入服务名、环境、版本等基础标签
+## Continue Reading
+
+- Start with the [Stellcon product overview](/products/stellcon/)
+- Previous: [Configuration Guide](/products/stellcon/configuration)
+- Next: [Observability Guide](/products/stellcon/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellcon/api-and-sdk)

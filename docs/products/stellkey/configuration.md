@@ -1,20 +1,28 @@
 ---
-title: Stellkey · 星钥 · 配置建议
+title: Stellkey Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellkey · Configuration Guide
 
-> 密钥中心，负责密钥生命周期管理、机密分发、轮换审计与安全访问控制。
+> A secret-management center for key lifecycle management, secret distribution, rotation auditing, and secure access control.
 
-[返回产品首页](/products/stellkey/)
+## Baseline Configuration
 
-## 基础配置
+- Use different rotation cycles for highly sensitive secrets and ordinary secrets.
+- Applications should keep only references and short-lived cache, avoiding long-lived plain-text persistence.
 
-- 密钥轮换应区分高敏与普通机密的周期
-- 应用侧只保存引用和短期缓存，避免长期明文落盘
+## Production Guidance
 
-## 生产建议
+- Approval flows should be layered by secret class, environment, and access source.
+- All sensitive values should be passed by reference to avoid copy-based spread.
 
-- 审批流应按密钥等级、环境和访问来源分层控制
-- 所有敏感值都应通过引用传递，避免复制扩散
+## Continue Reading
+
+- Start with the [Stellkey product overview](/products/stellkey/)
+- Previous: [Getting Started](/products/stellkey/quick-start)
+- Next: [API Reference](/products/stellkey/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellkey/configuration)

@@ -1,20 +1,28 @@
 ---
-title: Stellgate · 视界 · 配置建议
+title: Stellgate Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellgate · Configuration Guide
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-[返回产品首页](/products/stellgate/)
+## Baseline Configuration
 
-## 基础配置
+- Routes should be layered by domain, path, tenant, and version.
+- Security plugins and observability plugins are good candidates for a global default chain.
 
-- 路由应按域名、路径、租户和版本维度分层管理
-- 安全插件和可观测性插件建议设为全局默认链
+## Production Guidance
 
-## 生产建议
+- Use separate certificates and plugin strategies for public-facing and internal gateways.
+- Long-lived connection protocols need dedicated timeout, retry, and connection-limit tuning.
 
-- 对外和对内网关建议采用独立证书和独立插件策略
-- 长连接协议需要单独配置超时、重试和连接数限制
+## Continue Reading
+
+- Start with the [Stellgate product overview](/products/stellgate/)
+- Previous: [Getting Started](/products/stellgate/quick-start)
+- Next: [API Reference](/products/stellgate/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellgate/configuration)

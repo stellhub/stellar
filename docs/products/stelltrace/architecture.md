@@ -1,21 +1,29 @@
 ---
-title: Stelltrace · 星迹 · 架构组成
+title: Stelltrace System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stelltrace · System Architecture
 
-> 链路追踪平台，负责全链路 Trace、Span 采集、关联分析与问题定位。
+> A tracing platform for end-to-end trace collection, span analysis, cross-signal correlation, and issue localization.
 
-[返回产品首页](/products/stelltrace/)
+## Component Model
 
-## 核心组件
+- Agent / SDK: handles instrumentation and context propagation.
+- Collector: receives spans and performs pre-aggregation.
+- Query API: provides search, analysis, and visualization interfaces.
 
-- Agent / SDK：埋点采集与上下文传播
-- Collector：接收 Span 并进行预聚合
-- Query API：提供检索、分析和可视化接口
+## Interaction Flow
 
-## 关键交互
+- Agents report spans to the collector for aggregation and cleanup.
+- The query layer reconstructs execution paths by Trace ID and correlates them with logs and metrics.
 
-- Agent 将 Span 上报到 Collector 进行聚合与清洗
-- 查询层按 Trace ID 还原链路并关联日志与指标
+## Continue Reading
+
+- Start with the [Stelltrace product overview](/products/stelltrace/)
+- Previous: [Design Overview](/products/stelltrace/summary-design)
+- Next: [Deployment Model](/products/stelltrace/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stelltrace/architecture)

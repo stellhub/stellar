@@ -1,21 +1,28 @@
 ---
-title: Stellspec · 星谱 · 概要设计
+title: Stellspec Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellspec · Design Overview
 
-> 日志平台，负责统一采集、结构化处理、检索分析与日志留存治理。
+> A log platform for unified collection, structured processing, search analysis, and retention governance.
 
-[返回产品首页](/products/stellspec/)
+## Control Plane
 
-## 控制面设计
+- Collection rules, index templates, and lifecycle policy are orchestrated centrally.
+- Audit logs and business logs can be managed in separate layers from the control plane.
 
-- 采集规则、索引模板和生命周期策略由控制面统一编排
-- 审计日志与业务日志可在控制面中分层管理
+## Data Plane
 
-## 数据面设计
+- The collection layer ingests logs from agents, sidecars, and gateways.
+- The processing layer handles parsing, cleanup, desensitization, and index generation.
+- The query layer provides full-text search, field filtering, and context correlation.
 
-- 采集层负责 Agent、Sidecar 和网关日志接入
-- 处理层负责解析、清洗、脱敏和索引生成
-- 查询层负责全文检索、字段过滤和上下文关联
+## Continue Reading
+
+- Start with the [Stellspec product overview](/products/stellspec/)
+- Next: [System Architecture](/products/stellspec/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellspec/summary-design)

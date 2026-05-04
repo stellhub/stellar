@@ -1,19 +1,26 @@
 ---
-title: Stellcon · 星座 · 可观测性
+title: Stellcon Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellcon · Observability Guide
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-[返回产品首页](/products/stellcon/)
+## Metrics
 
-## 关键指标
+- Focus on collection latency, write-loss rate, query latency, and high-cardinality risk.
 
-- 重点关注采集延迟、写入丢失率、查询耗时和高基数风险
+## Operational Watchpoints
 
-## 运维重点
+- Watch for label explosion, hotspot queries, and remote-write backlog.
+- Watch for SLO semantic drift and incorrectly configured aggregation rules.
 
-- 关注标签膨胀、查询热点和远程写入积压
-- 关注 SLO 口径漂移和聚合规则误配
+## Continue Reading
+
+- Start with the [Stellcon product overview](/products/stellcon/)
+- Previous: [API Reference](/products/stellcon/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellcon/observability)

@@ -1,21 +1,29 @@
 ---
-title: Stellspec · 星谱 · 快速入门
+title: Stellspec Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellspec · Getting Started
 
-> 日志平台，负责统一采集、结构化处理、检索分析与日志留存治理。
+> A log platform for unified collection, structured processing, search analysis, and retention governance.
 
-[返回产品首页](/products/stellspec/)
+## Setup
 
-## 接入步骤
+1. Deploy the log collection agent.
+2. Configure standard fields and collection rules for the application.
+3. Search logs by Trace ID or service name in the query layer.
 
-1. 部署日志采集 Agent。
-2. 为应用配置标准字段和采集规则。
-3. 在查询端按 Trace ID 或服务名检索日志。
+## Validation
 
-## 首次验证
+- Emit a standard structured log and confirm that fields are parsed correctly.
+- Use Trace ID to verify that trace-related logs can be correlated end to end.
 
-- 输出一条标准结构化日志并确认字段已正确解析
-- 通过 Trace ID 验证链路日志是否能完整关联
+## Continue Reading
+
+- Start with the [Stellspec product overview](/products/stellspec/)
+- Previous: [Deployment Model](/products/stellspec/deployment)
+- Next: [Configuration Guide](/products/stellspec/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellspec/quick-start)

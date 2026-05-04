@@ -1,21 +1,29 @@
 ---
-title: Stellcon · 星座 · 架构组成
+title: Stellcon System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellcon · System Architecture
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-[返回产品首页](/products/stellcon/)
+## Component Model
 
-## 核心组件
+- Metrics Gateway: receives metrics ingestion traffic.
+- Time Series Store: stores time-series data and aggregation results.
+- Dashboard API: provides query, dashboard, and rule-configuration interfaces.
 
-- Metrics Gateway：承接指标采集流量
-- Time Series Store：保存时序数据和聚合结果
-- Dashboard API：提供查询、看板和规则配置接口
+## Interaction Flow
 
-## 关键交互
+- Metrics enter through the gateway and are written into time-series storage.
+- Query interfaces aggregate results into visual views by time window and label conditions.
 
-- 指标从采集端汇入 Gateway 后写入时序存储
-- 查询端按时间窗口和标签条件聚合出可视化结果
+## Continue Reading
+
+- Start with the [Stellcon product overview](/products/stellcon/)
+- Previous: [Design Overview](/products/stellcon/summary-design)
+- Next: [Deployment Model](/products/stellcon/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellcon/architecture)

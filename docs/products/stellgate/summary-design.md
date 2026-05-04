@@ -1,20 +1,27 @@
 ---
-title: Stellgate · 视界 · 概要设计
+title: Stellgate Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellgate · Design Overview
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-[返回产品首页](/products/stellgate/)
+## Control Plane
 
-## 控制面设计
+- The control plane manages routes, certificates, plugins, and release strategy.
+- Gateway instances, domains, upstream services, and plugin chains are orchestrated centrally.
 
-- 控制面管理路由、证书、插件和发布策略
-- 网关实例、域名、上游服务和插件链均由控制面编排
+## Data Plane
 
-## 数据面设计
+- The data plane uses stateless forwarding nodes that scale horizontally.
+- An extension layer handles authentication, observability, transformation, and traffic control through plugin chains.
 
-- 数据面采用无状态转发节点，支持水平扩展
-- 扩展面通过插件链处理认证、观测、转换和流量控制
+## Continue Reading
+
+- Start with the [Stellgate product overview](/products/stellgate/)
+- Next: [System Architecture](/products/stellgate/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellgate/summary-design)

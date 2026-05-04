@@ -1,19 +1,26 @@
 ---
-title: Stellmap · 星图 · 可观测性
+title: Stellmap Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellmap · Observability Guide
 
-> 注册中心，负责服务实例注册、健康检查、发现订阅与拓扑变更推送。
+> A registry center that manages service instance registration, health checks, discovery subscriptions, and topology change propagation.
 
-[返回产品首页](/products/stellmap/)
+## Metrics
 
-## 关键指标
+- Focus on registration success rate, renewal latency, push backlog, and cache hit ratio.
 
-- 重点关注注册成功率、续约延迟、推送积压和缓存命中率
+## Operational Watchpoints
 
-## 运维重点
+- Watch for instance flapping, abnormal lease expiration, and push-channel backlog.
+- Watch for replication delay in registration data across clusters.
 
-- 关注实例频繁抖动、租约异常过期和推送通道积压
-- 关注多集群间注册数据同步延迟
+## Continue Reading
+
+- Start with the [Stellmap product overview](/products/stellmap/)
+- Previous: [API Reference](/products/stellmap/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellmap/observability)

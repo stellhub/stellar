@@ -1,20 +1,28 @@
 ---
-title: Stellkey · 星钥 · 部署形态
+title: Stellkey Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellkey · Deployment Model
 
-> 密钥中心，负责密钥生命周期管理、机密分发、轮换审计与安全访问控制。
+> A secret-management center for key lifecycle management, secret distribution, rotation auditing, and secure access control.
 
-[返回产品首页](/products/stellkey/)
+## Deployment Topology
 
-## 推荐拓扑
+- Deploy core storage separately from the access gateway to reduce exposure.
+- For high-sensitivity workloads, use tiered custody for root keys and business keys.
 
-- 建议核心存储与访问网关分层部署，减少暴露面
-- 高敏场景可对主密钥和业务密钥采用分级托管
+## Availability Strategy
 
-## 高可用策略
+- Core secret storage should support replication and disaster-recovery restoration.
+- The access gateway should support audit caching and fast synchronization when permissions are revoked.
 
-- 核心机密存储应具备多副本和灾备恢复能力
-- 访问网关建议启用审计缓存和权限失效快速同步
+## Continue Reading
+
+- Start with the [Stellkey product overview](/products/stellkey/)
+- Previous: [System Architecture](/products/stellkey/architecture)
+- Next: [Getting Started](/products/stellkey/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellkey/deployment)

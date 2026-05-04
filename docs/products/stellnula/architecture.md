@@ -1,21 +1,29 @@
 ---
-title: Stellnula · 星云 · 架构组成
+title: Stellnula System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellnula · System Architecture
 
-> 配置中心，负责配置集中存储、版本管理、灰度发布与动态下发。
+> A configuration center responsible for centralized storage, version management, progressive release, and dynamic distribution.
 
-[返回产品首页](/products/stellnula/)
+## Component Model
 
-## 核心组件
+- Configuration Repository: stores configuration versions and metadata.
+- Release Engine: handles canary release, phased rollout, and scheduled publishing.
+- Client Agent: receives changes and persists local cache snapshots.
 
-- 配置仓库：保存配置版本与元数据
-- 发布引擎：处理灰度、分批和定时发布
-- 客户端代理：接收变更并落盘缓存
+## Interaction Flow
 
-## 关键交互
+- The release engine pushes incremental changes to clients according to the rollout plan.
+- When remote fetch fails, the client falls back to local snapshots to keep startup stable.
 
-- 发布引擎根据发布计划向客户端推送增量变更
-- 客户端在获取失败时回退到本地快照确保启动稳定
+## Continue Reading
+
+- Start with the [Stellnula product overview](/products/stellnula/)
+- Previous: [Design Overview](/products/stellnula/summary-design)
+- Next: [Deployment Model](/products/stellnula/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellnula/architecture)

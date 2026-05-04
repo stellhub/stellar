@@ -1,20 +1,27 @@
 ---
-title: Stelltrace · 星迹 · 概要设计
+title: Stelltrace Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stelltrace · Design Overview
 
-> 链路追踪平台，负责全链路 Trace、Span 采集、关联分析与问题定位。
+> A tracing platform for end-to-end trace collection, span analysis, cross-signal correlation, and issue localization.
 
-[返回产品首页](/products/stelltrace/)
+## Control Plane
 
-## 控制面设计
+- The ingestion layer handles protocol access, context propagation, and sampling decisions.
+- Sampling strategy, field conventions, and retention windows are managed centrally.
 
-- 采集层负责协议接入、上下文透传和采样决策
-- 采样策略、字段规范和保留周期由控制面统一管理
+## Data Plane
 
-## 数据面设计
+- The processing layer aggregates spans, builds indexes, and computes dependency relationships.
+- The query layer serves single-trace details, topology search, and troubleshooting views.
 
-- 处理层负责 Span 聚合、索引构建和依赖关系计算
-- 查询层负责单链路详情、拓扑检索和问题排查视图
+## Continue Reading
+
+- Start with the [Stelltrace product overview](/products/stelltrace/)
+- Next: [System Architecture](/products/stelltrace/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stelltrace/summary-design)

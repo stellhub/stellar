@@ -1,21 +1,29 @@
 ---
-title: Stellguard · 星盾 · 架构组成
+title: Stellguard System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellguard · System Architecture
 
-> 零信任安全平台，负责身份验证、访问控制、策略评估和服务间安全通信。
+> A zero-trust security platform for identity verification, access control, policy evaluation, and secure service-to-service communication.
 
-[返回产品首页](/products/stellguard/)
+## Component Model
 
-## 核心组件
+- Identity Provider: manages identities, tokens, and certificates.
+- Policy Engine: computes authorization strategy and risk decisions.
+- Enforcement Point: enforces access control at gateways and services.
 
-- Identity Provider：管理身份、令牌和证书
-- Policy Engine：计算授权策略和风险决策
-- Enforcement Point：在网关和服务侧执行访问控制
+## Interaction Flow
 
-## 关键交互
+- The identity provider issues credentials and shares identity context with the policy engine.
+- The enforcement point intercepts requests in real time and returns a policy decision.
 
-- 身份提供方签发主体凭证并与策略引擎共享上下文
-- 执行点在请求入口实时拦截并依据策略给出决策
+## Continue Reading
+
+- Start with the [Stellguard product overview](/products/stellguard/)
+- Previous: [Design Overview](/products/stellguard/summary-design)
+- Next: [Deployment Model](/products/stellguard/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellguard/architecture)

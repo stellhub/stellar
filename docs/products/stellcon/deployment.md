@@ -1,20 +1,28 @@
 ---
-title: Stellcon · 星座 · 部署形态
+title: Stellcon Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellcon · Deployment Model
 
-> 指标平台，负责指标采集、聚合计算、查询分析和容量看板建设。
+> A metrics platform for collection, aggregation, query analysis, and capacity dashboards.
 
-[返回产品首页](/products/stellcon/)
+## Deployment Topology
 
-## 推荐拓扑
+- In production, separate hot and cold storage and split storage clusters by tenant or business domain.
+- For high-cardinality scenarios, use label allowlists and sampling strategy.
 
-- 生产环境建议冷热分层，并按租户或业务域划分存储集群
-- 高基数场景建议设置标签白名单和采样策略
+## Availability Strategy
 
-## 高可用策略
+- Scale collection and query paths independently to avoid peak interference.
+- Store long-window aggregation and raw detail in different tiers to control cost.
 
-- 采集与查询链路建议拆分扩容，避免高峰互相影响
-- 长周期聚合和原始明细建议分层存储降低成本
+## Continue Reading
+
+- Start with the [Stellcon product overview](/products/stellcon/)
+- Previous: [System Architecture](/products/stellcon/architecture)
+- Next: [Getting Started](/products/stellcon/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellcon/deployment)

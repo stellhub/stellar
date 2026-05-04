@@ -1,19 +1,26 @@
 ---
-title: Stellvox · 星讯 · 可观测性
+title: Stellvox Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellvox · Observability Guide
 
-> 告警平台，负责告警规则、收敛降噪、通知编排和事件协同处置。
+> An alerting platform for alert rules, deduplication, notification orchestration, and incident coordination.
 
-[返回产品首页](/products/stellvox/)
+## Metrics
 
-## 关键指标
+- Focus on alert hit rate, false-positive rate, MTTA, and notification success rate.
 
-- 重点关注告警命中率、误报率、MTTA 和通知成功率
+## Operational Watchpoints
 
-## 运维重点
+- Watch for notification delay, on-call rule drift, and broken escalation paths.
+- Watch for alert storms and false-positive ratios caused by the same fault.
 
-- 关注通知延迟、值班规则漂移和升级链路失效
-- 关注同一故障引发的告警风暴和误报比例
+## Continue Reading
+
+- Start with the [Stellvox product overview](/products/stellvox/)
+- Previous: [API Reference](/products/stellvox/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellvox/observability)

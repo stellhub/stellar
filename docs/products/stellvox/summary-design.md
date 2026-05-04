@@ -1,20 +1,27 @@
 ---
-title: Stellvox · 星讯 · 概要设计
+title: Stellvox Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellvox · Design Overview
 
-> 告警平台，负责告警规则、收敛降噪、通知编排和事件协同处置。
+> An alerting platform for alert rules, deduplication, notification orchestration, and incident coordination.
 
-[返回产品首页](/products/stellvox/)
+## Control Plane
 
-## 控制面设计
+- The rule layer manages strategy configuration, versioning, and progressive activation.
+- Notification templates, on-call groups, and escalation paths are managed centrally.
 
-- 规则层负责策略配置、版本管理和灰度生效
-- 通知模板、值班组和升级链路由控制面统一管理
+## Data Plane
 
-## 数据面设计
+- The engine layer performs real-time computation, deduplication, convergence, and notification routing.
+- The collaboration layer handles ticket linkage, on-call rotation, and disposal tracking.
 
-- 引擎层负责实时计算、去重收敛和通知路由
-- 协同层负责工单联动、值班轮值和处置追踪
+## Continue Reading
+
+- Start with the [Stellvox product overview](/products/stellvox/)
+- Next: [System Architecture](/products/stellvox/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellvox/summary-design)

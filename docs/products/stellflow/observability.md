@@ -1,19 +1,26 @@
 ---
-title: Stellflow · 彗流 · 可观测性
+title: Stellflow Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellflow · Observability Guide
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-[返回产品首页](/products/stellflow/)
+## Metrics
 
-## 关键指标
+- Focus on production latency, consumer backlog, retry rate, and partition hotspots.
 
-- 重点关注生产延迟、消费堆积、重试率和分区热点
+## Operational Watchpoints
 
-## 运维重点
+- Watch for partition imbalance, consumer backlog, and replica synchronization delay.
+- Watch for retry storms and dead-letter backlog growth.
 
-- 关注分区不均衡、消费堆积和副本同步延迟
-- 关注重试风暴和死信积压趋势
+## Continue Reading
+
+- Start with the [Stellflow product overview](/products/stellflow/)
+- Previous: [API Reference](/products/stellflow/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellflow/observability)

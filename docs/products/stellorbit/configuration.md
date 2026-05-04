@@ -1,20 +1,28 @@
 ---
-title: Stellorbit · 星轨 · 配置建议
+title: Stellorbit Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellorbit · Configuration Guide
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-[返回产品首页](/products/stellorbit/)
+## Baseline Configuration
 
-## 基础配置
+- Route rules should be layered into global, tenant-level, and service-level strategies.
+- Retry and timeout settings should be designed together to avoid amplifying failure traffic.
 
-- 路由规则建议分为全局策略、租户策略和服务级策略
-- 重试与超时应联动配置，避免放大故障流量
+## Production Guidance
 
-## 生产建议
+- Critical routing rules should include approval and rollback plans.
+- Limit retry depth and timeout stacking to avoid request avalanches.
 
-- 重要路由规则需具备审批和回滚预案
-- 限制重试层级和超时叠加，避免请求雪崩
+## Continue Reading
+
+- Start with the [Stellorbit product overview](/products/stellorbit/)
+- Previous: [Getting Started](/products/stellorbit/quick-start)
+- Next: [API Reference](/products/stellorbit/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellorbit/configuration)

@@ -1,21 +1,29 @@
 ---
-title: Stellkey · 星钥 · 快速入门
+title: Stellkey Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellkey · Getting Started
 
-> 密钥中心，负责密钥生命周期管理、机密分发、轮换审计与安全访问控制。
+> A secret-management center for key lifecycle management, secret distribution, rotation auditing, and secure access control.
 
-[返回产品首页](/products/stellkey/)
+## Setup
 
-## 接入步骤
+1. Create a secret namespace and access policy.
+2. Write the first secret version and bind it to a rotation plan.
+3. Use the SDK inside the application to pull short-lived credentials or secret references.
 
-1. 创建机密命名空间和访问策略。
-2. 写入首个密钥版本并绑定轮换计划。
-3. 在应用中通过 SDK 拉取短期凭证或机密引用。
+## Validation
 
-## 首次验证
+- Retrieve a test secret and confirm that an audit record is written.
+- Trigger a rotation task and confirm the application can obtain the new version.
 
-- 拉取一条测试机密并确认审计日志已记录访问行为
-- 触发一次轮换任务，确认新版本可被应用正常获取
+## Continue Reading
+
+- Start with the [Stellkey product overview](/products/stellkey/)
+- Previous: [Deployment Model](/products/stellkey/deployment)
+- Next: [Configuration Guide](/products/stellkey/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellkey/quick-start)

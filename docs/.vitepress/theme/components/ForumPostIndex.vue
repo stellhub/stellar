@@ -1,12 +1,42 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
+import { useData } from "vitepress";
 import type { TopicPost } from "../../../topics/posts.data";
 
 const props = defineProps<{
   posts: TopicPost[];
 }>();
 
-const activeTag = ref("全部");
+const { lang } = useData();
+
+const isChinese = computed(() => lang.value.startsWith("zh"));
+const copy = computed(() => ({
+  allTag: isChinese.value ? "全部" : "All",
+  filterTitle: isChinese.value ? "按标签筛选" : "Filter by tag",
+  latestTitle: isChinese.value ? "最近更新" : "Recently updated",
+  publishLabel: isChinese.value ? "发布" : "Published",
+  updateLabel: isChinese.value ? "更新" : "Updated",
+  readingDirectionLabel: isChinese.value ? "阅读方向：" : "Reading direction:",
+  emptyState: isChinese.value ? "当前标签下还没有文章。" : "No posts match the selected tag yet.",
+  categoryTitle: isChinese.value ? "按主题分类" : "Browse by category",
+  categoryDesc: isChinese.value
+    ? "按问题域归拢，而不是按传统专题策展方式组织。"
+    : "Grouped by problem domain instead of a traditional editorial sequence.",
+  archiveTitle: isChinese.value ? "按年份归档" : "Archive by year",
+  writingScopeTitle: isChinese.value ? "写作范围" : "Writing scope",
+  unknownYear: isChinese.value ? "未知" : "Unknown"
+}));
+
+const activeTag = ref(copy.value.allTag);
+
+watch(
+  () => copy.value.allTag,
+  (allTag) => {
+    if (!availableTags.value.includes(activeTag.value)) {
+      activeTag.value = allTag;
+    }
+  }
+);
 
 const formatDate = (value: string) => {
   const date = new Date(value);
@@ -14,7 +44,7 @@ const formatDate = (value: string) => {
     return value;
   }
 
-  return new Intl.DateTimeFormat("zh-CN", {
+  return new Intl.DateTimeFormat(isChinese.value ? "zh-CN" : "en-US", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit"
@@ -28,11 +58,11 @@ const availableTags = computed(() => {
     post.tags.forEach((tag) => values.add(tag));
   });
 
-  return ["全部", ...Array.from(values)];
+  return [copy.value.allTag, ...Array.from(values)];
 });
 
 const filteredPosts = computed(() => {
-  if (activeTag.value === "全部") {
+  if (activeTag.value === copy.value.allTag) {
     return props.posts;
   }
 
@@ -59,7 +89,7 @@ const archivedPosts = computed(() => {
 
   filteredPosts.value.forEach((post) => {
     const date = new Date(post.publishAt);
-    const year = Number.isNaN(date.getTime()) ? "未知" : String(date.getFullYear());
+    const year = Number.isNaN(date.getTime()) ? copy.value.unknownYear : String(date.getFullYear());
     const current = groups.get(year) ?? [];
     current.push(post);
     groups.set(year, current);
@@ -82,7 +112,7 @@ const setActiveTag = (tag: string) => {
   <div class="forum-index">
     <section class="forum-section forum-section--compact">
       <div class="forum-section__head">
-        <h2>按标签筛选</h2>
+        <h2>{{ copy.filterTitle }}</h2>
       </div>
       <div class="forum-topic-chips">
         <button
@@ -100,7 +130,7 @@ const setActiveTag = (tag: string) => {
 
     <section class="forum-section">
       <div class="forum-section__head">
-        <h2>最近更新</h2>
+        <h2>{{ copy.latestTitle }}</h2>
       </div>
       <div class="forum-post-grid">
         <a
@@ -111,26 +141,26 @@ const setActiveTag = (tag: string) => {
         >
           <div class="forum-post-card__meta">
             <span class="forum-post-card__category">{{ post.category }}</span>
-            <span class="forum-post-card__date">发布 {{ formatDate(post.publishAt) }}</span>
-            <span class="forum-post-card__date">更新 {{ formatDate(post.updatedAt) }}</span>
+            <span class="forum-post-card__date">{{ copy.publishLabel }} {{ formatDate(post.publishAt) }}</span>
+            <span class="forum-post-card__date">{{ copy.updateLabel }} {{ formatDate(post.updatedAt) }}</span>
           </div>
           <h3>{{ post.title }}</h3>
           <p class="forum-post-card__summary">{{ post.summary }}</p>
           <p class="forum-post-card__direction">
-            <strong>阅读方向：</strong>{{ post.readingDirection }}
+            <strong>{{ copy.readingDirectionLabel }}</strong>{{ post.readingDirection }}
           </p>
           <div class="forum-post-card__tags">
             <span v-for="tag in post.tags" :key="tag">{{ tag }}</span>
           </div>
         </a>
       </div>
-      <p v-if="!filteredPosts.length" class="forum-empty-state">当前标签下还没有文章。</p>
+      <p v-if="!filteredPosts.length" class="forum-empty-state">{{ copy.emptyState }}</p>
     </section>
 
     <section class="forum-section">
       <div class="forum-section__head">
-        <h2>按主题分类</h2>
-        <p>按问题域归拢，而不是按传统专题策展方式组织。</p>
+        <h2>{{ copy.categoryTitle }}</h2>
+        <p>{{ copy.categoryDesc }}</p>
       </div>
       <div class="forum-category-grid">
         <div v-for="group in groupedPosts" :key="group.category" class="forum-category-card">
@@ -146,7 +176,7 @@ const setActiveTag = (tag: string) => {
 
     <section class="forum-section">
       <div class="forum-section__head">
-        <h2>按年份归档</h2>
+        <h2>{{ copy.archiveTitle }}</h2>
       </div>
       <div class="forum-archive-list">
         <div v-for="archive in archivedPosts" :key="archive.year" class="forum-archive-card">
@@ -163,10 +193,10 @@ const setActiveTag = (tag: string) => {
 
     <section class="forum-section forum-section--compact">
       <div class="forum-section__head">
-        <h2>写作范围</h2>
+        <h2>{{ copy.writingScopeTitle }}</h2>
       </div>
       <div class="forum-topic-chips">
-        <span v-for="tag in availableTags.filter((tag) => tag !== '全部')" :key="tag">{{ tag }}</span>
+        <span v-for="tag in availableTags.filter((tag) => tag !== copy.allTag)" :key="tag">{{ tag }}</span>
       </div>
     </section>
   </div>

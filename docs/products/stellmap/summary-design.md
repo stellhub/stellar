@@ -1,20 +1,27 @@
 ---
-title: Stellmap · 星图 · 概要设计
+title: Stellmap Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellmap · Design Overview
 
-> 注册中心，负责服务实例注册、健康检查、发现订阅与拓扑变更推送。
+> A registry center that manages service instance registration, health checks, discovery subscriptions, and topology change propagation.
 
-[返回产品首页](/products/stellmap/)
+## Control Plane
 
-## 控制面设计
+- The control plane manages service metadata, adapts registration protocols, and converges instance state.
+- Service definitions, grouping labels, and subscription relationships are all maintained centrally.
 
-- 控制面负责服务元数据管理、注册协议适配和实例状态收敛
-- 服务定义、分组标签和订阅关系统一由控制面维护
+## Data Plane
 
-## 数据面设计
+- The data plane is responsible for high-availability queries, incremental push delivery, and local client-side cache support.
+- A replicated consistency layer and lease model ensure instance information can be recovered after failures.
 
-- 数据面负责高可用查询、增量推送和本地客户端缓存
-- 一致性层采用多副本复制与租约模型保证实例信息可恢复
+## Continue Reading
+
+- Start with the [Stellmap product overview](/products/stellmap/)
+- Next: [System Architecture](/products/stellmap/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellmap/summary-design)

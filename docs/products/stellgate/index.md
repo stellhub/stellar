@@ -1,61 +1,63 @@
 ---
-title: Stellgate 详细设计
+title: Stellgate Design
 outline: deep
 ---
 
-# Stellgate · 视界
+# Stellgate · Event Horizon
 
 <div class="product-logo">
   <img src="/logo/stellgate.png" alt="Stellgate Logo">
 </div>
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellgate 作为外部入口和内部流量编排枢纽，负责承接客户端请求、统一安全策略并将流量转发至后端服务。
+Stellgate acts as the external entry point and internal traffic-orchestration hub, receiving client requests, applying unified security policies, and forwarding traffic to backend services.
 
-### 适用边界
+### Boundaries
 
-- 面向外部 API、内部服务入口和边缘接入场景
-- 面向协议接入、认证鉴权、转发治理和插件扩展
-- 不替代服务治理平台，而是承接入口侧流量处理
+- Designed for external APIs, internal service ingress, and edge-access scenarios.
+- Designed for protocol access, authentication and authorization, forwarding governance, and plugin extensibility.
+- It does not replace a service-governance platform; it focuses on ingress-side traffic handling.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持 HTTP、gRPC、WebSocket 和 SSE 接入
-- 支持鉴权、限流、路由、改写和插件化扩展
-- 支持多租户、多域名和多环境网关编排
+- Supports HTTP, gRPC, WebSocket, and SSE access.
+- Supports authentication, rate limiting, routing, rewriting, and plugin-based extension.
+- Supports multi-tenant, multi-domain, and multi-environment gateway orchestration.
 
-### 设计价值
+### Engineering Value
 
-- 将入口治理、安全和协议处理收口到统一网关
-- 提升对外 API 暴露和内部流量编排的一致性
+- Centralizes ingress governance, security, and protocol processing into a unified gateway.
+- Improves consistency for both external API exposure and internal traffic orchestration.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellgate/summary-design)
+- [System Architecture](/products/stellgate/architecture)
+- [Deployment Model](/products/stellgate/deployment)
+- [Getting Started](/products/stellgate/quick-start)
+- [Configuration Guide](/products/stellgate/configuration)
+- [API Reference](/products/stellgate/api-and-sdk)
+- [Observability Guide](/products/stellgate/observability)
 
-- [概要设计](/products/stellgate/summary-design)
-- [架构组成](/products/stellgate/architecture)
-- [部署形态](/products/stellgate/deployment)
-- [快速入门](/products/stellgate/quick-start)
-- [配置建议](/products/stellgate/configuration)
-- [API 与 SDK](/products/stellgate/api-and-sdk)
-- [可观测性](/products/stellgate/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Unified Open API ingress
+- LLM gateway and edge access
 
-- Open API 统一入口
-- LLM 网关与边缘接入
+### Platform Use Cases
 
-### 平台场景
+- Internal service gateway
+- Edge traffic ingress
 
-- 内部服务网关
-- 边缘流量接入
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellgate/)

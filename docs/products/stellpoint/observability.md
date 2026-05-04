@@ -1,19 +1,26 @@
 ---
-title: Stellpoint · 奇点 · 可观测性
+title: Stellpoint Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellpoint · Observability Guide
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-[返回产品首页](/products/stellpoint/)
+## Metrics
 
-## 关键指标
+- Focus on lock wait time, lock-acquisition failure rate, renewal success rate, and session drift.
 
-- 重点关注锁等待时长、抢锁失败率、续约成功率和会话漂移
+## Operational Watchpoints
 
-## 运维重点
+- Watch for session drift, hotspot lock contention, and abnormal lease reclamation.
+- Watch for coordination-log delay and quorum-node instability.
 
-- 关注会话漂移、热点锁竞争和租约异常回收
-- 关注协调日志延迟和仲裁节点抖动
+## Continue Reading
+
+- Start with the [Stellpoint product overview](/products/stellpoint/)
+- Previous: [API Reference](/products/stellpoint/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpoint/observability)

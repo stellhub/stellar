@@ -1,19 +1,27 @@
 ---
-title: Stellpulse · 脉冲 · API 与 SDK
+title: Stellpulse API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellpulse · API Reference
 
-> 流控熔断平台，负责热点保护、容量守卫、隔离舱和自适应降级。
+> A flow-control and circuit-breaking platform for hotspot protection, capacity guarding, bulkhead isolation, and adaptive degradation.
 
-[返回产品首页](/products/stellpulse/)
+## API Surface
 
-## 接口分层
+- Expose rule query, dynamic push, and event-subscription interfaces.
 
-- 提供规则查询、动态推送和事件订阅接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK supports annotations, programmatic APIs, and gateway adapters.
+- Use the same rule model on both the gateway and service side.
 
-- SDK 提供注解、编程式 API 和网关适配器
-- 推荐在服务和网关两侧采用统一规则模型
+## Continue Reading
+
+- Start with the [Stellpulse product overview](/products/stellpulse/)
+- Previous: [Configuration Guide](/products/stellpulse/configuration)
+- Next: [Observability Guide](/products/stellpulse/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpulse/api-and-sdk)

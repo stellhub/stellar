@@ -1,0 +1,424 @@
+<svg width="2200" height="1210" viewBox="0 20 2200 1210" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="2200" y2="1380" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#06101C"/>
+      <stop offset="1" stop-color="#0A1730"/>
+    </linearGradient>
+    <pattern id="smallGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#1D3D67" stroke-opacity="0.16" stroke-width="1"/>
+    </pattern>
+    <pattern id="largeGrid" width="120" height="120" patternUnits="userSpaceOnUse">
+      <rect width="120" height="120" fill="url(#smallGrid)"/>
+      <path d="M120 0H0V120" fill="none" stroke="#2F5F98" stroke-opacity="0.24" stroke-width="1.5"/>
+    </pattern>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#5FD8FF" flood-opacity="0.16"/>
+    </filter>
+    <marker id="arrowMain" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0 0L14 7L0 14Z" fill="#7FE4FF"/>
+    </marker>
+    <marker id="arrowObserve" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0 0L14 7L0 14Z" fill="#8FB7FF"/>
+    </marker>
+    <style>
+      text {
+        font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      }
+      .title {
+        font-size: 48px;
+        font-weight: 700;
+        fill: #F5FAFF;
+      }
+      .subtitle {
+        font-size: 23px;
+        fill: #AFC6E8;
+      }
+      .layer-tag {
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        fill: #76DFFF;
+      }
+      .layer-title {
+        font-size: 28px;
+        font-weight: 700;
+        fill: #F4FAFF;
+      }
+      .layer-desc {
+        font-size: 18px;
+        fill: #C9DAF4;
+      }
+      .node-title {
+        font-size: 24px;
+        font-weight: 700;
+        fill: #F6FBFF;
+      }
+      .node-domain {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        fill: #70DEFF;
+      }
+      .node-subtitle {
+        font-size: 17px;
+        fill: #D7E6FA;
+      }
+      .legend {
+        font-size: 18px;
+        fill: #D4E0F5;
+      }
+      .link-label {
+        fill: rgba(11, 30, 49, 0.94);
+        stroke: #6ec9ea;
+        stroke-opacity: 0.36;
+        stroke-width: 1.5;
+      }
+      .link-label-text {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        fill: #8fe7ff;
+      }
+      .link-label-note {
+        font-size: 13px;
+        fill: #d7e6fa;
+      }
+      .panel {
+        fill: rgba(10, 22, 40, 0.62);
+        stroke: #4B7EBA;
+        stroke-width: 2;
+      }
+      .panel-accent {
+        fill: rgba(10, 22, 40, 0.18);
+        stroke: #70DEFF;
+        stroke-opacity: 0.32;
+        stroke-width: 1.5;
+      }
+      .node {
+        fill: rgba(11, 26, 48, 0.94);
+        stroke: #76DFFF;
+        stroke-width: 2;
+        transition: fill 0.2s ease, stroke 0.2s ease, stroke-width 0.2s ease;
+      }
+      .node-header {
+        stroke: #4FB9EA;
+        stroke-width: 1.5;
+      }
+      .node-badge {
+        stroke-width: 1.5;
+      }
+      .node-badge-text {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        fill: #F6FBFF;
+      }
+      .edge-main {
+        stroke: #7FE4FF;
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .edge-observe {
+        stroke: #8FB7FF;
+        stroke-width: 4.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 14 12;
+        fill: none;
+      }
+      .bp-node {
+        cursor: pointer;
+      }
+      .bp-node.active .node,
+      .bp-node:hover .node {
+        fill: rgba(16, 42, 72, 0.98);
+        stroke: #D8F8FF;
+        stroke-width: 3;
+      }
+      .bp-node.active .node-header,
+      .bp-node:hover .node-header {
+        stroke: #97EEFF;
+        stroke-width: 2;
+      }
+      .bp-node.active .node-badge,
+      .bp-node:hover .node-badge {
+        filter: drop-shadow(0 0 10px rgba(95, 216, 255, 0.24));
+      }
+      .group-access .node-badge {
+        fill: #123A58;
+        stroke: #72DEFF;
+      }
+      .group-runtime .node-badge {
+        fill: #153D33;
+        stroke: #7ED9AA;
+      }
+      .group-foundation .node-badge {
+        fill: #4D3717;
+        stroke: #E7BE72;
+      }
+      .group-observe .node-badge {
+        fill: #372652;
+        stroke: #B8A2FF;
+      }
+    </style>
+  </defs>
+
+  <rect width="2200" height="1380" fill="url(#bg)"/>
+  <rect width="2200" height="1380" fill="url(#largeGrid)"/>
+
+  <circle cx="340" cy="150" r="140" fill="#144777" fill-opacity="0.12"/>
+  <circle cx="1780" cy="160" r="220" fill="#183A73" fill-opacity="0.14"/>
+  <circle cx="1820" cy="1160" r="260" fill="#1A2E61" fill-opacity="0.12"/>
+  <circle cx="250" cy="1180" r="240" fill="#11335A" fill-opacity="0.1"/>
+
+  <text x="92" y="74" class="title">Stell Hub Core Middleware Blueprint</text>
+  <text x="92" y="110" class="subtitle">以分层职责、公开契约与观测闭环组织的基础架构中间件蓝图</text>
+
+  <g filter="url(#glow)">
+    <rect x="80" y="170" width="2040" height="180" rx="28" class="panel"/>
+    <rect x="96" y="186" width="2008" height="148" rx="22" class="panel-accent"/>
+
+    <rect x="80" y="390" width="2040" height="250" rx="28" class="panel"/>
+    <rect x="96" y="406" width="2008" height="218" rx="22" class="panel-accent"/>
+
+    <rect x="80" y="690" width="2040" height="220" rx="28" class="panel"/>
+    <rect x="96" y="706" width="2008" height="188" rx="22" class="panel-accent"/>
+
+    <rect x="80" y="960" width="2040" height="250" rx="28" class="panel"/>
+    <rect x="96" y="976" width="2008" height="218" rx="22" class="panel-accent"/>
+  </g>
+
+  <rect x="120" y="194" width="240" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="216" class="layer-tag">L1 ACCESS / SECURITY</text>
+  <text x="120" y="266" class="layer-title">接入与安全层</text>
+  <text x="120" y="298" class="layer-desc">统一入口、身份与零信任校验，位于最上游。</text>
+
+  <rect x="120" y="414" width="248" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="436" class="layer-tag">L2 GOVERNANCE / RUNTIME</text>
+  <text x="120" y="486" class="layer-title">治理与运行层</text>
+  <text x="120" y="518" class="layer-desc">流量治理、调度编排、异步通信等核心运行能力，依赖基础设施并向观测层输出信号。</text>
+
+  <rect x="120" y="714" width="222" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="736" class="layer-tag">L3 FOUNDATION</text>
+  <text x="120" y="786" class="layer-title">基础支撑层</text>
+  <text x="120" y="818" class="layer-desc">注册、配置、锁与密钥等基础能力，向上提供稳定契约。</text>
+
+  <rect x="120" y="984" width="258" height="34" rx="10" fill="#0E223D" stroke="#5FD8FF" stroke-opacity="0.46"/>
+  <text x="142" y="1006" class="layer-tag">L4 OBSERVABILITY / ALERT</text>
+  <text x="120" y="1056" class="layer-title">可观测与告警层</text>
+  <text x="120" y="1088" class="layer-desc">统一承接链路、日志、指标，并驱动告警闭环。</text>
+
+  <g id="bp-node-m08" data-node="m08" class="bp-node group-access" filter="url(#glow)">
+    <rect x="260" y="226" width="380" height="110" rx="18" class="node"/>
+    <line x1="260" y1="258" x2="640" y2="258" class="node-header"/>
+    <rect x="552" y="238" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="568" y="256" class="node-badge-text">M08</text>
+    <text x="292" y="248" class="node-domain">GATEWAY</text>
+    <text x="292" y="290" class="node-title">Stellgate · 视界</text>
+    <text x="292" y="320" class="node-subtitle">网关入口 / 统一访问边界</text>
+  </g>
+
+  <g id="bp-node-m13" data-node="m13" class="bp-node group-access" filter="url(#glow)">
+    <rect x="1320" y="226" width="380" height="110" rx="18" class="node"/>
+    <line x1="1320" y1="258" x2="1700" y2="258" class="node-header"/>
+    <rect x="1612" y="238" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="1628" y="256" class="node-badge-text">M13</text>
+    <text x="1352" y="248" class="node-domain">ZERO TRUST</text>
+    <text x="1352" y="290" class="node-title">Stellguard · 星盾</text>
+    <text x="1352" y="320" class="node-subtitle">零信平台 / 身份与策略</text>
+  </g>
+
+  <g id="bp-node-m04" data-node="m04" class="bp-node group-runtime" filter="url(#glow)">
+    <rect x="120" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="120" y1="528" x2="440" y2="528" class="node-header"/>
+    <rect x="348" y="508" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="364" y="526" class="node-badge-text">M04</text>
+    <text x="148" y="518" class="node-domain">SERVICE MESH</text>
+    <text x="148" y="560" class="node-title">Stellorbit · 星轨</text>
+    <text x="148" y="592" class="node-subtitle">服务治理 / 路由与编排</text>
+  </g>
+
+  <g id="bp-node-m05" data-node="m05" class="bp-node group-runtime" filter="url(#glow)">
+    <rect x="620" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="620" y1="528" x2="940" y2="528" class="node-header"/>
+    <rect x="848" y="508" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="864" y="526" class="node-badge-text">M05</text>
+    <text x="648" y="518" class="node-domain">RESILIENCE</text>
+    <text x="648" y="560" class="node-title">Stellpulse · 脉冲</text>
+    <text x="648" y="592" class="node-subtitle">流控熔断 / 保护与降级</text>
+  </g>
+
+  <g id="bp-node-m06" data-node="m06" class="bp-node group-runtime" filter="url(#glow)">
+    <rect x="1120" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="1120" y1="528" x2="1440" y2="528" class="node-header"/>
+    <rect x="1348" y="508" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="1364" y="526" class="node-badge-text">M06</text>
+    <text x="1148" y="518" class="node-domain">SCHEDULER</text>
+    <text x="1148" y="560" class="node-title">Stellabe · 星盘</text>
+    <text x="1148" y="592" class="node-subtitle">任务调度 / 分布式编排</text>
+  </g>
+
+  <g id="bp-node-m09" data-node="m09" class="bp-node group-runtime" filter="url(#glow)">
+    <rect x="1620" y="496" width="320" height="114" rx="18" class="node"/>
+    <line x1="1620" y1="528" x2="1940" y2="528" class="node-header"/>
+    <rect x="1848" y="508" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="1864" y="526" class="node-badge-text">M09</text>
+    <text x="1648" y="518" class="node-domain">EVENT BUS</text>
+    <text x="1648" y="560" class="node-title">Stellflow · 彗流</text>
+    <text x="1648" y="592" class="node-subtitle">消息队列 / 异步事件流</text>
+  </g>
+
+  <g id="bp-node-m01" data-node="m01" class="bp-node group-foundation" filter="url(#glow)">
+    <rect x="120" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="120" y1="802" x2="440" y2="802" class="node-header"/>
+    <rect x="348" y="782" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="364" y="800" class="node-badge-text">M01</text>
+    <text x="148" y="792" class="node-domain">REGISTRY</text>
+    <text x="148" y="834" class="node-title">Stellmap · 星图</text>
+    <text x="148" y="864" class="node-subtitle">注册中心 / 服务发现</text>
+  </g>
+
+  <g id="bp-node-m02" data-node="m02" class="bp-node group-foundation" filter="url(#glow)">
+    <rect x="620" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="620" y1="802" x2="940" y2="802" class="node-header"/>
+    <rect x="848" y="782" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="864" y="800" class="node-badge-text">M02</text>
+    <text x="648" y="792" class="node-domain">CONFIGURATION</text>
+    <text x="648" y="834" class="node-title">Stellnula · 星云</text>
+    <text x="648" y="864" class="node-subtitle">配置中心 / 动态配置</text>
+  </g>
+
+  <g id="bp-node-m07" data-node="m07" class="bp-node group-foundation" filter="url(#glow)">
+    <rect x="1120" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="1120" y1="802" x2="1440" y2="802" class="node-header"/>
+    <rect x="1348" y="782" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="1364" y="800" class="node-badge-text">M07</text>
+    <text x="1148" y="792" class="node-domain">LOCK / COORDINATION</text>
+    <text x="1148" y="834" class="node-title">Stellpoint · 奇点</text>
+    <text x="1148" y="864" class="node-subtitle">分布式锁 / 互斥协调</text>
+  </g>
+
+  <g id="bp-node-m14" data-node="m14" class="bp-node group-foundation" filter="url(#glow)">
+    <rect x="1620" y="770" width="320" height="108" rx="18" class="node"/>
+    <line x1="1620" y1="802" x2="1940" y2="802" class="node-header"/>
+    <rect x="1848" y="782" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="1864" y="800" class="node-badge-text">M14</text>
+    <text x="1648" y="792" class="node-domain">SECRET MANAGEMENT</text>
+    <text x="1648" y="834" class="node-title">Stellkey · 星钥</text>
+    <text x="1648" y="864" class="node-subtitle">密钥中心 / 凭据管理</text>
+  </g>
+
+  <g id="bp-node-m03" data-node="m03" class="bp-node group-observe" filter="url(#glow)">
+    <rect x="120" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="120" y1="1072" x2="440" y2="1072" class="node-header"/>
+    <rect x="348" y="1052" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="364" y="1070" class="node-badge-text">M03</text>
+    <text x="148" y="1062" class="node-domain">TRACE</text>
+    <text x="148" y="1104" class="node-title">Stelltrace · 星迹</text>
+    <text x="148" y="1136" class="node-subtitle">链路追踪 / Trace 汇聚</text>
+  </g>
+
+  <g id="bp-node-m10" data-node="m10" class="bp-node group-observe" filter="url(#glow)">
+    <rect x="620" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="620" y1="1072" x2="940" y2="1072" class="node-header"/>
+    <rect x="848" y="1052" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="864" y="1070" class="node-badge-text">M10</text>
+    <text x="648" y="1062" class="node-domain">LOGGING</text>
+    <text x="648" y="1104" class="node-title">Stellspec · 星谱</text>
+    <text x="648" y="1136" class="node-subtitle">日志平台 / Log 汇聚</text>
+  </g>
+
+  <g id="bp-node-m11" data-node="m11" class="bp-node group-observe" filter="url(#glow)">
+    <rect x="1120" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="1120" y1="1072" x2="1440" y2="1072" class="node-header"/>
+    <rect x="1348" y="1052" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="1364" y="1070" class="node-badge-text">M11</text>
+    <text x="1148" y="1062" class="node-domain">METRICS</text>
+    <text x="1148" y="1104" class="node-title">Stellcon · 星座</text>
+    <text x="1148" y="1136" class="node-subtitle">指标平台 / Metric 汇聚</text>
+  </g>
+
+  <g id="bp-node-m12" data-node="m12" class="bp-node group-observe" filter="url(#glow)">
+    <rect x="1620" y="1040" width="320" height="114" rx="18" class="node"/>
+    <line x1="1620" y1="1072" x2="1940" y2="1072" class="node-header"/>
+    <rect x="1848" y="1052" width="66" height="26" rx="13" class="node-badge"/>
+    <text x="1864" y="1070" class="node-badge-text">M12</text>
+    <text x="1648" y="1062" class="node-domain">ALERTING</text>
+    <text x="1648" y="1104" class="node-title">Stellvox · 星讯</text>
+    <text x="1648" y="1136" class="node-subtitle">告警平台 / 收敛与通知</text>
+  </g>
+
+  <path d="M640 281C860 281 1070 281 1320 281" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M438 336C400 392 334 438 280 496" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M506 336C625 404 718 444 780 496" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1488 336C1412 398 1348 442 1280 496" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1544 336C1686 434 1764 520 1780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M440 553C520 553 560 553 620 553" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M280 610C280 680 280 720 280 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M324 610C442 700 584 736 780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M780 610C780 680 780 720 780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1280 610C1280 680 1280 720 1280 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M1324 610C1450 698 1592 740 1780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M520 336C520 518 634 662 780 770" class="edge-main" marker-end="url(#arrowMain)"/>
+  <path d="M438 336C352 574 300 790 280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M506 336C530 576 674 794 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M572 336C712 570 1028 776 1280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M280 610C280 796 280 908 280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M780 610C780 792 960 904 1280 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1280 610C1280 790 1060 904 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1780 610C1780 792 1538 904 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1544 336C1590 620 1642 812 780 1040" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M440 1097C770 1176 1186 1178 1620 1097" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M940 1097C1208 1158 1452 1152 1620 1097" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <path d="M1440 1097C1520 1126 1580 1120 1620 1097" class="edge-observe" marker-end="url(#arrowObserve)"/>
+
+  <g>
+    <rect x="760" y="248" width="146" height="30" rx="12" class="link-label"/>
+    <text x="776" y="267" class="link-label-text">D01</text>
+    <text x="820" y="267" class="link-label-note">Access Policy</text>
+
+    <rect x="318" y="388" width="154" height="30" rx="12" class="link-label"/>
+    <text x="334" y="407" class="link-label-text">D02</text>
+    <text x="378" y="407" class="link-label-note">Ingress Route</text>
+
+    <rect x="612" y="392" width="168" height="30" rx="12" class="link-label"/>
+    <text x="628" y="411" class="link-label-text">D03</text>
+    <text x="672" y="411" class="link-label-note">Traffic Shield</text>
+
+    <rect x="1040" y="388" width="182" height="30" rx="12" class="link-label"/>
+    <text x="1056" y="407" class="link-label-text">D04</text>
+    <text x="1100" y="407" class="link-label-note">Policy Injection</text>
+
+    <rect x="318" y="648" width="188" height="30" rx="12" class="link-label"/>
+    <text x="334" y="667" class="link-label-text">D05</text>
+    <text x="378" y="667" class="link-label-note">Service Discovery</text>
+
+    <rect x="1090" y="646" width="168" height="30" rx="12" class="link-label"/>
+    <text x="1106" y="665" class="link-label-text">D06</text>
+    <text x="1150" y="665" class="link-label-note">Coordination</text>
+
+    <rect x="366" y="902" width="160" height="30" rx="12" class="link-label"/>
+    <text x="382" y="921" class="link-label-text">O01</text>
+    <text x="426" y="921" class="link-label-note">Trace Export</text>
+
+    <rect x="906" y="934" width="150" height="30" rx="12" class="link-label"/>
+    <text x="922" y="953" class="link-label-text">O02</text>
+    <text x="966" y="953" class="link-label-note">Log Export</text>
+
+    <rect x="1382" y="934" width="164" height="30" rx="12" class="link-label"/>
+    <text x="1398" y="953" class="link-label-text">O03</text>
+    <text x="1442" y="953" class="link-label-note">Metric Export</text>
+
+    <rect x="1700" y="1120" width="168" height="30" rx="12" class="link-label"/>
+    <text x="1716" y="1139" class="link-label-text">O04</text>
+    <text x="1760" y="1139" class="link-label-note">Alert Fan-in</text>
+  </g>
+
+  <rect x="1340" y="80" width="780" height="124" rx="18" fill="#0A1A31" stroke="#4C78AA" stroke-width="2" stroke-opacity="0.56"/>
+  <line x1="1386" y1="124" x2="1496" y2="124" class="edge-main" marker-end="url(#arrowMain)"/>
+  <text x="1526" y="130" class="legend">主依赖：通过公开 API / SDK / 配置 / 策略形成单向依赖</text>
+  <line x1="1386" y1="170" x2="1496" y2="170" class="edge-observe" marker-end="url(#arrowObserve)"/>
+  <text x="1526" y="176" class="legend">观测输出：统一向 Trace / Log / Metric 汇聚，再由 Stellvox 闭环</text>
+</svg>

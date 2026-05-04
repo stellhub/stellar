@@ -1,19 +1,26 @@
 ---
-title: Stelltrace · 星迹 · 可观测性
+title: Stelltrace Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stelltrace · Observability Guide
 
-> 链路追踪平台，负责全链路 Trace、Span 采集、关联分析与问题定位。
+> A tracing platform for end-to-end trace collection, span analysis, cross-signal correlation, and issue localization.
 
-[返回产品首页](/products/stelltrace/)
+## Metrics
 
-## 关键指标
+- Focus on span throughput, sampling hit rate, index latency, and query latency.
 
-- 重点关注 Span 吞吐、采样命中率、索引延迟和查询耗时
+## Operational Watchpoints
 
-## 运维重点
+- Watch for collector backpressure, index backlog, and uncontrolled high-cardinality labels.
+- Watch for broken traces and failures in context propagation.
 
-- 关注 Collector 背压、索引堆积和高基数标签失控
-- 关注链路断裂比例和上下文传播失败率
+## Continue Reading
+
+- Start with the [Stelltrace product overview](/products/stelltrace/)
+- Previous: [API Reference](/products/stelltrace/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stelltrace/observability)

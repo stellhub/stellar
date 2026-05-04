@@ -1,20 +1,28 @@
 ---
-title: Stellspec · 星谱 · 部署形态
+title: Stellspec Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellspec · Deployment Model
 
-> 日志平台，负责统一采集、结构化处理、检索分析与日志留存治理。
+> A log platform for unified collection, structured processing, search analysis, and retention governance.
 
-[返回产品首页](/products/stellspec/)
+## Deployment Topology
 
-## 推荐拓扑
+- Store hot and cold logs in separate tiers to balance query performance and cost.
+- Audit logs should use independent storage and independent access control.
 
-- 建议将热日志与冷日志分层存储，平衡查询性能与成本
-- 审计日志建议独立存储与独立访问控制
+## Availability Strategy
 
-## 高可用策略
+- Query nodes and index nodes should be deployed separately to avoid contention.
+- For high-throughput ingestion, use buffering queues and batched writes.
 
-- 查询节点和索引节点建议解耦部署，避免互相抢占资源
-- 高吞吐写入场景建议采用缓冲队列和批量写入机制
+## Continue Reading
+
+- Start with the [Stellspec product overview](/products/stellspec/)
+- Previous: [System Architecture](/products/stellspec/architecture)
+- Next: [Getting Started](/products/stellspec/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellspec/deployment)

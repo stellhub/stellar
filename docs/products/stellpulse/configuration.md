@@ -1,20 +1,28 @@
 ---
-title: Stellpulse · 脉冲 · 配置建议
+title: Stellpulse Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellpulse · Configuration Guide
 
-> 流控熔断平台，负责热点保护、容量守卫、隔离舱和自适应降级。
+> A flow-control and circuit-breaking platform for hotspot protection, capacity guarding, bulkhead isolation, and adaptive degradation.
 
-[返回产品首页](/products/stellpulse/)
+## Baseline Configuration
 
-## 基础配置
+- Circuit recovery should use half-open probing to avoid an instant full-volume recovery.
+- Hotspot-parameter rules should include allowlists and fallback logic.
 
-- 熔断恢复应采用半开探测，避免瞬时全量恢复
-- 热点参数规则建议设置白名单和回退逻辑
+## Production Guidance
 
-## 生产建议
+- Different interfaces should have independent thresholds based on capacity class and business criticality.
+- Degradation logic should be designed together with fallback pages or default responses.
 
-- 不同接口应按容量等级和业务等级配置独立阈值
-- 退化逻辑应与业务兜底页面或默认结果配套设计
+## Continue Reading
+
+- Start with the [Stellpulse product overview](/products/stellpulse/)
+- Previous: [Getting Started](/products/stellpulse/quick-start)
+- Next: [API Reference](/products/stellpulse/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpulse/configuration)

@@ -1,79 +1,55 @@
 ---
-title: Stellmap · 星图 · API 与 SDK
+title: Stellmap API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellmap · API Reference
 
-> 注册中心，负责服务实例注册、健康检查、发现订阅与拓扑变更推送。
+> A registry center that manages service instance registration, health checks, discovery subscriptions, and topology change propagation.
 
-[返回产品首页](/products/stellmap/)
+## Write Contract
 
-## 读写流程
+1. A client sends a registration, deregistration, or heartbeat renewal request through the public HTTP API.
+2. If the request lands on a follower, it is redirected or forwarded to the leader.
+3. The leader encodes the instance change into a proposal and submits it to the single Raft group.
+4. The log is appended to the local WAL.
+5. The log is replicated to a quorum and committed.
+6. The state machine applies the change to Pebble in order.
+7. The write success response is returned.
 
-### 写请求
+## Read Contract
 
-1. 客户端通过 `HTTP API` 发起注册、注销或心跳续约请求
-2. 非 Leader 节点重定向或转发到 Leader
-3. Leader 将实例变更命令编码为 proposal，提交给单 Raft 组
-4. 日志追加到本地 `WAL`
-5. 日志复制到多数派并提交
-6. 状态机按顺序 apply 到 `Pebble`
-7. 返回写成功结果
+1. A client sends an instance query request.
+2. The request reaches the leader, or a follower forwards it to the leader path.
+3. The leader executes `ReadIndex`.
+4. The node waits until local `appliedIndex` catches up to `readIndex`.
+5. The latest registry view is read from Pebble.
+6. A linearizable response is returned.
 
-### 读请求
+## Public API Contract
 
-1. 客户端发起实例查询请求
-2. 请求到达 Leader，或被 Follower 转发到 Leader
-3. Leader 执行 `ReadIndex`
-4. 等待本地 `appliedIndex` 追平到 `readIndex`
-5. 从 `Pebble` 读取最新实例注册表视图
-6. 返回线性一致结果
+- Third-party integration is exposed through the public HTTP API only.
+- That keeps onboarding simple for scripts, sidecars, and multi-language clients while preserving a clear boundary for registration, discovery, query, and health-reporting interfaces.
 
-## 通信设计
+## Admin API Contract
 
-### 外部 API
+- Membership changes, leader transfer, and cluster-status inspection run on a dedicated admin HTTP listener instead of the public business listener.
+- The public HTTP surface carries only business data-plane and health endpoints.
+- The admin listener is bound to loopback by default, currently accepts only localhost traffic, and requires `Authorization: Bearer <token>` authentication.
+- `stellmapctl` is the only supported control-plane entry point today.
 
-对三方业务接入只提供公共 `HTTP API`。
+## Internal Transport Contract
 
-对外 `HTTP API` 的价值：
+- Cluster-internal replication uniformly uses gRPC.
+- The external API and internal replication surface should not share protocol assumptions because the internal channel carries Raft messages, snapshots, and leader-forwarded read or write traffic.
+- External HTTP and internal gRPC still share the same core state-machine and permission-validation logic to avoid double implementation.
 
-- 降低接入门槛
-- 方便脚本、Sidecar 和多语言客户端调用
-- 适合注册、注销、查询、健康上报等开放接口
+## Continue Reading
 
-### 管理面 API
+- Start with the [Stellmap product overview](/products/stellmap/)
+- Previous: [Configuration Guide](/products/stellmap/configuration)
+- Next: [Observability Guide](/products/stellmap/observability)
 
-成员变更、Leader 转移和集群状态查询不挂在公共 HTTP listener 上，而是挂在独立的 `admin HTTP` listener 上。
+## Chinese Source
 
-设计约束：
-
-- 公共 `HTTP` 只承载业务数据面和健康检查
-- `admin HTTP` 只承载控制面动作，默认绑定到本地回环地址，例如 `127.0.0.1:18080`
-- `admin HTTP` 当前额外强制只接受来源为 `127.0.0.1` 的请求
-- `admin HTTP` 需要固定 token 鉴权，请求头格式为 `Authorization: Bearer <token>`
-- `stellmapctl` 是控制面的唯一入口
-- 这意味着当前控制面默认只支持本机运维；如需跨机器运维，需要后续单独放宽来源限制并补更完整鉴权
-
-### 内部 Transport
-
-集群内部复制面统一采用 `gRPC`。
-
-这样设计的原因：
-
-- 内外通信面职责不同，不应共用同一套协议假设
-- 单 Raft 集群内部需要承载 Raft message、快照、Leader 转发等协议
-- `gRPC` 对内部机器间通信更适合，协议清晰、强类型、支持流式快照传输
-
-内部 transport 主要承载：
-
-- Raft message 传输
-- Snapshot 文件/分片传输
-- Leader 转发读写请求
-- 节点管理与健康探测
-
-策略：
-
-- 外部开放面只提供 `HTTP API`
-- 内部复制面统一使用 `gRPC`
-- 外部 HTTP 与内部 `gRPC` 共享同一套核心状态机与权限校验逻辑，避免双份实现
+- [Read the original Chinese page](/zh/products/stellmap/api-and-sdk)

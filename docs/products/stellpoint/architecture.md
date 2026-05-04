@@ -1,21 +1,29 @@
 ---
-title: Stellpoint · 奇点 · 架构组成
+title: Stellpoint System Architecture
 outline: deep
 ---
 
-# 架构组成
+# Stellpoint · System Architecture
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-[返回产品首页](/products/stellpoint/)
+## Component Model
 
-## 核心组件
+- Lock API: receives lock, unlock, renewal, and query requests.
+- Lease Manager: manages sessions, leases, and expiration cleanup.
+- Coordination Log: stores lock ordering and fencing tokens.
 
-- Lock API：受理加锁、解锁、续约和查询请求
-- Lease Manager：管理会话、租约和过期回收
-- Coordination Log：保存锁顺序与 fencing token
+## Interaction Flow
 
-## 关键交互
+- Clients keep leases alive through sessions and periodic renewal.
+- The coordination log emits fencing tokens to preserve holder-order semantics.
 
-- 客户端通过会话保持租约有效并周期续约
-- 协调日志生成 fencing token 保障持有者顺序语义
+## Continue Reading
+
+- Start with the [Stellpoint product overview](/products/stellpoint/)
+- Previous: [Design Overview](/products/stellpoint/summary-design)
+- Next: [Deployment Model](/products/stellpoint/deployment)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpoint/architecture)

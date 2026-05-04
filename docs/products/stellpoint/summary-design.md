@@ -1,20 +1,27 @@
 ---
-title: Stellpoint · 奇点 · 概要设计
+title: Stellpoint Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellpoint · Design Overview
 
-> 分布式锁与协调中心，负责互斥控制、领导者选举和关键资源串行化访问。
+> A distributed locking and coordination center for mutual exclusion, leader election, and serialized access to critical resources.
 
-[返回产品首页](/products/stellpoint/)
+## Control Plane
 
-## 控制面设计
+- The lock control plane manages the resource model, permissions, and lock-strategy publication.
+- Resource paths, lease policies, and permission boundaries are maintained centrally.
 
-- 锁控制面负责资源模型、权限控制和锁策略发布
-- 资源路径、租约策略和权限边界由控制面统一维护
+## Data Plane
 
-## 数据面设计
+- The coordination storage layer persists lock state and lease information through a consistent log.
+- Clients preserve ordering guarantees through session keepalive and fencing tokens.
 
-- 协调存储层通过一致性日志保存锁状态和租约信息
-- 客户端通过会话保活与 fencing token 保障顺序一致性
+## Continue Reading
+
+- Start with the [Stellpoint product overview](/products/stellpoint/)
+- Next: [System Architecture](/products/stellpoint/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellpoint/summary-design)

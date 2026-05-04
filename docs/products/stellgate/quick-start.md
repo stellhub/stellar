@@ -1,21 +1,29 @@
 ---
-title: Stellgate · 视界 · 快速入门
+title: Stellgate Getting Started
 outline: deep
 ---
 
-# 快速入门
+# Stellgate · Getting Started
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-[返回产品首页](/products/stellgate/)
+## Setup
 
-## 接入步骤
+1. Create a gateway instance and domain mapping.
+2. Configure upstream services, route rules, and authentication policies.
+3. Publish the route and validate traffic through a canary domain.
 
-1. 创建网关实例与域名映射。
-2. 配置上游服务、路由规则和鉴权策略。
-3. 发布路由并通过灰度域名验证流量。
+## Validation
 
-## 首次验证
+- Send an authenticated request and confirm both routing and the plugin chain take effect.
+- Validate a small amount of canary traffic and confirm the release result is observable.
 
-- 发起一次带鉴权的请求，确认网关路由和插件链生效
-- 对灰度路由做小流量验证，确认发布结果可观测
+## Continue Reading
+
+- Start with the [Stellgate product overview](/products/stellgate/)
+- Previous: [Deployment Model](/products/stellgate/deployment)
+- Next: [Configuration Guide](/products/stellgate/configuration)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellgate/quick-start)

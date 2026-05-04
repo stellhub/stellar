@@ -1,61 +1,63 @@
 ---
-title: Stellflow 详细设计
+title: Stellflow Design
 outline: deep
 ---
 
-# Stellflow · 彗流
+# Stellflow · CometFlow
 
 <div class="product-logo">
   <img src="/logo/stellflow.png" alt="Stellflow Logo">
 </div>
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellflow 提供统一的消息投递与事件分发能力，支持业务异步化、系统集成和流式处理场景。
+Stellflow provides a unified messaging and event-distribution capability for asynchronous business flows, system integration, and streaming workloads.
 
-### 适用边界
+### Boundaries
 
-- 面向异步解耦、事件驱动和数据分发场景
-- 面向延迟消息、顺序消息和流式消费模型
-- 不替代任务调度平台，而是聚焦消息持久化与分发
+- Designed for asynchronous decoupling, event-driven interaction, and data-distribution scenarios.
+- Designed for delayed messages, ordered messages, and stream-consumption models.
+- It does not replace a job-scheduling platform; it focuses on durable message storage and distribution.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持普通队列、主题订阅、延迟消息和顺序消息
-- 支持消费组、重试队列、死信队列和回溯消费
-- 支持事件桥接、流式处理和跨 Region 复制
+- Supports ordinary queues, topic subscription, delayed messages, and ordered messages.
+- Supports consumer groups, retry queues, dead-letter queues, and replay consumption.
+- Supports event bridging, streaming processing, and cross-region replication.
 
-### 设计价值
+### Engineering Value
 
-- 通过异步化降低系统耦合和峰值冲击
-- 通过可靠投递与位点管理支撑事件驱动架构
+- Reduces coupling and traffic shocks through asynchronous design.
+- Supports event-driven architecture through reliable delivery and offset management.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellflow/summary-design)
+- [System Architecture](/products/stellflow/architecture)
+- [Deployment Model](/products/stellflow/deployment)
+- [Getting Started](/products/stellflow/quick-start)
+- [Configuration Guide](/products/stellflow/configuration)
+- [API Reference](/products/stellflow/api-and-sdk)
+- [Observability Guide](/products/stellflow/observability)
 
-- [概要设计](/products/stellflow/summary-design)
-- [架构组成](/products/stellflow/architecture)
-- [部署形态](/products/stellflow/deployment)
-- [快速入门](/products/stellflow/quick-start)
-- [配置建议](/products/stellflow/configuration)
-- [API 与 SDK](/products/stellflow/api-and-sdk)
-- [可观测性](/products/stellflow/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Order event-driven integration
+- Asynchronous burst smoothing
 
-- 订单事件驱动
-- 异步削峰
+### Platform Use Cases
 
-### 平台场景
+- Data synchronization bus
+- Cross-system event bridging
 
-- 数据同步总线
-- 跨系统事件桥接
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellflow/)

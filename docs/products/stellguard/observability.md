@@ -1,19 +1,26 @@
 ---
-title: Stellguard · 星盾 · 可观测性
+title: Stellguard Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellguard · Observability Guide
 
-> 零信任安全平台，负责身份验证、访问控制、策略评估和服务间安全通信。
+> A zero-trust security platform for identity verification, access control, policy evaluation, and secure service-to-service communication.
 
-[返回产品首页](/products/stellguard/)
+## Metrics
 
-## 关键指标
+- Focus on authentication latency, rejection rate, certificate validity, and risk-hit rate.
 
-- 重点关注鉴权延迟、拒绝率、证书有效期和风险命中率
+## Operational Watchpoints
 
-## 运维重点
+- Watch for certificate expiry, false-positive policy blocks, and identity-source synchronization failures.
+- Watch for authorization-decision latency and the distribution of risk-policy hits.
 
-- 关注证书过期、策略误杀和身份源同步异常
-- 关注授权决策耗时和风险策略命中分布
+## Continue Reading
+
+- Start with the [Stellguard product overview](/products/stellguard/)
+- Previous: [API Reference](/products/stellguard/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellguard/observability)

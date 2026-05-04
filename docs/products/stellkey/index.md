@@ -1,61 +1,63 @@
 ---
-title: Stellkey 详细设计
+title: Stellkey Design
 outline: deep
 ---
 
-# Stellkey · 星钥
+# Stellkey · StarKey
 
 <div class="product-logo">
   <img src="/logo/stellkey.png" alt="Stellkey Logo">
 </div>
 
-> 密钥中心，负责密钥生命周期管理、机密分发、轮换审计与安全访问控制。
+> A secret-management center for key lifecycle management, secret distribution, rotation auditing, and secure access control.
 
-## 产品定位
+## Product Scope
 
-### 目标定位
+### Objective
 
-Stellkey 为应用和平台组件提供统一密钥托管与机密分发能力，降低明文密钥散落、人工轮换困难和审计缺失带来的安全风险。
+Stellkey provides unified secret custody and secret distribution for applications and platform components, reducing risk from scattered plain-text keys, difficult manual rotation, and missing audit trails.
 
-### 适用边界
+### Boundaries
 
-- 面向密钥、证书、令牌和机密配置的统一托管
-- 面向访问审批、轮换审计和短期凭证分发
-- 不直接替代配置中心，而是为敏感值治理提供安全底座
+- Designed for unified management of keys, certificates, tokens, and sensitive configuration.
+- Designed for access approval, rotation audit, and short-lived credential distribution.
+- It does not replace the configuration center directly; it provides a secure foundation for sensitive-value governance.
 
-## 核心能力
+## Core Capabilities
 
-### 能力清单
+### Capabilities
 
-- 支持密钥、证书、令牌和机密配置统一托管
-- 支持版本轮换、临时凭证、访问审批和审计追踪
-- 支持与配置中心、零信平台和网关联动分发
+- Supports unified custody of keys, certificates, tokens, and secret configuration.
+- Supports version rotation, temporary credentials, access approval, and audit tracking.
+- Supports coordinated distribution with the configuration center, zero-trust platform, and gateways.
 
-### 设计价值
+### Engineering Value
 
-- 统一机密生命周期管理，降低明文泄露风险
-- 让敏感配置分发和访问审计具备平台级能力
+- Unifies secret lifecycle management and reduces the risk of plain-text exposure.
+- Makes sensitive-configuration delivery and access auditing available as platform-level capabilities.
 
-## 设计文档
+## Reference Sections
 
-以下设计章节已拆分为独立文档：
+- [Design Overview](/products/stellkey/summary-design)
+- [System Architecture](/products/stellkey/architecture)
+- [Deployment Model](/products/stellkey/deployment)
+- [Getting Started](/products/stellkey/quick-start)
+- [Configuration Guide](/products/stellkey/configuration)
+- [API Reference](/products/stellkey/api-and-sdk)
+- [Observability Guide](/products/stellkey/observability)
 
-- [概要设计](/products/stellkey/summary-design)
-- [架构组成](/products/stellkey/architecture)
-- [部署形态](/products/stellkey/deployment)
-- [快速入门](/products/stellkey/quick-start)
-- [配置建议](/products/stellkey/configuration)
-- [API 与 SDK](/products/stellkey/api-and-sdk)
-- [可观测性](/products/stellkey/observability)
+## Typical Use Cases
 
-## 典型场景
+### Business Use Cases
 
-### 业务场景
+- Database credential custody
+- TLS certificate management
 
-- 数据库凭证托管
-- TLS 证书管理
+### Platform Use Cases
 
-### 平台场景
+- Sensitive-value references from the configuration center
+- Platform-level secret lifecycle governance
 
-- 配置中心敏感值引用
-- 平台级机密生命周期治理
+## Chinese Source
+
+- [Read the original Chinese product page](/zh/products/stellkey/)

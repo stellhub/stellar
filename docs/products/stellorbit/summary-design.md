@@ -1,20 +1,27 @@
 ---
-title: Stellorbit · 星轨 · 概要设计
+title: Stellorbit Design Overview
 outline: deep
 ---
 
-# 概要设计
+# Stellorbit · Design Overview
 
-> 服务治理中枢，负责路由、负载、限流策略编排以及服务生命周期治理。
+> A service-governance hub for routing, load balancing, traffic control orchestration, and service lifecycle governance.
 
-[返回产品首页](/products/stellorbit/)
+## Control Plane
 
-## 控制面设计
+- A strategy center manages routing rules and governance templates centrally.
+- Rule publication, canary rollout, and rollback are all controlled from the control plane.
 
-- 策略中心统一管理路由规则和治理模板
-- 治理规则发布、灰度和回滚由控制面统一控制
+## Data Plane
 
-## 数据面设计
+- The execution plane enforces policies in real time through sidecars or SDKs.
+- The state plane reports circuit state, service profiles, and capacity data back to the governance center.
 
-- 执行面通过 Sidecar 或 SDK 在调用链路中实时生效
-- 状态面负责熔断状态、实例画像和容量数据回传
+## Continue Reading
+
+- Start with the [Stellorbit product overview](/products/stellorbit/)
+- Next: [System Architecture](/products/stellorbit/architecture)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellorbit/summary-design)

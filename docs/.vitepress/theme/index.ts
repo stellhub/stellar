@@ -3,6 +3,8 @@ import { defineComponent, h, nextTick, onMounted, watch } from "vue";
 import { useRoute } from "vitepress";
 import "./style.css";
 
+const HOME_ROUTES = new Set(["/", "/zh/"]);
+
 const HomeMatrixBridge = defineComponent({
   name: "HomeMatrixBridge",
   setup() {
@@ -18,11 +20,11 @@ const HomeMatrixBridge = defineComponent({
       delete body.dataset.stellarProductView;
       delete body.dataset.stellarHome;
 
-      if (route.path === "/") {
+      if (HOME_ROUTES.has(route.path)) {
         body.dataset.stellarHome = "true";
       }
 
-      const productMatch = route.path.match(/^\/products\/([^/]+)\/?(.*)$/);
+      const productMatch = route.path.match(/^\/(?:zh\/)?products\/([^/]+)\/?(.*)$/);
       if (!productMatch) {
         return;
       }
@@ -37,7 +39,7 @@ const HomeMatrixBridge = defineComponent({
     };
 
     const bindHomeMatrix = () => {
-      if (route.path !== "/") {
+      if (!HOME_ROUTES.has(route.path)) {
         return;
       }
 

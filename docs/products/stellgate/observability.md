@@ -1,19 +1,26 @@
 ---
-title: Stellgate · 视界 · 可观测性
+title: Stellgate Observability Guide
 outline: deep
 ---
 
-# 可观测性
+# Stellgate · Observability Guide
 
-> 网关入口平台，负责统一接入、认证鉴权、协议转换、流量治理与 API 暴露。
+> A gateway ingress platform for unified access, authentication, protocol translation, traffic governance, and API exposure.
 
-[返回产品首页](/products/stellgate/)
+## Metrics
 
-## 关键指标
+- Focus on gateway latency, 5xx ratio, rate-limit hits, and upstream retry count.
 
-- 重点关注网关延迟、5xx 比例、限流命中和上游重试
+## Operational Watchpoints
 
-## 运维重点
+- Watch for upstream errors, plugin execution latency, and connection-pool congestion.
+- Watch for certificate expiry, canary release failure, and domain-configuration drift.
 
-- 关注上游异常、插件执行耗时和连接池拥塞
-- 关注证书到期、灰度发布失败和域名配置漂移
+## Continue Reading
+
+- Start with the [Stellgate product overview](/products/stellgate/)
+- Previous: [API Reference](/products/stellgate/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellgate/observability)

@@ -1,19 +1,27 @@
 ---
-title: Stellvox · 星讯 · API 与 SDK
+title: Stellvox API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellvox · API Reference
 
-> 告警平台，负责告警规则、收敛降噪、通知编排和事件协同处置。
+> An alerting platform for alert rules, deduplication, notification orchestration, and incident coordination.
 
-[返回产品首页](/products/stellvox/)
+## API Surface
 
-## 接口分层
+- Expose rule management, notification template, on-call management, and event-query interfaces.
 
-- 提供规则管理、通知模板、值班管理和事件查询接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK supports direct reporting of custom business events and callback handling.
+- Business-side integrations should declare event severity, source, and ownership labels explicitly.
 
-- SDK 支持业务自定义事件直报和回调处理
-- 建议在业务侧显式声明事件级别、来源和责任标签
+## Continue Reading
+
+- Start with the [Stellvox product overview](/products/stellvox/)
+- Previous: [Configuration Guide](/products/stellvox/configuration)
+- Next: [Observability Guide](/products/stellvox/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellvox/api-and-sdk)

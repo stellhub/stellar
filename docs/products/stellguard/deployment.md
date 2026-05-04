@@ -1,20 +1,28 @@
 ---
-title: Stellguard · 星盾 · 部署形态
+title: Stellguard Deployment Model
 outline: deep
 ---
 
-# 部署形态
+# Stellguard · Deployment Model
 
-> 零信任安全平台，负责身份验证、访问控制、策略评估和服务间安全通信。
+> A zero-trust security platform for identity verification, access control, policy evaluation, and secure service-to-service communication.
 
-[返回产品首页](/products/stellguard/)
+## Deployment Topology
 
-## 推荐拓扑
+- Deploy core identity and policy services in isolated, highly available clusters.
+- Access control can be enforced collaboratively across gateways, sidecars, and application code.
 
-- 核心身份与策略服务建议高可用隔离部署
-- 访问控制可在网关、Sidecar 和应用内多层协同
+## Availability Strategy
 
-## 高可用策略
+- Identity and policy services should support partitioned deployment and local cache capability.
+- Certificate issuance and validation paths must account for disaster recovery and rotation windows.
 
-- 身份和策略服务建议分区部署并具备本地缓存能力
-- 证书签发与校验链路需要考虑灾备和轮换窗口
+## Continue Reading
+
+- Start with the [Stellguard product overview](/products/stellguard/)
+- Previous: [System Architecture](/products/stellguard/architecture)
+- Next: [Getting Started](/products/stellguard/quick-start)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellguard/deployment)

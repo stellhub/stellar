@@ -1,20 +1,28 @@
 ---
-title: Stellflow · 彗流 · 配置建议
+title: Stellflow Configuration Guide
 outline: deep
 ---
 
-# 配置建议
+# Stellflow · Configuration Guide
 
-> 消息队列与事件流平台，负责异步解耦、流式分发、削峰填谷和事件驱动集成。
+> A message queue and event-stream platform for asynchronous decoupling, streaming distribution, burst smoothing, and event-driven integration.
 
-[返回产品首页](/products/stellflow/)
+## Baseline Configuration
 
-## 基础配置
+- Design separate topics for ordered-message workloads and high-throughput workloads.
+- Set retry count and dead-letter thresholds according to business idempotency capability.
 
-- 顺序消息与高吞吐消息应分开主题设计
-- 重试次数和死信阈值应结合业务幂等能力设置
+## Production Guidance
 
-## 生产建议
+- Plan partition count based on throughput, concurrency, and hotspot-key distribution.
+- Design offset-commit strategy together with consumer idempotency and transaction requirements.
 
-- 分区数应按吞吐、并发和热点键分布综合规划
-- 位点提交策略需与消费幂等和事务能力一起设计
+## Continue Reading
+
+- Start with the [Stellflow product overview](/products/stellflow/)
+- Previous: [Getting Started](/products/stellflow/quick-start)
+- Next: [API Reference](/products/stellflow/api-and-sdk)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellflow/configuration)

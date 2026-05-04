@@ -1,19 +1,27 @@
 ---
-title: Stellnula · 星云 · API 与 SDK
+title: Stellnula API Reference
 outline: deep
 ---
 
-# API 与 SDK
+# Stellnula · API Reference
 
-> 配置中心，负责配置集中存储、版本管理、灰度发布与动态下发。
+> A configuration center responsible for centralized storage, version management, progressive release, and dynamic distribution.
 
-[返回产品首页](/products/stellnula/)
+## API Surface
 
-## 接口分层
+- Expose configuration query, listener, publish, and rollback interfaces.
 
-- 提供配置查询、监听、发布和回滚接口
+## SDK Guidance
 
-## SDK 说明
+- The SDK supports preload at startup, runtime refresh, and change callbacks.
+- Critical configuration changes should include local validation and callback protection.
 
-- SDK 提供启动预加载、运行期刷新和变更回调能力
-- 建议对关键配置变更增加本地校验和回调保护
+## Continue Reading
+
+- Start with the [Stellnula product overview](/products/stellnula/)
+- Previous: [Configuration Guide](/products/stellnula/configuration)
+- Next: [Observability Guide](/products/stellnula/observability)
+
+## Chinese Source
+
+- [Read the original Chinese page](/zh/products/stellnula/api-and-sdk)
