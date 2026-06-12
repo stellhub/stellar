@@ -190,7 +190,7 @@ opentelemetry:
 Run the included HTTP example:
 
 ```bash
-go run ./examples/http-examples
+go run ./examples/http-simple-examples
 ```
 
 Then open:
@@ -204,7 +204,7 @@ GET http://localhost:8080/metrics
 Run the included gRPC example:
 
 ```bash
-go run ./examples/grpc-examples
+go run ./examples/grpc-simple-examples
 ```
 
 ## Transport Adapters
@@ -487,7 +487,18 @@ Cache create/update body:
 
 Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, MySQL client, PostgreSQL client, and local cache client with OpenTelemetry trace, logs, and metrics.
 
-Stellar reads `application.yml` or `application.yaml` from the directory that contains `main.go`, then from the current working directory.
+Stellar reads configuration in this order:
+
+1. Command line: `--config`, `--config.file`, `--stellar.config`, `--stellar.config.file`, or `--spring.config.location`.
+2. Environment variables: `STELLAR_CONFIG_FILE`, `STELLAR_CONFIG`, or `STELLAR_APPLICATION_CONFIG`.
+3. Default lookup: `application.yml` or `application.yaml` from the directory that contains `main.go`, then from the current working directory.
+
+The explicit command line or environment value can be either an `application.yml` / `application.yaml` file path or a directory that contains one of those files.
+
+```bash
+go run ./examples/http-simple-examples --config ./examples/http-simple-examples/application.yml
+STELLAR_CONFIG_FILE=./examples/http-simple-examples/application.yml go run ./examples/http-simple-examples
+```
 
 OpenTelemetry defaults:
 

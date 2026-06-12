@@ -277,6 +277,75 @@ opentelemetry:
 	}
 }
 
+func TestLoadUsesCommandLineConfigPath(t *testing.T) {
+	path := writeTestConfig(t, filepath.Join(t.TempDir(), "application.yaml"), "cli-service")
+	setArgs(t, "stellar", "--config", path)
+	clearConfigEnv(t)
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+	if cfg.AppName != "cli-service" {
+		t.Fatalf("unexpected app name %q", cfg.AppName)
+	}
+}
+
+func TestLoadUsesCommandLineConfigDirectory(t *testing.T) {
+	dir := t.TempDir()
+	writeTestConfig(t, filepath.Join(dir, "application.yml"), "cli-dir-service")
+	setArgs(t, "stellar", "--config.file="+dir)
+	clearConfigEnv(t)
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+	if cfg.AppName != "cli-dir-service" {
+		t.Fatalf("unexpected app name %q", cfg.AppName)
+	}
+}
+
+func TestLoadUsesEnvConfigPath(t *testing.T) {
+	path := writeTestConfig(t, filepath.Join(t.TempDir(), "application.yaml"), "env-service")
+	setArgs(t, "stellar")
+	clearConfigEnv(t)
+	t.Setenv(EnvConfigFile, path)
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+	if cfg.AppName != "env-service" {
+		t.Fatalf("unexpected app name %q", cfg.AppName)
+	}
+}
+
+func TestLoadCommandLineConfigPathOverridesEnv(t *testing.T) {
+	envPath := writeTestConfig(t, filepath.Join(t.TempDir(), "application.yaml"), "env-service")
+	cliPath := writeTestConfig(t, filepath.Join(t.TempDir(), "application.yaml"), "cli-service")
+	setArgs(t, "stellar", "--stellar.config", cliPath)
+	clearConfigEnv(t)
+	t.Setenv(EnvConfigFile, envPath)
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+	if cfg.AppName != "cli-service" {
+		t.Fatalf("unexpected app name %q", cfg.AppName)
+	}
+}
+
+func TestLoadRejectsMissingCommandLineConfigValue(t *testing.T) {
+	setArgs(t, "stellar", "--config")
+	clearConfigEnv(t)
+
+	if _, err := Load(); err == nil {
+		t.Fatalf("expected missing command line config value to be rejected")
+	}
+}
+
 func TestLoadFileRejectsUnsupportedConfigName(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "stellar.yaml")
 	if err := os.WriteFile(path, []byte("app:\n  name: order-service\n"), 0o644); err != nil {
@@ -289,7 +358,7 @@ func TestLoadFileRejectsUnsupportedConfigName(t *testing.T) {
 }
 
 func TestConfigPathsPreferMainDirBeforeWorkingDir(t *testing.T) {
-	mainDir := filepath.Join("repo", "examples", "http-examples")
+	mainDir := filepath.Join("repo", "examples", "http-simple-examples")
 	workingDir := filepath.Join("repo")
 
 	paths := configPathsInDirs(mainDir, workingDir)
@@ -303,4 +372,29 @@ func TestConfigPathsPreferMainDirBeforeWorkingDir(t *testing.T) {
 	if paths[2] != filepath.Join(workingDir, "application.yml") {
 		t.Fatalf("expected working dir after main dir candidates, got %q", paths[2])
 	}
+}
+
+func writeTestConfig(t *testing.T, path string, appName string) string {
+	t.Helper()
+	content := "app:\n  name: " + appName + "\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	return path
+}
+
+func setArgs(t *testing.T, args ...string) {
+	t.Helper()
+	originalArgs := os.Args
+	os.Args = args
+	t.Cleanup(func() {
+		os.Args = originalArgs
+	})
+}
+
+func clearConfigEnv(t *testing.T) {
+	t.Helper()
+	t.Setenv(EnvConfigFile, "")
+	t.Setenv(EnvConfig, "")
+	t.Setenv(EnvApplicationConfig, "")
 }

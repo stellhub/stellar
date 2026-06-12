@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -244,6 +245,21 @@ type appFileConfig struct {
 
 var ErrConfigFileNotFound = errors.New("stellar: config file not found")
 
+const (
+	EnvConfigFile        = "STELLAR_CONFIG_FILE"
+	EnvConfig            = "STELLAR_CONFIG"
+	EnvApplicationConfig = "STELLAR_APPLICATION_CONFIG"
+)
+
+var configArgNames = []string{
+	"--config",
+	"-config",
+	"--config.file",
+	"--stellar.config",
+	"--stellar.config.file",
+	"--spring.config.location",
+}
+
 func (e Environment) Valid() bool {
 	switch e {
 	case EnvDev, EnvUAT, EnvPre, EnvProd:
@@ -370,12 +386,95 @@ func (c GRPCConfig) ServerAddr() string {
 }
 
 func Load() (Config, error) {
+	if path, ok, err := explicitConfigPath(os.Args[1:]); ok || err != nil {
+		if err != nil {
+			return Config{}, err
+		}
+		return LoadFile(path)
+	}
+
 	for _, candidate := range DefaultConfigPaths() {
 		if _, err := os.Stat(candidate); err == nil {
 			return LoadFile(candidate)
 		}
 	}
 	return Config{}, ErrConfigFileNotFound
+}
+
+func explicitConfigPath(args []string) (string, bool, error) {
+	if path, ok, err := configPathFromArgs(args); ok || err != nil {
+		return path, ok, err
+	}
+	if path, ok, err := configPathFromEnv(); ok || err != nil {
+		return path, ok, err
+	}
+	return "", false, nil
+}
+
+func configPathFromArgs(args []string) (string, bool, error) {
+	for i := 0; i < len(args); i++ {
+		arg := strings.TrimSpace(args[i])
+		if arg == "" {
+			continue
+		}
+		for _, name := range configArgNames {
+			if arg == name {
+				if i+1 >= len(args) {
+					return "", true, fmt.Errorf("stellar: missing value for %s", name)
+				}
+				value := strings.TrimSpace(args[i+1])
+				if value == "" {
+					return "", true, fmt.Errorf("stellar: missing value for %s", name)
+				}
+				path, err := resolveConfigPath(value)
+				return path, true, err
+			}
+			if strings.HasPrefix(arg, name+"=") {
+				value := strings.TrimSpace(strings.TrimPrefix(arg, name+"="))
+				if value == "" {
+					return "", true, fmt.Errorf("stellar: missing value for %s", name)
+				}
+				path, err := resolveConfigPath(value)
+				return path, true, err
+			}
+		}
+	}
+	return "", false, nil
+}
+
+func configPathFromEnv() (string, bool, error) {
+	for _, key := range []string{EnvConfigFile, EnvConfig, EnvApplicationConfig} {
+		value := strings.TrimSpace(os.Getenv(key))
+		if value == "" {
+			continue
+		}
+		path, err := resolveConfigPath(value)
+		return path, true, err
+	}
+	return "", false, nil
+}
+
+func resolveConfigPath(path string) (string, error) {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return "", errors.New("stellar: config path is required")
+	}
+
+	path = filepath.Clean(path)
+	info, err := os.Stat(path)
+	if err != nil {
+		return "", err
+	}
+	if !info.IsDir() {
+		return path, nil
+	}
+
+	for _, candidate := range configPathsInDirs(path) {
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate, nil
+		}
+	}
+	return "", fmt.Errorf("%w: %s", ErrConfigFileNotFound, path)
 }
 
 func DefaultConfigPaths() []string {

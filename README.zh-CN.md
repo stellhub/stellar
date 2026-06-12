@@ -190,7 +190,7 @@ opentelemetry:
 运行 HTTP 示例：
 
 ```bash
-go run ./examples/http-examples
+go run ./examples/http-simple-examples
 ```
 
 然后访问：
@@ -204,7 +204,7 @@ GET http://localhost:8080/metrics
 运行 gRPC 示例：
 
 ```bash
-go run ./examples/grpc-examples
+go run ./examples/grpc-simple-examples
 ```
 
 ## 传输适配器
@@ -487,7 +487,18 @@ Cache 创建/更新请求体：
 
 Stellar 会为 HTTP server、gRPC server、HTTP client、gRPC client、Redis client、MySQL client、PostgreSQL client 和本地 cache client 接入 OpenTelemetry trace、logs 与 metrics。
 
-Stellar 会先从包含 `main.go` 的目录读取 `application.yml` 或 `application.yaml`，再从当前工作目录读取。
+Stellar 会按下面顺序读取配置：
+
+1. 命令行参数：`--config`、`--config.file`、`--stellar.config`、`--stellar.config.file` 或 `--spring.config.location`。
+2. 环境变量：`STELLAR_CONFIG_FILE`、`STELLAR_CONFIG` 或 `STELLAR_APPLICATION_CONFIG`。
+3. 默认查找：先从包含 `main.go` 的目录读取 `application.yml` 或 `application.yaml`，再从当前工作目录读取。
+
+命令行或环境变量显式指定的值可以是 `application.yml` / `application.yaml` 文件路径，也可以是包含这些文件的目录。
+
+```bash
+go run ./examples/http-simple-examples --config ./examples/http-simple-examples/application.yml
+STELLAR_CONFIG_FILE=./examples/http-simple-examples/application.yml go run ./examples/http-simple-examples
+```
 
 OpenTelemetry 默认行为：
 
