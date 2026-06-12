@@ -1,0 +1,38 @@
+app:
+  name: stellar-postgresql-example
+  env: dev
+  zone: local
+
+http:
+  server:
+    enabled: true
+    port: 18083
+    adapter: gin
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+
+postgresql:
+  enabled: true
+  dsn: postgres://user:password@localhost:5432/stellar?sslmode=disable
+  max_open_conns: 25
+  max_idle_conns: 5
+  conn_max_lifetime: 30m
+  conn_max_idle_time: 5m
+  ping_on_startup: false
+  debug_api:
+    enabled: true
+    prefix: /postgresql
+  observability:
+    trace: true
+    metrics: true
+    logs: true
+
+opentelemetry:
+  log:
+    enabled: false
+    output: stdout
+  trace: false
+  metrics: false
+  trace_output: none

@@ -148,6 +148,21 @@ mysql:
     trace: true
     metrics: true
     logs: true
+postgresql:
+  enabled: true
+  dsn: postgres://user:password@localhost:5432/example?sslmode=disable
+  max_open_conns: 25
+  max_idle_conns: 5
+  conn_max_lifetime: 30m
+  conn_max_idle_time: 5m
+  ping_on_startup: false
+  debug_api:
+    enabled: true
+    prefix: /postgresql
+  observability:
+    trace: true
+    metrics: true
+    logs: true
 opentelemetry:
   trace: true
   metrics: true
@@ -256,9 +271,9 @@ grpc:
 
 ## Data Clients
 
-Stellar can create standard Redis and MySQL clients from `application.yml`.
+Stellar can create standard Redis, MySQL, and PostgreSQL clients from `application.yml`.
 
-Redis uses `github.com/redis/go-redis/v9`; MySQL uses the standard `database/sql` API with `github.com/go-sql-driver/mysql`.
+Redis uses `github.com/redis/go-redis/v9`; MySQL and PostgreSQL use the standard `database/sql` API with `github.com/go-sql-driver/mysql` and `github.com/jackc/pgx/v5/stdlib`.
 
 ```yaml
 redis:
@@ -289,6 +304,22 @@ mysql:
     trace: true
     metrics: true
     logs: true
+
+postgresql:
+  enabled: true
+  dsn: postgres://user:password@localhost:5432/example?sslmode=disable
+  max_open_conns: 25
+  max_idle_conns: 5
+  conn_max_lifetime: 30m
+  conn_max_idle_time: 5m
+  ping_on_startup: false
+  debug_api:
+    enabled: true
+    prefix: /postgresql
+  observability:
+    trace: true
+    metrics: true
+    logs: true
 ```
 
 When using the programmatic API:
@@ -296,6 +327,7 @@ When using the programmatic API:
 ```go
 redisClient, ok := app.RedisClient()
 mysqlDB, ok := app.MySQLDB()
+postgresqlDB, ok := app.PostgreSQLDB()
 ```
 
 Run the standalone data client examples:
@@ -303,6 +335,7 @@ Run the standalone data client examples:
 ```bash
 go run ./examples/redis-example
 go run ./examples/mysql-example
+go run ./examples/postgresql-example
 ```
 
 Both examples use only:
@@ -311,7 +344,7 @@ Both examples use only:
 stellar.Start()
 ```
 
-Redis/MySQL clients and debug APIs are enabled by `application.yml`, not by passing explicit starters in `main`.
+Redis/MySQL/PostgreSQL clients and debug APIs are enabled by `application.yml`, not by passing explicit starters in `main`.
 
 Redis example API:
 
@@ -353,9 +386,29 @@ MySQL create/update body:
 }
 ```
 
+PostgreSQL example API:
+
+```text
+POST   http://localhost:18083/postgresql/items
+GET    http://localhost:18083/postgresql/items?id=1
+PUT    http://localhost:18083/postgresql/items
+DELETE http://localhost:18083/postgresql/items?id=1
+GET    http://localhost:18083/postgresql/items/list?limit=20
+```
+
+PostgreSQL create/update body:
+
+```json
+{
+  "id": 1,
+  "name": "demo",
+  "value": "hello"
+}
+```
+
 ## OpenTelemetry
 
-Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, and MySQL client with OpenTelemetry trace, logs, and metrics.
+Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, MySQL client, and PostgreSQL client with OpenTelemetry trace, logs, and metrics.
 
 Stellar reads `application.yml` or `application.yaml` from the directory that contains `main.go`, then from the current working directory.
 

@@ -116,6 +116,20 @@ type MySQLConfig struct {
 	DebugAPI        *DebugAPIConfig           `yaml:"debug_api"`
 }
 
+type PostgreSQLConfig struct {
+	Enabled         *bool                     `yaml:"enabled"`
+	Driver          string                    `yaml:"driver"`
+	DSN             string                    `yaml:"dsn"`
+	MaxOpenConns    int                       `yaml:"max_open_conns"`
+	MaxIdleConns    int                       `yaml:"max_idle_conns"`
+	ConnMaxLifetime string                    `yaml:"conn_max_lifetime"`
+	ConnMaxIdleTime string                    `yaml:"conn_max_idle_time"`
+	PingOnStartup   bool                      `yaml:"ping_on_startup"`
+	PingTimeout     string                    `yaml:"ping_timeout"`
+	Observability   ObservabilitySignalConfig `yaml:"observability"`
+	DebugAPI        *DebugAPIConfig           `yaml:"debug_api"`
+}
+
 type DebugAPIConfig struct {
 	Enabled *bool  `yaml:"enabled"`
 	Prefix  string `yaml:"prefix"`
@@ -131,6 +145,7 @@ type Config struct {
 	GRPC        GRPCConfig
 	Redis       *RedisConfig
 	MySQL       *MySQLConfig
+	PostgreSQL  *PostgreSQLConfig
 	Starter     StarterConfig
 	Metadata    map[string]string
 }
@@ -195,6 +210,7 @@ type fileConfig struct {
 	GRPC          *GRPCConfig                 `yaml:"grpc"`
 	Redis         *RedisConfig                `yaml:"redis"`
 	MySQL         *MySQLConfig                `yaml:"mysql"`
+	PostgreSQL    *PostgreSQLConfig           `yaml:"postgresql"`
 	OpenTelemetry *OpenTelemetryStarterConfig `yaml:"opentelemetry"`
 }
 
@@ -244,6 +260,13 @@ func (c Config) Normalize() Config {
 			mysql.Driver = "mysql"
 		}
 		c.MySQL = &mysql
+	}
+	if c.PostgreSQL != nil {
+		postgresql := *c.PostgreSQL
+		if strings.TrimSpace(postgresql.Driver) == "" {
+			postgresql.Driver = "pgx"
+		}
+		c.PostgreSQL = &postgresql
 	}
 	if c.Metadata == nil {
 		c.Metadata = map[string]string{}
@@ -416,6 +439,7 @@ func LoadFile(path string) (Config, error) {
 		GRPC:        derefGRPCConfig(raw.GRPC),
 		Redis:       raw.Redis,
 		MySQL:       raw.MySQL,
+		PostgreSQL:  raw.PostgreSQL,
 		Starter: StarterConfig{
 			HTTP:          raw.HTTP,
 			GRPC:          raw.GRPC,

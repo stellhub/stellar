@@ -18,56 +18,63 @@ import (
 const ScopeName = "github.com/stellhub/stellar"
 
 type Provider struct {
-	serviceName           string
-	tracerProvider        trace.TracerProvider
-	meterProvider         metric.MeterProvider
-	loggerProvider        log.LoggerProvider
-	tracer                trace.Tracer
-	meter                 metric.Meter
-	logger                log.Logger
-	propagator            propagation.TextMapPropagator
-	httpServerTrace       bool
-	httpServerMetrics     bool
-	httpServerLogs        bool
-	httpClientTrace       bool
-	httpClientMetrics     bool
-	httpClientLogsEnabled bool
-	redisClientTrace      bool
-	redisClientMetrics    bool
-	redisClientLogs       bool
-	mysqlClientTrace      bool
-	mysqlClientMetrics    bool
-	mysqlClientLogs       bool
+	serviceName             string
+	tracerProvider          trace.TracerProvider
+	meterProvider           metric.MeterProvider
+	loggerProvider          log.LoggerProvider
+	tracer                  trace.Tracer
+	meter                   metric.Meter
+	logger                  log.Logger
+	propagator              propagation.TextMapPropagator
+	httpServerTrace         bool
+	httpServerMetrics       bool
+	httpServerLogs          bool
+	httpClientTrace         bool
+	httpClientMetrics       bool
+	httpClientLogsEnabled   bool
+	redisClientTrace        bool
+	redisClientMetrics      bool
+	redisClientLogs         bool
+	mysqlClientTrace        bool
+	mysqlClientMetrics      bool
+	mysqlClientLogs         bool
+	postgresqlClientTrace   bool
+	postgresqlClientMetrics bool
+	postgresqlClientLogs    bool
 
-	httpServerRequests metric.Int64Counter
-	httpServerDuration metric.Float64Histogram
-	httpClientLogger   log.Logger
-	redisClientLogger  log.Logger
-	mysqlClientLogger  log.Logger
-	metricsHandler     http.Handler
-	shutdowns          []func(context.Context) error
+	httpServerRequests     metric.Int64Counter
+	httpServerDuration     metric.Float64Histogram
+	httpClientLogger       log.Logger
+	redisClientLogger      log.Logger
+	mysqlClientLogger      log.Logger
+	postgresqlClientLogger log.Logger
+	metricsHandler         http.Handler
+	shutdowns              []func(context.Context) error
 }
 
 type Option func(*providerConfig)
 
 type providerConfig struct {
-	serviceName        string
-	tracerProvider     trace.TracerProvider
-	meterProvider      metric.MeterProvider
-	loggerProvider     log.LoggerProvider
-	propagator         propagation.TextMapPropagator
-	httpServerTrace    *bool
-	httpServerMetrics  *bool
-	httpServerLogs     *bool
-	httpClientTrace    *bool
-	httpClientMetrics  *bool
-	httpClientLogs     *bool
-	redisClientTrace   *bool
-	redisClientMetrics *bool
-	redisClientLogs    *bool
-	mysqlClientTrace   *bool
-	mysqlClientMetrics *bool
-	mysqlClientLogs    *bool
+	serviceName             string
+	tracerProvider          trace.TracerProvider
+	meterProvider           metric.MeterProvider
+	loggerProvider          log.LoggerProvider
+	propagator              propagation.TextMapPropagator
+	httpServerTrace         *bool
+	httpServerMetrics       *bool
+	httpServerLogs          *bool
+	httpClientTrace         *bool
+	httpClientMetrics       *bool
+	httpClientLogs          *bool
+	redisClientTrace        *bool
+	redisClientMetrics      *bool
+	redisClientLogs         *bool
+	mysqlClientTrace        *bool
+	mysqlClientMetrics      *bool
+	mysqlClientLogs         *bool
+	postgresqlClientTrace   *bool
+	postgresqlClientMetrics *bool
+	postgresqlClientLogs    *bool
 }
 
 func New(options ...Option) *Provider {
@@ -85,25 +92,28 @@ func New(options ...Option) *Provider {
 	}
 
 	provider := &Provider{
-		serviceName:           cfg.serviceName,
-		tracerProvider:        cfg.tracerProvider,
-		meterProvider:         cfg.meterProvider,
-		loggerProvider:        cfg.loggerProvider,
-		tracer:                cfg.tracerProvider.Tracer(ScopeName),
-		meter:                 cfg.meterProvider.Meter(ScopeName),
-		logger:                cfg.loggerProvider.Logger(ScopeName),
-		httpServerTrace:       boolValue(cfg.httpServerTrace, true),
-		httpServerMetrics:     boolValue(cfg.httpServerMetrics, true),
-		httpServerLogs:        boolValue(cfg.httpServerLogs, true),
-		httpClientTrace:       boolValue(cfg.httpClientTrace, true),
-		httpClientMetrics:     boolValue(cfg.httpClientMetrics, true),
-		httpClientLogsEnabled: boolValue(cfg.httpClientLogs, true),
-		redisClientTrace:      boolValue(cfg.redisClientTrace, true),
-		redisClientMetrics:    boolValue(cfg.redisClientMetrics, true),
-		redisClientLogs:       boolValue(cfg.redisClientLogs, true),
-		mysqlClientTrace:      boolValue(cfg.mysqlClientTrace, true),
-		mysqlClientMetrics:    boolValue(cfg.mysqlClientMetrics, true),
-		mysqlClientLogs:       boolValue(cfg.mysqlClientLogs, true),
+		serviceName:             cfg.serviceName,
+		tracerProvider:          cfg.tracerProvider,
+		meterProvider:           cfg.meterProvider,
+		loggerProvider:          cfg.loggerProvider,
+		tracer:                  cfg.tracerProvider.Tracer(ScopeName),
+		meter:                   cfg.meterProvider.Meter(ScopeName),
+		logger:                  cfg.loggerProvider.Logger(ScopeName),
+		httpServerTrace:         boolValue(cfg.httpServerTrace, true),
+		httpServerMetrics:       boolValue(cfg.httpServerMetrics, true),
+		httpServerLogs:          boolValue(cfg.httpServerLogs, true),
+		httpClientTrace:         boolValue(cfg.httpClientTrace, true),
+		httpClientMetrics:       boolValue(cfg.httpClientMetrics, true),
+		httpClientLogsEnabled:   boolValue(cfg.httpClientLogs, true),
+		redisClientTrace:        boolValue(cfg.redisClientTrace, true),
+		redisClientMetrics:      boolValue(cfg.redisClientMetrics, true),
+		redisClientLogs:         boolValue(cfg.redisClientLogs, true),
+		mysqlClientTrace:        boolValue(cfg.mysqlClientTrace, true),
+		mysqlClientMetrics:      boolValue(cfg.mysqlClientMetrics, true),
+		mysqlClientLogs:         boolValue(cfg.mysqlClientLogs, true),
+		postgresqlClientTrace:   boolValue(cfg.postgresqlClientTrace, true),
+		postgresqlClientMetrics: boolValue(cfg.postgresqlClientMetrics, true),
+		postgresqlClientLogs:    boolValue(cfg.postgresqlClientLogs, true),
 		httpClientLogger: cfg.loggerProvider.Logger(
 			ScopeName + "/http-client",
 		),
@@ -112,6 +122,9 @@ func New(options ...Option) *Provider {
 		),
 		mysqlClientLogger: cfg.loggerProvider.Logger(
 			ScopeName + "/mysql-client",
+		),
+		postgresqlClientLogger: cfg.loggerProvider.Logger(
+			ScopeName + "/postgresql-client",
 		),
 		propagator: cfg.propagator,
 	}
@@ -186,6 +199,14 @@ func WithMySQLClientObservability(trace *bool, metrics *bool, logs *bool) Option
 		cfg.mysqlClientTrace = trace
 		cfg.mysqlClientMetrics = metrics
 		cfg.mysqlClientLogs = logs
+	}
+}
+
+func WithPostgreSQLClientObservability(trace *bool, metrics *bool, logs *bool) Option {
+	return func(cfg *providerConfig) {
+		cfg.postgresqlClientTrace = trace
+		cfg.postgresqlClientMetrics = metrics
+		cfg.postgresqlClientLogs = logs
 	}
 }
 
@@ -285,6 +306,27 @@ func (p *Provider) MySQLClientLogsEnabled() bool {
 		return true
 	}
 	return p.mysqlClientLogs
+}
+
+func (p *Provider) PostgreSQLClientTraceEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.postgresqlClientTrace
+}
+
+func (p *Provider) PostgreSQLClientMetricsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.postgresqlClientMetrics
+}
+
+func (p *Provider) PostgreSQLClientLogsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.postgresqlClientLogs
 }
 
 func (p *Provider) MetricsHandler() http.Handler {

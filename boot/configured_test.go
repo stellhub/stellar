@@ -89,6 +89,9 @@ func TestNewConfiguredRegistersRedisAndMySQLClients(t *testing.T) {
 		MySQL: &config.MySQLConfig{
 			DSN: "user:pass@tcp(localhost:3306)/app?parseTime=true",
 		},
+		PostgreSQL: &config.PostgreSQLConfig{
+			DSN: "postgres://user:pass@localhost:5432/app?sslmode=disable",
+		},
 	}.Normalize()
 
 	app, err := NewConfigured(context.Background(), cfg)
@@ -103,11 +106,18 @@ func TestNewConfiguredRegistersRedisAndMySQLClients(t *testing.T) {
 	if !ok || mysqlDB == nil {
 		t.Fatalf("expected mysql db to be registered")
 	}
+	postgresqlDB, ok := app.PostgreSQLDB()
+	if !ok || postgresqlDB == nil {
+		t.Fatalf("expected postgresql db to be registered")
+	}
 	if err := redisClient.Close(); err != nil {
 		t.Fatalf("close redis client: %v", err)
 	}
 	if err := mysqlDB.Close(); err != nil {
 		t.Fatalf("close mysql db: %v", err)
+	}
+	if err := postgresqlDB.Close(); err != nil {
+		t.Fatalf("close postgresql db: %v", err)
 	}
 }
 
@@ -127,6 +137,10 @@ func TestNewConfiguredRegistersDataDebugAPIsFromConfig(t *testing.T) {
 			DSN:      "user:pass@tcp(localhost:3306)/app?parseTime=true",
 			DebugAPI: &config.DebugAPIConfig{Enabled: &enabled},
 		},
+		PostgreSQL: &config.PostgreSQLConfig{
+			DSN:      "postgres://user:pass@localhost:5432/app?sslmode=disable",
+			DebugAPI: &config.DebugAPIConfig{Enabled: &enabled},
+		},
 	}.Normalize()
 
 	app, err := NewConfigured(context.Background(), cfg)
@@ -140,6 +154,9 @@ func TestNewConfiguredRegistersDataDebugAPIsFromConfig(t *testing.T) {
 		if mysqlDB, ok := app.MySQLDB(); ok {
 			_ = mysqlDB.Close()
 		}
+		if postgresqlDB, ok := app.PostgreSQLDB(); ok {
+			_ = postgresqlDB.Close()
+		}
 	}()
 
 	routes := app.HTTP().Routes()
@@ -147,6 +164,8 @@ func TestNewConfiguredRegistersDataDebugAPIsFromConfig(t *testing.T) {
 	assertRouteExists(t, routes, http.MethodGet, "/redis/items")
 	assertRouteExists(t, routes, http.MethodPost, "/mysql/items")
 	assertRouteExists(t, routes, http.MethodGet, "/mysql/items")
+	assertRouteExists(t, routes, http.MethodPost, "/postgresql/items")
+	assertRouteExists(t, routes, http.MethodGet, "/postgresql/items")
 }
 
 func TestPortFromAddr(t *testing.T) {

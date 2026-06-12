@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	mysqlclient "github.com/stellhub/stellar/clients/mysql"
+	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
 	"github.com/stellhub/stellar/config"
 	"github.com/stellhub/stellar/lifecycle"
@@ -53,6 +54,9 @@ func NewConfigured(ctx context.Context, cfg config.Config, options ...Option) (*
 		return nil, err
 	}
 	if err := configureMySQLStarter(ctx, app, cfg); err != nil {
+		return nil, err
+	}
+	if err := configurePostgreSQLStarter(ctx, app, cfg); err != nil {
 		return nil, err
 	}
 	return app, nil
@@ -148,6 +152,29 @@ func configureMySQLStarter(ctx context.Context, app *App, cfg config.Config) err
 	registerMySQLDebugAPI(app, cfg.MySQL)
 	app.lifecycle.Append(lifecycle.Hook{
 		Name: mysqlclient.DefaultDBName,
+		OnStop: func(context.Context) error {
+			return db.Close()
+		},
+	})
+	return nil
+}
+
+func configurePostgreSQLStarter(ctx context.Context, app *App, cfg config.Config) error {
+	if cfg.PostgreSQL == nil {
+		return nil
+	}
+	if cfg.PostgreSQL.Enabled != nil && !*cfg.PostgreSQL.Enabled {
+		return nil
+	}
+
+	db, err := postgresqlclient.NewDBFromConfig(ctx, cfg.PostgreSQL, app.observability)
+	if err != nil {
+		return fmt.Errorf("configure postgresql client: %w", err)
+	}
+	app.registry.Set(postgresqlclient.DefaultDBName, db)
+	registerPostgreSQLDebugAPI(app, cfg.PostgreSQL)
+	app.lifecycle.Append(lifecycle.Hook{
+		Name: postgresqlclient.DefaultDBName,
 		OnStop: func(context.Context) error {
 			return db.Close()
 		},

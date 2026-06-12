@@ -92,6 +92,20 @@ mysql:
     trace: true
     metrics: true
     logs: true
+postgresql:
+  enabled: true
+  dsn: postgres://user:pass@localhost:5432/orders?sslmode=disable
+  max_open_conns: 25
+  max_idle_conns: 5
+  conn_max_lifetime: 30m
+  conn_max_idle_time: 5m
+  debug_api:
+    enabled: true
+    prefix: /postgresql
+  observability:
+    trace: true
+    metrics: true
+    logs: true
 opentelemetry:
   log: true
   trace: true
@@ -174,6 +188,15 @@ opentelemetry:
 	}
 	if cfg.MySQL.Observability.Metrics == nil || !*cfg.MySQL.Observability.Metrics {
 		t.Fatalf("expected mysql metrics observability")
+	}
+	if cfg.PostgreSQL == nil || cfg.PostgreSQL.Driver != "pgx" || cfg.PostgreSQL.MaxOpenConns != 25 {
+		t.Fatalf("unexpected postgresql config %#v", cfg.PostgreSQL)
+	}
+	if cfg.PostgreSQL.DebugAPI == nil || cfg.PostgreSQL.DebugAPI.Enabled == nil || !*cfg.PostgreSQL.DebugAPI.Enabled || cfg.PostgreSQL.DebugAPI.Prefix != "/postgresql" {
+		t.Fatalf("unexpected postgresql debug api config %#v", cfg.PostgreSQL.DebugAPI)
+	}
+	if cfg.PostgreSQL.Observability.Trace == nil || !*cfg.PostgreSQL.Observability.Trace {
+		t.Fatalf("expected postgresql trace observability")
 	}
 	if cfg.Starter.OpenTelemetry == nil || !cfg.Starter.OpenTelemetry.Log.Enabled {
 		t.Fatalf("expected opentelemetry log starter")

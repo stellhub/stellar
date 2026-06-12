@@ -24,6 +24,14 @@ type MySQLClientLog struct {
 	Attrs     []otellog.KeyValue
 }
 
+type PostgreSQLClientLog struct {
+	Operation string
+	Driver    string
+	Duration  float64
+	Err       error
+	Attrs     []otellog.KeyValue
+}
+
 func (p *Provider) EmitRedisClientLog(ctx context.Context, entry RedisClientLog) {
 	if p == nil {
 		p = New()
@@ -62,6 +70,25 @@ func (p *Provider) EmitMySQLClientLog(ctx context.Context, entry MySQLClientLog)
 	record.AddAttributes(entry.Attrs...)
 	addTraceAttributes(ctx, &record)
 	p.mysqlClientLogger.Emit(ctx, record)
+}
+
+func (p *Provider) EmitPostgreSQLClientLog(ctx context.Context, entry PostgreSQLClientLog) {
+	if p == nil {
+		p = New()
+	}
+	if !p.postgresqlClientLogs {
+		return
+	}
+
+	record := newRecord("postgresql.client.request", "PostgreSQL client request completed", statusFromError(entry.Err), entry.Duration, entry.Err)
+	record.AddAttributes(
+		otellog.String("db.system.name", "postgresql"),
+		otellog.String("db.operation.name", entry.Operation),
+		otellog.String("db.client.driver", entry.Driver),
+	)
+	record.AddAttributes(entry.Attrs...)
+	addTraceAttributes(ctx, &record)
+	p.postgresqlClientLogger.Emit(ctx, record)
 }
 
 func statusFromError(err error) int {
