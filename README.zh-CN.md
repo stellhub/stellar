@@ -1,56 +1,56 @@
 <p align="right">
-English | <a href="README.zh-CN.md">简体中文</a>
+<a href="README.md">English</a> | 简体中文
 </p>
 
 # Stellar
 
-`stellar` is the Go framework for the Stell middleware ecosystem. It provides a unified application foundation for services that need to integrate Stell standards for configuration, discovery, messaging, observability, governance, and platform operations.
+`stellar` 是 Stell 中间件生态的 Go 框架。它为需要接入 Stell 配置、服务发现、消息、可观测性、治理和平台运维标准的服务提供统一的应用基础。
 
-It has the same positioning as [`stellhub/stellflux`](https://github.com/stellhub/stellflux), while following Go conventions: small packages, explicit composition, context propagation, standard library first, and predictable lifecycle management.
+它与 [`stellhub/stellflux`](https://github.com/stellhub/stellflux) 定位一致，同时遵循 Go 的工程习惯：小包、显式组合、上下文传递、优先使用标准库，以及可预测的生命周期管理。
 
-## Positioning
+## 定位
 
-Stellar is not a middleware server and does not implement business logic. It is a framework layer for Go services that need a consistent way to adopt Stell middleware capabilities.
+Stellar 不是一个中间件服务器，也不承载业务逻辑。它是一个框架层，面向需要统一接入 Stell 中间件能力的 Go 服务。
 
-## Core Responsibilities
+## 核心职责
 
-- Provide unified application configuration and runtime metadata.
-- Define a lightweight module lifecycle for Stell middleware integrations.
-- Standardize how Go services connect to StellMap, StellFlow, StellNula, StellSpec, StellOrbit, StellGate, and StellAtlas.
-- Expose framework status for health checks, control planes, and platform consoles.
-- Keep observability, service identity, environment, and zone metadata consistent across services.
+- 提供统一的应用配置和运行时元数据。
+- 定义轻量级的 Stell 中间件模块生命周期。
+- 标准化 Go 服务接入 StellMap、StellFlow、StellNula、StellSpec、StellOrbit、StellGate 和 StellAtlas 的方式。
+- 暴露框架状态，服务于健康检查、控制面和平台控制台。
+- 保持可观测性、服务身份、环境和可用区元数据一致。
 
-## Middleware Standards
+## 中间件标准
 
-| Standard | Responsibility |
+| 标准 | 职责 |
 | --- | --- |
-| StellMap | Service discovery and registry integration |
-| StellFlow | Messaging and event streaming integration |
-| StellNula | Configuration center integration |
-| StellSpec | Observability and log query standard integration |
-| StellOrbit | Traffic governance, routing, retries, and lifecycle policy integration |
-| StellGate | API gateway and ingress standard integration |
-| StellAtlas | CMDB, asset inventory, topology, and lifecycle metadata integration |
+| StellMap | 服务发现与注册中心集成 |
+| StellFlow | 消息与事件流集成 |
+| StellNula | 配置中心集成 |
+| StellSpec | 可观测性与日志查询标准集成 |
+| StellOrbit | 流量治理、路由、重试和生命周期策略集成 |
+| StellGate | API 网关与入口标准集成 |
+| StellAtlas | CMDB、资产清单、拓扑和生命周期元数据集成 |
 
-## Current Status
+## 当前状态
 
-| Item | Value |
+| 项目 | 值 |
 | --- | --- |
-| Stability | Early development |
-| Language | Go |
-| Project type | Go framework |
-| Target users | Go microservices, platform services, infrastructure components |
-| Maintainer | StellHub |
+| 稳定性 | 早期开发 |
+| 语言 | Go |
+| 项目类型 | Go 框架 |
+| 目标用户 | Go 微服务、平台服务、基础设施组件 |
+| 维护者 | StellHub |
 
-## Quick Start
+## 快速开始
 
-Install the module:
+安装模块：
 
 ```bash
 go get github.com/stellhub/stellar
 ```
 
-Create an application:
+创建应用：
 
 ```go
 package main
@@ -68,7 +68,7 @@ func main() {
 }
 ```
 
-Add `application.yml`:
+添加 `application.yml`：
 
 ```yaml
 app:
@@ -187,13 +187,13 @@ opentelemetry:
   metrics: true
 ```
 
-Run the included HTTP example:
+运行 HTTP 示例：
 
 ```bash
 go run ./examples/http-examples
 ```
 
-Then open:
+然后访问：
 
 ```text
 GET http://localhost:8080/health
@@ -201,28 +201,28 @@ GET http://localhost:8080/stellar/status
 GET http://localhost:8080/metrics
 ```
 
-Run the included gRPC example:
+运行 gRPC 示例：
 
 ```bash
 go run ./examples/grpc-examples
 ```
 
-## Transport Adapters
+## 传输适配器
 
-Stellar keeps HTTP and RPC behind adapter interfaces.
+Stellar 将 HTTP 和 RPC 隔离在适配器接口之后。
 
-| Layer | Default | Optional implementations |
+| 层 | 默认实现 | 可选实现 |
 | --- | --- | --- |
-| HTTP | Gin | Hertz, Chi |
-| RPC | gRPC-Go | Other RPC adapters can be added later |
+| HTTP | Gin | Hertz、Chi |
+| RPC | gRPC-Go | 后续可扩展其它 RPC 适配器 |
 
-HTTP applications can switch adapters without changing business handlers:
+HTTP 应用可以在不修改业务 handler 的情况下切换适配器：
 
 ```go
-app := stellar.New(cfg, stellar.WithHTTPServer(":8080")) // default Gin
+app := stellar.New(cfg, stellar.WithHTTPServer(":8080")) // 默认 Gin
 ```
 
-HTTP server and HTTP client use separate configuration sections:
+HTTP server 和 HTTP client 使用独立配置：
 
 ```yaml
 http:
@@ -253,13 +253,13 @@ http:
         timeout: 5s
 ```
 
-RPC applications use the same lifecycle model:
+RPC 应用使用同样的生命周期模型：
 
 ```go
-app := stellar.New(cfg, stellar.WithRPCServer(":9090")) // default gRPC-Go
+app := stellar.New(cfg, stellar.WithRPCServer(":9090")) // 默认 gRPC-Go
 ```
 
-gRPC server and gRPC client also use separate configuration sections. Only `grpc.server` starts a listener; `grpc.client` only configures outbound client connections:
+gRPC server 和 gRPC client 也使用独立配置。只有 `grpc.server` 会启动监听器；`grpc.client` 只配置出站客户端连接：
 
 ```yaml
 grpc:
@@ -288,12 +288,12 @@ grpc:
         timeout: 5s
 ```
 
-## Data Clients
+## 数据客户端
 
-Stellar can create standard Redis, MySQL, PostgreSQL, and local cache clients from `application.yml`.
+Stellar 可以根据 `application.yml` 创建标准 Redis、MySQL、PostgreSQL 和本地缓存客户端。
 
-Redis uses `github.com/redis/go-redis/v9`; MySQL and PostgreSQL use the standard `database/sql` API with `github.com/go-sql-driver/mysql` and `github.com/jackc/pgx/v5/stdlib`.
-Local cache is exposed through Stellar's cache adapter abstraction. BigCache is the default implementation; FreeCache can be selected with `adapter: freecache`.
+Redis 使用 `github.com/redis/go-redis/v9`；MySQL 和 PostgreSQL 使用标准 `database/sql` API，并分别接入 `github.com/go-sql-driver/mysql` 与 `github.com/jackc/pgx/v5/stdlib`。
+本地缓存通过 Stellar 的 cache adapter 抽象暴露。BigCache 是默认实现；可以通过 `adapter: freecache` 选择 FreeCache。
 
 ```yaml
 redis:
@@ -358,7 +358,7 @@ cache:
     logs: true
 ```
 
-When using the programmatic API:
+使用程序化 API 时：
 
 ```go
 redisClient, ok := app.RedisClient()
@@ -367,7 +367,7 @@ postgresqlDB, ok := app.PostgreSQLDB()
 localCache, ok := app.Cache()
 ```
 
-Switch the local cache implementation without changing application code:
+不修改应用代码即可切换本地缓存实现：
 
 ```yaml
 cache:
@@ -379,7 +379,7 @@ cache:
     metrics: true
 ```
 
-Cache operations use the same framework abstraction:
+缓存操作使用同一套框架抽象：
 
 ```go
 _ = localCache.SetString(ctx, "demo", "hello")
@@ -387,7 +387,7 @@ value, ok, err := localCache.GetString(ctx, "demo")
 deleted, err := localCache.Delete(ctx, "demo")
 ```
 
-Run the standalone data client examples:
+运行独立数据客户端示例：
 
 ```bash
 go run ./examples/redis-example
@@ -396,15 +396,15 @@ go run ./examples/postgresql-example
 go run ./examples/cache-example
 ```
 
-These examples use only:
+这些示例只需要：
 
 ```go
 stellar.Start()
 ```
 
-Redis/MySQL/PostgreSQL/cache clients and their debug APIs are enabled by `application.yml`, not by passing explicit starters in `main`.
+Redis、MySQL、PostgreSQL、cache 客户端及其 debug API 都由 `application.yml` 启用，不需要在 `main` 中显式传入 starter。
 
-Redis example API:
+Redis 示例 API：
 
 ```text
 POST   http://localhost:18081/redis/items
@@ -414,7 +414,7 @@ DELETE http://localhost:18081/redis/items?key=demo
 GET    http://localhost:18081/redis/keys?pattern=*&limit=20
 ```
 
-Redis create/update body:
+Redis 创建/更新请求体：
 
 ```json
 {
@@ -424,7 +424,7 @@ Redis create/update body:
 }
 ```
 
-MySQL example API:
+MySQL 示例 API：
 
 ```text
 POST   http://localhost:18082/mysql/items
@@ -434,7 +434,7 @@ DELETE http://localhost:18082/mysql/items?id=1
 GET    http://localhost:18082/mysql/items/list?limit=20
 ```
 
-MySQL create/update body:
+MySQL 创建/更新请求体：
 
 ```json
 {
@@ -444,7 +444,7 @@ MySQL create/update body:
 }
 ```
 
-PostgreSQL example API:
+PostgreSQL 示例 API：
 
 ```text
 POST   http://localhost:18083/postgresql/items
@@ -454,7 +454,7 @@ DELETE http://localhost:18083/postgresql/items?id=1
 GET    http://localhost:18083/postgresql/items/list?limit=20
 ```
 
-PostgreSQL create/update body:
+PostgreSQL 创建/更新请求体：
 
 ```json
 {
@@ -464,7 +464,7 @@ PostgreSQL create/update body:
 }
 ```
 
-Cache example API:
+Cache 示例 API：
 
 ```text
 POST   http://localhost:18084/cache/items
@@ -474,7 +474,7 @@ DELETE http://localhost:18084/cache/items?key=demo
 GET    http://localhost:18084/cache/stats
 ```
 
-Cache create/update body:
+Cache 创建/更新请求体：
 
 ```json
 {
@@ -485,17 +485,17 @@ Cache create/update body:
 
 ## OpenTelemetry
 
-Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, MySQL client, PostgreSQL client, and local cache client with OpenTelemetry trace, logs, and metrics.
+Stellar 会为 HTTP server、gRPC server、HTTP client、gRPC client、Redis client、MySQL client、PostgreSQL client 和本地 cache client 接入 OpenTelemetry trace、logs 与 metrics。
 
-Stellar reads `application.yml` or `application.yaml` from the directory that contains `main.go`, then from the current working directory.
+Stellar 会先从包含 `main.go` 的目录读取 `application.yml` 或 `application.yaml`，再从当前工作目录读取。
 
-OpenTelemetry defaults:
+OpenTelemetry 默认行为：
 
-- `log`: defaults to local `stdout`/`stderr`; set `log.enabled: false` with `log.output: file` for local rolling files, or set `log.enabled: true` for OTLP export to `localhost:4317`.
-- `trace`: when enabled, spans are generated without export; set `trace_output: otlp` for `localhost:4317`.
-- `metrics`: when enabled, exposes `/metrics` on the configured HTTP port; set `metrics_output: otlp` for `localhost:4317`.
+- `log`：默认输出到本地 `stdout`/`stderr`；设置 `log.enabled: false` 并配合 `log.output: file` 可输出到本地滚动文件；设置 `log.enabled: true` 可通过 OTLP 输出到 `localhost:4317`。
+- `trace`：启用后会生成 spans，但默认不导出；设置 `trace_output: otlp` 可输出到 `localhost:4317`。
+- `metrics`：启用后会在当前 HTTP 端口暴露 `/metrics`；设置 `metrics_output: otlp` 可输出到 `localhost:4317`。
 
-Example with explicit OTLP output:
+显式 OTLP 输出示例：
 
 ```yaml
 opentelemetry:
@@ -509,7 +509,7 @@ opentelemetry:
   metrics_output: otlp
 ```
 
-Example with local rolling files:
+本地滚动文件示例：
 
 ```yaml
 opentelemetry:
@@ -522,28 +522,28 @@ opentelemetry:
     max_backups: 5
 ```
 
-When using the programmatic API, create an instrumented HTTP client:
+使用程序化 API 创建已接入观测能力的 HTTP client：
 
 ```go
 client, baseURL, err := app.NewHTTPClient("user-service")
 ```
 
-When using the programmatic API, create an instrumented gRPC-Go client:
+使用程序化 API 创建已接入观测能力的 gRPC-Go client：
 
 ```go
 conn, _, err := app.NewGRPCClient(context.Background(), "user-service")
 ```
 
-## Configuration Model
+## 配置模型
 
-| Field | Required | Description |
+| 字段 | 是否必需 | 说明 |
 | --- | --- | --- |
-| AppName | Yes | Logical application name |
-| Environment | Yes | Runtime environment, such as `dev`, `uat`, `pre`, or `prod` |
-| Zone | No | Availability zone or logical deployment zone |
-| Disabled | No | Whether framework modules should be skipped during startup |
+| AppName | 是 | 应用逻辑名称 |
+| Environment | 是 | 运行环境，例如 `dev`、`uat`、`pre` 或 `prod` |
+| Zone | 否 | 可用区或逻辑部署区域 |
+| Disabled | 否 | 是否跳过框架模块启动 |
 
-## Architecture
+## 架构
 
 ```mermaid
 flowchart LR
@@ -554,35 +554,35 @@ flowchart LR
     Runtime --> ControlPlane[StellCloud / Control Plane]
 ```
 
-## Development
+## 开发
 
-Run tests:
+运行测试：
 
 ```bash
 go test ./...
 ```
 
-Format code:
+格式化代码：
 
 ```bash
 gofmt -w .
 ```
 
-## Compatibility
+## 兼容性
 
-Stellar follows semantic versioning once the public API stabilizes:
+Stellar 在公共 API 稳定后会遵循语义化版本：
 
-- `MAJOR`: incompatible API or runtime behavior changes.
-- `MINOR`: backward-compatible modules, standards, or APIs.
-- `PATCH`: backward-compatible fixes.
+- `MAJOR`：不兼容的 API 或运行时行为变更。
+- `MINOR`：向后兼容的模块、标准或 API。
+- `PATCH`：向后兼容的修复。
 
-## Contribution Guidelines
+## 贡献指南
 
-- New middleware integrations should be exposed as explicit modules.
-- Public API changes must describe compatibility impact.
-- Framework code should prefer the Go standard library unless an external dependency provides clear value.
-- Context propagation is required for startup, shutdown, client calls, and background tasks.
+- 新的中间件集成应以显式模块暴露。
+- 公共 API 变更必须说明兼容性影响。
+- 框架代码应优先使用 Go 标准库，除非外部依赖能带来明确价值。
+- 启动、关闭、客户端调用和后台任务都必须传递 `context`。
 
-## License
+## 许可证
 
-The license will be defined before the first stable release.
+许可证会在第一个稳定版本发布前确定。
