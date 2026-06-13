@@ -1,0 +1,62 @@
+app:
+  name: stellar-registry-register-example
+  env: dev
+  zone: local
+
+http:
+  server:
+    enabled: true
+    port: 18091
+    adapter: gin
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+
+grpc:
+  server:
+    enabled: true
+    port: 19091
+    adapter: grpc-go
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+
+# Start StellMap on localhost:18090 first, or switch adapter/endpoints to etcd, consul, or nacos.
+registry:
+  enabled: true
+  adapter: stellmap
+  endpoints:
+    - http://localhost:18090
+  namespace: default
+  service: stellar-registry-register-example
+  instance_id: stellar-registry-register-example-local-1
+  zone: local
+  ttl: 30s
+  heartbeat_interval: 10s
+  labels:
+    env: dev
+    version: v1
+  metadata:
+    description: http and grpc registry register example
+  service_endpoints:
+    - name: http
+      protocol: http
+      host: 127.0.0.1
+      port: 18091
+      path: /
+      weight: 100
+    - name: grpc
+      protocol: grpc
+      host: 127.0.0.1
+      port: 19091
+      weight: 100
+
+opentelemetry:
+  log:
+    enabled: false
+    output: stdout
+  trace: false
+  metrics: false
+  trace_output: none

@@ -147,6 +147,41 @@ type CacheConfig struct {
 	DebugAPI           *DebugAPIConfig           `yaml:"debug_api"`
 }
 
+type RegistryConfig struct {
+	Enabled           *bool                           `yaml:"enabled"`
+	Adapter           string                          `yaml:"adapter"`
+	Endpoints         []string                        `yaml:"endpoints"`
+	Endpoint          string                          `yaml:"endpoint"`
+	Namespace         string                          `yaml:"namespace"`
+	Group             string                          `yaml:"group"`
+	Cluster           string                          `yaml:"cluster"`
+	Service           string                          `yaml:"service"`
+	InstanceID        string                          `yaml:"instance_id"`
+	Zone              string                          `yaml:"zone"`
+	Username          string                          `yaml:"username"`
+	Password          string                          `yaml:"password"`
+	Token             string                          `yaml:"token"`
+	Scheme            string                          `yaml:"scheme"`
+	Datacenter        string                          `yaml:"datacenter"`
+	Prefix            string                          `yaml:"prefix"`
+	TTL               string                          `yaml:"ttl"`
+	HeartbeatInterval string                          `yaml:"heartbeat_interval"`
+	Timeout           string                          `yaml:"timeout"`
+	Ephemeral         *bool                           `yaml:"ephemeral"`
+	Labels            map[string]string               `yaml:"labels"`
+	Metadata          map[string]string               `yaml:"metadata"`
+	ServiceEndpoints  []RegistryServiceEndpointConfig `yaml:"service_endpoints"`
+}
+
+type RegistryServiceEndpointConfig struct {
+	Name     string `yaml:"name"`
+	Protocol string `yaml:"protocol"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Path     string `yaml:"path"`
+	Weight   int    `yaml:"weight"`
+}
+
 type DebugAPIConfig struct {
 	Enabled *bool  `yaml:"enabled"`
 	Prefix  string `yaml:"prefix"`
@@ -164,6 +199,7 @@ type Config struct {
 	MySQL       *MySQLConfig
 	PostgreSQL  *PostgreSQLConfig
 	Cache       *CacheConfig
+	Registry    *RegistryConfig
 	Starter     StarterConfig
 	Metadata    map[string]string
 }
@@ -230,6 +266,7 @@ type fileConfig struct {
 	MySQL         *MySQLConfig                `yaml:"mysql"`
 	PostgreSQL    *PostgreSQLConfig           `yaml:"postgresql"`
 	Cache         *CacheConfig                `yaml:"cache"`
+	Registry      *RegistryConfig             `yaml:"registry"`
 	OpenTelemetry *OpenTelemetryStarterConfig `yaml:"opentelemetry"`
 }
 
@@ -317,6 +354,39 @@ func (c Config) Normalize() Config {
 			cache.SizeBytes = 64 * 1024 * 1024
 		}
 		c.Cache = &cache
+	}
+	if c.Registry != nil {
+		registry := *c.Registry
+		if strings.TrimSpace(registry.Adapter) == "" {
+			registry.Adapter = "stellmap"
+		}
+		if strings.TrimSpace(registry.Namespace) == "" {
+			registry.Namespace = "default"
+		}
+		if strings.TrimSpace(registry.Endpoint) != "" && len(registry.Endpoints) == 0 {
+			registry.Endpoints = []string{registry.Endpoint}
+		}
+		if registry.Endpoints != nil {
+			registry.Endpoints = append([]string(nil), registry.Endpoints...)
+		}
+		if registry.Labels != nil {
+			labels := make(map[string]string, len(registry.Labels))
+			for key, value := range registry.Labels {
+				labels[key] = value
+			}
+			registry.Labels = labels
+		}
+		if registry.Metadata != nil {
+			metadata := make(map[string]string, len(registry.Metadata))
+			for key, value := range registry.Metadata {
+				metadata[key] = value
+			}
+			registry.Metadata = metadata
+		}
+		if registry.ServiceEndpoints != nil {
+			registry.ServiceEndpoints = append([]RegistryServiceEndpointConfig(nil), registry.ServiceEndpoints...)
+		}
+		c.Registry = &registry
 	}
 	if c.Metadata == nil {
 		c.Metadata = map[string]string{}
@@ -574,6 +644,7 @@ func LoadFile(path string) (Config, error) {
 		MySQL:       raw.MySQL,
 		PostgreSQL:  raw.PostgreSQL,
 		Cache:       raw.Cache,
+		Registry:    raw.Registry,
 		Starter: StarterConfig{
 			HTTP:          raw.HTTP,
 			GRPC:          raw.GRPC,

@@ -119,6 +119,31 @@ cache:
     trace: false
     metrics: true
     logs: false
+registry:
+  enabled: true
+  adapter: consul
+  endpoints:
+    - http://localhost:8500
+  namespace: platform
+  group: DEFAULT_GROUP
+  cluster: DEFAULT
+  service: order-service
+  instance_id: order-service-1
+  zone: zone-a
+  ttl: 30s
+  heartbeat_interval: 10s
+  timeout: 3s
+  labels:
+    version: v1
+  metadata:
+    owner: platform
+  service_endpoints:
+    - name: http
+      protocol: http
+      host: 127.0.0.1
+      port: 18080
+      path: /
+      weight: 100
 opentelemetry:
   log: true
   trace: true
@@ -222,6 +247,21 @@ opentelemetry:
 	}
 	if cfg.Cache.Observability.Logs == nil || *cfg.Cache.Observability.Logs {
 		t.Fatalf("expected cache logs observability disabled")
+	}
+	if cfg.Registry == nil || cfg.Registry.Adapter != "consul" || cfg.Registry.Namespace != "platform" {
+		t.Fatalf("unexpected registry config %#v", cfg.Registry)
+	}
+	if len(cfg.Registry.Endpoints) != 1 || cfg.Registry.Endpoints[0] != "http://localhost:8500" {
+		t.Fatalf("unexpected registry endpoints %#v", cfg.Registry.Endpoints)
+	}
+	if cfg.Registry.Service != "order-service" || cfg.Registry.InstanceID != "order-service-1" {
+		t.Fatalf("unexpected registry instance config %#v", cfg.Registry)
+	}
+	if cfg.Registry.Labels["version"] != "v1" || cfg.Registry.Metadata["owner"] != "platform" {
+		t.Fatalf("unexpected registry metadata labels=%#v metadata=%#v", cfg.Registry.Labels, cfg.Registry.Metadata)
+	}
+	if len(cfg.Registry.ServiceEndpoints) != 1 || cfg.Registry.ServiceEndpoints[0].Port != 18080 {
+		t.Fatalf("unexpected registry service endpoints %#v", cfg.Registry.ServiceEndpoints)
 	}
 	if cfg.Starter.OpenTelemetry == nil || !cfg.Starter.OpenTelemetry.Log.Enabled {
 		t.Fatalf("expected opentelemetry log starter")

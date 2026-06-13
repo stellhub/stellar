@@ -182,6 +182,22 @@ cache:
     trace: true
     metrics: true
     logs: true
+registry:
+  enabled: true
+  adapter: stellmap
+  endpoints:
+    - http://localhost:18090
+  namespace: default
+  service: example-service
+  instance_id: example-service-1
+  zone: local
+  ttl: 30s
+  heartbeat_interval: 10s
+  service_endpoints:
+    - name: http
+      protocol: http
+      host: 127.0.0.1
+      port: 8080
 opentelemetry:
   trace: true
   metrics: true
@@ -227,6 +243,14 @@ go run ./examples/http/client/interceptor
 go run ./examples/grpc/server/interceptor
 go run ./examples/grpc/client/interceptor
 ```
+
+Run the registry register example:
+
+```bash
+go run ./examples/registry/register
+```
+
+Start StellMap on `localhost:18090` first, or switch `registry.adapter` and `registry.endpoints` in `examples/registry/register/application.yml` to your Etcd, Consul, or Nacos instance.
 
 ## Transport Adapters
 
@@ -309,6 +333,55 @@ grpc:
       order-service:
         target: dns:///localhost:9092
         timeout: 5s
+```
+
+## Service Registry
+
+Stellar exposes service discovery behind a registry adapter. The default adapter is StellMap. Etcd, Consul, and Nacos can be selected from `application.yml` without changing business code.
+
+If only `registry.enabled`, `adapter`, and connection fields are configured, Stellar creates a registry client and exposes it through `app.ServiceRegistry()`. If `service`, `instance_id`, and `service_endpoints` are also configured, Stellar automatically registers the current instance after server transports start and deregisters it during shutdown.
+
+```yaml
+registry:
+  enabled: true
+  adapter: stellmap # stellmap, etcd, consul, nacos
+  endpoints:
+    - http://localhost:18090
+  namespace: default
+  service: example-service
+  instance_id: example-service-1
+  zone: local
+  ttl: 30s
+  heartbeat_interval: 10s
+  labels:
+    version: v1
+  metadata:
+    owner: platform
+  service_endpoints:
+    - name: http
+      protocol: http
+      host: 127.0.0.1
+      port: 8080
+```
+
+Switch the implementation by changing `adapter` and endpoints:
+
+```yaml
+registry:
+  enabled: true
+  adapter: consul
+  endpoints:
+    - http://localhost:8500
+```
+
+Programmatic discovery uses the same abstraction:
+
+```go
+registry, ok := app.ServiceRegistry()
+instances, err := registry.Discover(ctx, stellar.ServiceQuery{
+	Namespace: "default",
+	Service:   "user-service",
+})
 ```
 
 ## Data Clients

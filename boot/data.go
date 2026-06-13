@@ -6,6 +6,7 @@ import (
 	mysqlclient "github.com/stellhub/stellar/clients/mysql"
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
+	serviceregistry "github.com/stellhub/stellar/registry"
 )
 
 func (a *App) RedisClient() (*goredis.Client, bool) {
@@ -22,4 +23,8 @@ func (a *App) PostgreSQLDB() (*postgresqlclient.DB, bool) {
 
 func (a *App) Cache() (*cacheclient.Cache, bool) {
 	return GetAs[*cacheclient.Cache](a.Registry(), cacheclient.DefaultName)
+}
+
+func (a *App) ServiceRegistry() (*serviceregistry.Registry, bool) {
+	return GetAs[*serviceregistry.Registry](a.Registry(), serviceregistry.DefaultName)
 }

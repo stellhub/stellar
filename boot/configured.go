@@ -12,6 +12,7 @@ import (
 	"github.com/stellhub/stellar/config"
 	"github.com/stellhub/stellar/lifecycle"
 	"github.com/stellhub/stellar/observability"
+	serviceregistry "github.com/stellhub/stellar/registry"
 	grpcgoadapter "github.com/stellhub/stellar/transport/grpc/adapters/grpcgo"
 	stellarhttp "github.com/stellhub/stellar/transport/http"
 	chiadapter "github.com/stellhub/stellar/transport/http/adapters/chi"
@@ -61,6 +62,9 @@ func NewConfigured(ctx context.Context, cfg config.Config, options ...Option) (*
 		return nil, err
 	}
 	if err := configureCacheStarter(ctx, app, cfg); err != nil {
+		return nil, err
+	}
+	if err := configureRegistryStarter(ctx, app, cfg); err != nil {
 		return nil, err
 	}
 	return app, nil
@@ -204,6 +208,36 @@ func configureCacheStarter(ctx context.Context, app *App, cfg config.Config) err
 		Name: cacheclient.DefaultName,
 		OnStop: func(context.Context) error {
 			return cache.Close()
+		},
+	})
+	return nil
+}
+
+func configureRegistryStarter(ctx context.Context, app *App, cfg config.Config) error {
+	if cfg.Registry == nil {
+		return nil
+	}
+	if cfg.Registry.Enabled != nil && !*cfg.Registry.Enabled {
+		return nil
+	}
+
+	registry, err := serviceregistry.NewFromConfig(ctx, cfg.Registry)
+	if err != nil {
+		return fmt.Errorf("configure service registry: %w", err)
+	}
+	app.registry.Set(serviceregistry.DefaultName, registry)
+	instance, ok := serviceregistry.InstanceFromConfig(cfg.Registry)
+	if ok {
+		app.addTransport(&registryTransport{
+			registry: registry,
+			instance: instance,
+		})
+		return nil
+	}
+	app.lifecycle.Append(lifecycle.Hook{
+		Name: serviceregistry.DefaultName,
+		OnStop: func(ctx context.Context) error {
+			return registry.Close(ctx)
 		},
 	})
 	return nil

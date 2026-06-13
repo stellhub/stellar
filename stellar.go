@@ -18,6 +18,7 @@ import (
 	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/lifecycle"
 	"github.com/stellhub/stellar/observability"
+	serviceregistry "github.com/stellhub/stellar/registry"
 	transportgrpc "github.com/stellhub/stellar/transport/grpc"
 	transporthttp "github.com/stellhub/stellar/transport/http"
 	otellog "go.opentelemetry.io/otel/log"
@@ -58,6 +59,10 @@ type PostgreSQLConfig = config.PostgreSQLConfig
 
 type CacheConfig = config.CacheConfig
 
+type RegistryConfig = config.RegistryConfig
+
+type RegistryServiceEndpointConfig = config.RegistryServiceEndpointConfig
+
 type DebugAPIConfig = config.DebugAPIConfig
 
 type RedisClient = goredis.Client
@@ -69,6 +74,20 @@ type PostgreSQLDB = postgresqlclient.DB
 type Cache = cacheclient.Cache
 
 type CacheAdapter = cacheclient.Adapter
+
+type ServiceRegistry = serviceregistry.Registry
+
+type ServiceRegistryAdapter = serviceregistry.Adapter
+
+type ServiceInstance = serviceregistry.Instance
+
+type ServiceEndpoint = serviceregistry.Endpoint
+
+type ServiceQuery = serviceregistry.Query
+
+type ServiceRegistryEvent = serviceregistry.Event
+
+type ServiceRegistryWatcher = serviceregistry.Watcher
 
 type Runtime = boot.Runtime
 
@@ -186,6 +205,11 @@ const (
 	CacheName        = cacheclient.DefaultName
 	CacheBigCache    = cacheclient.AdapterBigCache
 	CacheFreeCache   = cacheclient.AdapterFreeCache
+	RegistryName     = serviceregistry.DefaultName
+	RegistryEtcd     = serviceregistry.AdapterEtcd
+	RegistryConsul   = serviceregistry.AdapterConsul
+	RegistryNacos    = serviceregistry.AdapterNacos
+	RegistryStellMap = serviceregistry.AdapterStellMap
 )
 
 func New(cfg Config, options ...Option) *App {
@@ -247,6 +271,10 @@ func NewGovernanceStore(initial ...GovernanceSnapshot) *GovernanceStore {
 
 func NewCache(adapter CacheAdapter, provider *ObservabilityProvider) (*Cache, error) {
 	return cacheclient.New(adapter, provider)
+}
+
+func NewServiceRegistry(adapter ServiceRegistryAdapter) (*ServiceRegistry, error) {
+	return serviceregistry.New(adapter)
 }
 
 func WithObservability(provider *ObservabilityProvider) Option {

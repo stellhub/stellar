@@ -182,6 +182,22 @@ cache:
     trace: true
     metrics: true
     logs: true
+registry:
+  enabled: true
+  adapter: stellmap
+  endpoints:
+    - http://localhost:18090
+  namespace: default
+  service: example-service
+  instance_id: example-service-1
+  zone: local
+  ttl: 30s
+  heartbeat_interval: 10s
+  service_endpoints:
+    - name: http
+      protocol: http
+      host: 127.0.0.1
+      port: 8080
 opentelemetry:
   trace: true
   metrics: true
@@ -227,6 +243,14 @@ go run ./examples/http/client/interceptor
 go run ./examples/grpc/server/interceptor
 go run ./examples/grpc/client/interceptor
 ```
+
+运行注册中心 register 示例：
+
+```bash
+go run ./examples/registry/register
+```
+
+需要先在 `localhost:18090` 启动 StellMap，或者将 `examples/registry/register/application.yml` 中的 `registry.adapter` 和 `registry.endpoints` 切换为你的 Etcd、Consul 或 Nacos 实例。
 
 ## 传输适配器
 
@@ -309,6 +333,55 @@ grpc:
       order-service:
         target: dns:///localhost:9092
         timeout: 5s
+```
+
+## 服务注册中心
+
+Stellar 将服务发现隔离在 registry adapter 抽象之后。默认实现是 StellMap，也可以在 `application.yml` 中选择 Etcd、Consul 或 Nacos，不需要修改业务代码。
+
+如果只配置了 `registry.enabled`、`adapter` 和连接信息，Stellar 会创建注册中心客户端，并通过 `app.ServiceRegistry()` 暴露。如果同时配置了 `service`、`instance_id` 和 `service_endpoints`，Stellar 会在服务端 transport 启动后自动注册当前实例，并在应用停止时注销。
+
+```yaml
+registry:
+  enabled: true
+  adapter: stellmap # stellmap, etcd, consul, nacos
+  endpoints:
+    - http://localhost:18090
+  namespace: default
+  service: example-service
+  instance_id: example-service-1
+  zone: local
+  ttl: 30s
+  heartbeat_interval: 10s
+  labels:
+    version: v1
+  metadata:
+    owner: platform
+  service_endpoints:
+    - name: http
+      protocol: http
+      host: 127.0.0.1
+      port: 8080
+```
+
+切换实现只需要修改 `adapter` 和 endpoints：
+
+```yaml
+registry:
+  enabled: true
+  adapter: consul
+  endpoints:
+    - http://localhost:8500
+```
+
+程序化服务发现使用同一套抽象：
+
+```go
+registry, ok := app.ServiceRegistry()
+instances, err := registry.Discover(ctx, stellar.ServiceQuery{
+	Namespace: "default",
+	Service:   "user-service",
+})
 ```
 
 ## 数据客户端

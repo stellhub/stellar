@@ -190,6 +190,43 @@ func TestNewConfiguredRegistersDataDebugAPIsFromConfig(t *testing.T) {
 	assertRouteExists(t, routes, http.MethodGet, "/cache/items")
 }
 
+func TestNewConfiguredRegistersServiceRegistryFromConfig(t *testing.T) {
+	cfg := config.Config{
+		AppName:     "configured-service",
+		Environment: config.EnvDev,
+		Registry: &config.RegistryConfig{
+			Adapter:    "stellmap",
+			Endpoint:   "http://localhost:18090",
+			Namespace:  "default",
+			Service:    "configured-service",
+			InstanceID: "configured-service-1",
+			TTL:        "30s",
+			ServiceEndpoints: []config.RegistryServiceEndpointConfig{{
+				Name:     "http",
+				Protocol: "http",
+				Host:     "127.0.0.1",
+				Port:     18080,
+			}},
+		},
+	}.Normalize()
+
+	app, err := NewConfigured(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("new configured app: %v", err)
+	}
+	serviceRegistry, ok := app.ServiceRegistry()
+	if !ok || serviceRegistry == nil {
+		t.Fatalf("expected service registry to be registered")
+	}
+	if serviceRegistry.AdapterName() != "stellmap" {
+		t.Fatalf("unexpected registry adapter %q", serviceRegistry.AdapterName())
+	}
+	transports := app.Transports()
+	if len(transports) != 1 || transports[0] != "registry-stellmap" {
+		t.Fatalf("expected registry transport, got %#v", transports)
+	}
+}
+
 func TestCacheDebugAPICRUD(t *testing.T) {
 	enabled := true
 	cfg := config.Config{
