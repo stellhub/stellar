@@ -14,6 +14,8 @@ import (
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
 	"github.com/stellhub/stellar/config"
+	"github.com/stellhub/stellar/governance"
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/lifecycle"
 	"github.com/stellhub/stellar/observability"
 	transportgrpc "github.com/stellhub/stellar/transport/grpc"
@@ -92,6 +94,30 @@ type ObservabilityProvider = observability.Provider
 
 type ObservabilityOption = observability.Option
 
+type Interceptor = interceptor.Interceptor
+
+type InterceptorFunc = interceptor.Func
+
+type InterceptorHandler = interceptor.Handler
+
+type InterceptorDefinition = interceptor.Definition
+
+type InterceptorInvocation = interceptor.Invocation
+
+type InterceptorKind = interceptor.Kind
+
+type InterceptorStage = interceptor.Stage
+
+type GovernanceStore = governance.Store
+
+type GovernanceSnapshot = governance.Snapshot
+
+type GovernanceRule = governance.Rule
+
+type GovernanceRuleKind = governance.RuleKind
+
+type GovernanceScope = governance.Scope
+
 type HealthStatus = boot.HealthStatus
 
 type HealthCheck = boot.HealthCheck
@@ -117,6 +143,38 @@ const (
 	HealthStatusUp      = boot.HealthStatusUp
 	HealthStatusDown    = boot.HealthStatusDown
 	HealthStatusSkipped = boot.HealthStatusSkipped
+)
+
+const (
+	InterceptorHTTPServer = interceptor.KindHTTPServer
+	InterceptorHTTPClient = interceptor.KindHTTPClient
+	InterceptorGRPCServer = interceptor.KindGRPCServer
+	InterceptorGRPCClient = interceptor.KindGRPCClient
+)
+
+const (
+	InterceptorStageRecovery       = interceptor.StageRecovery
+	InterceptorStageRouteResolve   = interceptor.StageRouteResolve
+	InterceptorStageObserve        = interceptor.StageObserve
+	InterceptorStageDeadline       = interceptor.StageDeadline
+	InterceptorStageAdmission      = interceptor.StageAdmission
+	InterceptorStageSecurity       = interceptor.StageSecurity
+	InterceptorStageDecodeValidate = interceptor.StageDecodeValidate
+	InterceptorStageRetry          = interceptor.StageRetry
+	InterceptorStageBusiness       = interceptor.StageBusiness
+)
+
+const (
+	GovernanceRuleRoute            = governance.RuleKindRoute
+	GovernanceRuleRateLimit        = governance.RuleKindRateLimit
+	GovernanceRuleCircuitBreaker   = governance.RuleKindCircuitBreaker
+	GovernanceRuleLoadShedding     = governance.RuleKindLoadShedding
+	GovernanceRuleConcurrencyLimit = governance.RuleKindConcurrencyLimit
+	GovernanceRuleAuthentication   = governance.RuleKindAuthentication
+	GovernanceRuleAuthorization    = governance.RuleKindAuthorization
+	GovernanceRuleRetry            = governance.RuleKindRetry
+	GovernanceRuleSigning          = governance.RuleKindSigning
+	GovernanceRuleQuota            = governance.RuleKindQuota
 )
 
 var ErrAppNameRequired = boot.ErrAppNameRequired
@@ -183,12 +241,44 @@ func NewObservability(options ...ObservabilityOption) *ObservabilityProvider {
 	return observability.New(options...)
 }
 
+func NewGovernanceStore(initial ...GovernanceSnapshot) *GovernanceStore {
+	return governance.NewStore(initial...)
+}
+
 func NewCache(adapter CacheAdapter, provider *ObservabilityProvider) (*Cache, error) {
 	return cacheclient.New(adapter, provider)
 }
 
 func WithObservability(provider *ObservabilityProvider) Option {
 	return boot.WithObservability(provider)
+}
+
+func WithInterceptor(definitions ...InterceptorDefinition) Option {
+	return boot.WithInterceptor(definitions...)
+}
+
+func WithGovernanceStore(store *GovernanceStore) Option {
+	return boot.WithGovernanceStore(store)
+}
+
+func HTTPServerInterceptor(name string, order int, fn InterceptorFunc) InterceptorDefinition {
+	return interceptor.Business(interceptor.KindHTTPServer, name, order, interceptor.New(name, fn))
+}
+
+func HTTPClientInterceptor(name string, order int, fn InterceptorFunc) InterceptorDefinition {
+	return interceptor.Business(interceptor.KindHTTPClient, name, order, interceptor.New(name, fn))
+}
+
+func GRPCServerInterceptor(name string, order int, fn InterceptorFunc) InterceptorDefinition {
+	return interceptor.Business(interceptor.KindGRPCServer, name, order, interceptor.New(name, fn))
+}
+
+func GRPCClientInterceptor(name string, order int, fn InterceptorFunc) InterceptorDefinition {
+	return interceptor.Business(interceptor.KindGRPCClient, name, order, interceptor.New(name, fn))
+}
+
+func FrameworkInterceptor(kind InterceptorKind, stage InterceptorStage, name string, fn InterceptorFunc) InterceptorDefinition {
+	return interceptor.Framework(kind, stage, name, interceptor.New(name, fn))
 }
 
 func WithObservabilityServiceName(serviceName string) ObservabilityOption {

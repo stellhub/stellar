@@ -219,9 +219,20 @@ Run the included gRPC custom router example:
 go run ./examples/grpc/server/custom-router
 ```
 
+Run the interceptor examples:
+
+```bash
+go run ./examples/http/server/interceptor
+go run ./examples/http/client/interceptor
+go run ./examples/grpc/server/interceptor
+go run ./examples/grpc/client/interceptor
+```
+
 ## Transport Adapters
 
 Stellar keeps HTTP and RPC behind adapter interfaces.
+
+Interceptor ordering for HTTP/gRPC server and client pipelines is documented in [Interceptor.md](Interceptor.md).
 
 | Layer | Default | Optional implementations |
 | --- | --- | --- |

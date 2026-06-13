@@ -12,6 +12,8 @@ import (
 
 	"github.com/stellhub/stellar/config"
 	apperrors "github.com/stellhub/stellar/errors"
+	"github.com/stellhub/stellar/governance"
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/lifecycle"
 	"github.com/stellhub/stellar/observability"
 	boothttp "github.com/stellhub/stellar/transport/http"
@@ -22,6 +24,8 @@ type App struct {
 	config            config.Config
 	logger            *slog.Logger
 	registry          *Registry
+	governance        *governance.Store
+	interceptors      *interceptor.Registry
 	lifecycle         *lifecycle.Manager
 	observability     *observability.Provider
 	httpRouter        *boothttp.Router
@@ -40,13 +44,16 @@ type App struct {
 func New(cfg config.Config, options ...Option) *App {
 	cfg = cfg.Normalize()
 	observer := observability.New(observability.WithServiceName(cfg.AppName))
+	interceptors := interceptor.NewRegistry(interceptor.WithDefaultFramework())
 	app := &App{
 		config:        cfg,
 		logger:        slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 		registry:      NewRegistry(),
+		governance:    governance.NewStore(),
+		interceptors:  interceptors,
 		lifecycle:     lifecycle.NewManager(),
 		observability: observer,
-		httpRouter:    boothttp.NewRouter(boothttp.WithObservability(observer)),
+		httpRouter:    boothttp.NewRouter(boothttp.WithObservability(observer), boothttp.WithInterceptors(interceptors)),
 	}
 	app.registerManagementRoutes()
 	for _, option := range options {
@@ -75,6 +82,39 @@ func WithObservability(provider *observability.Provider) Option {
 			if consumer, ok := app.rpcAdapter.(observabilityConsumer); ok {
 				consumer.UseObservability(provider)
 			}
+		}
+	}
+}
+
+func WithInterceptor(definitions ...interceptor.Definition) Option {
+	return func(app *App) {
+		if app.interceptors == nil {
+			app.interceptors = interceptor.NewRegistry(interceptor.WithDefaultFramework())
+			app.httpRouter.SetInterceptors(app.interceptors)
+		}
+		app.interceptors.Register(definitions...)
+	}
+}
+
+func WithInterceptorRegistry(registry *interceptor.Registry) Option {
+	return func(app *App) {
+		if registry == nil {
+			return
+		}
+		app.interceptors = registry
+		app.httpRouter.SetInterceptors(registry)
+		if app.rpcAdapter != nil {
+			if consumer, ok := app.rpcAdapter.(interceptorConsumer); ok {
+				consumer.UseInterceptors(registry)
+			}
+		}
+	}
+}
+
+func WithGovernanceStore(store *governance.Store) Option {
+	return func(app *App) {
+		if store != nil {
+			app.governance = store
 		}
 	}
 }
@@ -249,6 +289,14 @@ func (a *App) Logger() *slog.Logger {
 
 func (a *App) Registry() *Registry {
 	return a.registry
+}
+
+func (a *App) Interceptors() *interceptor.Registry {
+	return a.interceptors
+}
+
+func (a *App) Governance() *governance.Store {
+	return a.governance
 }
 
 func (a *App) Observability() *observability.Provider {

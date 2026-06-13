@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	apperrors "github.com/stellhub/stellar/errors"
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/middleware"
 	"github.com/stellhub/stellar/observability"
 )
@@ -43,12 +44,13 @@ type AddrSetter interface {
 }
 
 type Request struct {
-	Method string
-	Path   string
-	Header stdhttp.Header
-	Query  url.Values
-	Body   io.ReadCloser
-	Raw    any
+	Method     string
+	Path       string
+	Header     stdhttp.Header
+	Query      url.Values
+	Body       io.ReadCloser
+	Raw        any
+	Invocation *interceptor.Invocation
 }
 
 type Response struct {
@@ -63,16 +65,18 @@ type ErrorResponse struct {
 }
 
 type Route struct {
-	Method      string
-	Path        string
-	Endpoint    Endpoint
-	Middlewares []middleware.Middleware
+	Method             string
+	Path               string
+	Endpoint           Endpoint
+	Middlewares        []middleware.Middleware
+	BusinessInEndpoint bool
 }
 
 type Snapshot struct {
-	Middlewares []middleware.Middleware
-	Routes      []Route
-	Observer    *observability.Provider
+	Middlewares  []middleware.Middleware
+	Routes       []Route
+	Observer     *observability.Provider
+	Interceptors *interceptor.Registry
 }
 
 type GroupOption func(*groupConfig)
@@ -88,6 +92,7 @@ type Router struct {
 	parent       *Router
 	errorHandler ErrorHandler
 	observer     *observability.Provider
+	interceptors *interceptor.Registry
 }
 
 type groupConfig struct {
@@ -111,6 +116,14 @@ func WithObservability(provider *observability.Provider) Option {
 	return func(router *Router) {
 		if provider != nil {
 			router.observer = provider
+		}
+	}
+}
+
+func WithInterceptors(registry *interceptor.Registry) Option {
+	return func(router *Router) {
+		if registry != nil {
+			router.interceptors = registry
 		}
 	}
 }
@@ -159,6 +172,10 @@ func (r *Router) DELETE(path string, endpoint Endpoint, mws ...middleware.Middle
 }
 
 func (r *Router) Handle(method string, path string, endpoint Endpoint, mws ...middleware.Middleware) {
+	r.handle(method, path, endpoint, false, mws...)
+}
+
+func (r *Router) handle(method string, path string, endpoint Endpoint, businessInEndpoint bool, mws ...middleware.Middleware) {
 	root := r.root()
 	fullPath := r.fullPath(path)
 	routeMiddlewares := append(r.groupMiddlewares(), mws...)
@@ -166,10 +183,11 @@ func (r *Router) Handle(method string, path string, endpoint Endpoint, mws ...mi
 	root.mu.Lock()
 	defer root.mu.Unlock()
 	root.routes = append(root.routes, Route{
-		Method:      method,
-		Path:        fullPath,
-		Endpoint:    endpoint,
-		Middlewares: routeMiddlewares,
+		Method:             method,
+		Path:               fullPath,
+		Endpoint:           endpoint,
+		Middlewares:        routeMiddlewares,
+		BusinessInEndpoint: businessInEndpoint,
 	})
 }
 
@@ -202,7 +220,7 @@ func (r *Router) Snapshot() Snapshot {
 		routes[i] = route
 		routes[i].Middlewares = append([]middleware.Middleware(nil), route.Middlewares...)
 	}
-	return Snapshot{Middlewares: mws, Routes: routes, Observer: root.observer}
+	return Snapshot{Middlewares: mws, Routes: routes, Observer: root.observer, Interceptors: root.interceptors}
 }
 
 func (r *Router) ErrorHandler() ErrorHandler {
@@ -221,7 +239,7 @@ func Handle[Req any, Resp any](router *Router, method string, path string, binde
 		encoder = JSONEncoder[Resp]
 	}
 
-	router.Handle(method, path, func(ctx context.Context, request *Request) (*Response, error) {
+	router.handle(method, path, func(ctx context.Context, request *Request) (*Response, error) {
 		req, err := binder(request)
 		if err != nil {
 			return nil, err
@@ -231,7 +249,14 @@ func Handle[Req any, Resp any](router *Router, method string, path string, binde
 			typedReq := payload.(*Req)
 			return handler(ctx, typedReq)
 		})
-		resp, err := middleware.Chain(mws...)(final)(ctx, req)
+		typedHandler := func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
+			return middleware.Chain(mws...)(final)(ctx, payload)
+		}
+		if registry := router.root().interceptors; registry != nil {
+			typedHandler = registry.BusinessChain(interceptor.KindHTTPServer, typedHandler)
+			typedHandler = registry.FrameworkChainForStages(interceptor.KindHTTPServer, interceptor.ServerInboundDecodeStages, typedHandler)
+		}
+		resp, err := typedHandler(ctx, request.Invocation, req)
 		if err != nil {
 			return nil, err
 		}
@@ -243,7 +268,7 @@ func Handle[Req any, Resp any](router *Router, method string, path string, binde
 			return nil, apperrors.New(apperrors.CodeInternal, "unexpected response type", stdhttp.StatusInternalServerError)
 		}
 		return encoder(typedResp), nil
-	})
+	}, true)
 }
 
 func Execute(ctx context.Context, request *Request, snapshot Snapshot, route Route) (*Response, error) {
@@ -268,7 +293,33 @@ func Execute(ctx context.Context, request *Request, snapshot Snapshot, route Rou
 		return route.Endpoint(ctx, httpReq)
 	})
 	chain := middleware.Chain(append(snapshot.Middlewares, route.Middlewares...)...)(final)
-	resp, err := chain(ctx, request)
+	handler := func(ctx context.Context, _ *interceptor.Invocation, req any) (any, error) {
+		httpReq, ok := req.(*Request)
+		if !ok {
+			return nil, apperrors.New(apperrors.CodeInternal, "unexpected HTTP request type", stdhttp.StatusInternalServerError)
+		}
+		return chain(ctx, httpReq)
+	}
+	inv := &interceptor.Invocation{
+		Kind:      interceptor.KindHTTPServer,
+		Protocol:  "http",
+		Service:   request.Method + " " + route.Path,
+		Operation: request.Method + " " + route.Path,
+		Method:    request.Method,
+		Path:      route.Path,
+		Target:    request.Path,
+		Headers:   interceptor.HeaderFromHTTP(request.Header),
+		Raw:       request.Raw,
+	}
+	request.Invocation = inv
+	if snapshot.Interceptors != nil {
+		if route.BusinessInEndpoint {
+			handler = snapshot.Interceptors.FrameworkChainForStages(interceptor.KindHTTPServer, interceptor.ServerInboundPreDecodeStages, handler)
+		} else {
+			handler = snapshot.Interceptors.Chain(interceptor.KindHTTPServer, handler)
+		}
+	}
+	resp, err := handler(ctx, inv, request)
 	if err != nil {
 		finish(observability.HTTPServerResult{StatusCode: apperrors.HTTPStatusOf(err), Err: err})
 		finish = nil
@@ -302,6 +353,15 @@ func (r *Router) SetObservability(provider *observability.Provider) {
 	defer root.mu.Unlock()
 	if provider != nil {
 		root.observer = provider
+	}
+}
+
+func (r *Router) SetInterceptors(registry *interceptor.Registry) {
+	root := r.root()
+	root.mu.Lock()
+	defer root.mu.Unlock()
+	if registry != nil {
+		root.interceptors = registry
 	}
 }
 

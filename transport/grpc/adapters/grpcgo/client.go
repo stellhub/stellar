@@ -7,10 +7,12 @@ import (
 	"time"
 
 	stellarconfig "github.com/stellhub/stellar/config"
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/observability"
 	stellargrpc "github.com/stellhub/stellar/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 type ClientOption func(*clientConfig)
@@ -18,6 +20,7 @@ type ClientOption func(*clientConfig)
 type clientConfig struct {
 	dialOptions    []grpc.DialOption
 	observer       *observability.Provider
+	interceptors   *interceptor.Registry
 	defaultTimeout time.Duration
 }
 
@@ -32,6 +35,12 @@ func WithClientObservability(provider *observability.Provider) ClientOption {
 		if provider != nil {
 			cfg.observer = provider
 		}
+	}
+}
+
+func WithInterceptors(registry *interceptor.Registry) ClientOption {
+	return func(cfg *clientConfig) {
+		cfg.interceptors = registry
 	}
 }
 
@@ -55,13 +64,24 @@ func NewClientConn(ctx context.Context, target string, options ...ClientOption) 
 		option(&cfg)
 	}
 
-	dialOptions := append(cfg.observer.GRPCClientOptions(), cfg.dialOptions...)
-	if cfg.defaultTimeout > 0 {
-		dialOptions = append(dialOptions,
-			grpc.WithChainUnaryInterceptor(defaultTimeoutUnaryInterceptor(cfg.defaultTimeout)),
-			grpc.WithChainStreamInterceptor(defaultTimeoutStreamInterceptor(cfg.defaultTimeout)),
-		)
+	dialOptions := []grpc.DialOption{
+		grpc.WithStatsHandler(cfg.observer.GRPCClientStatsHandler()),
 	}
+	unaryInterceptors := []grpc.UnaryClientInterceptor{cfg.observer.UnaryClientInterceptor()}
+	streamInterceptors := []grpc.StreamClientInterceptor{cfg.observer.StreamClientInterceptor()}
+	if cfg.defaultTimeout > 0 {
+		unaryInterceptors = append(unaryInterceptors, defaultTimeoutUnaryInterceptor(cfg.defaultTimeout))
+		streamInterceptors = append(streamInterceptors, defaultTimeoutStreamInterceptor(cfg.defaultTimeout))
+	}
+	if cfg.interceptors != nil {
+		unaryInterceptors = append(unaryInterceptors, unaryClientInterceptor(cfg.interceptors))
+		streamInterceptors = append(streamInterceptors, streamClientInterceptor(cfg.interceptors))
+	}
+	dialOptions = append(dialOptions,
+		grpc.WithChainUnaryInterceptor(unaryInterceptors...),
+		grpc.WithChainStreamInterceptor(streamInterceptors...),
+	)
+	dialOptions = append(dialOptions, cfg.dialOptions...)
 	conn, err := grpc.NewClient(target, dialOptions...)
 	if err != nil {
 		return nil, err
@@ -113,8 +133,9 @@ func NewNamedClientConnFromConfig(ctx context.Context, cfg *stellarconfig.GRPCCl
 }
 
 type ClientFactory struct {
-	observer *observability.Provider
-	options  []grpc.DialOption
+	observer     *observability.Provider
+	interceptors *interceptor.Registry
+	options      []grpc.DialOption
 }
 
 func NewClientFactory(options ...ClientOption) *ClientFactory {
@@ -125,13 +146,14 @@ func NewClientFactory(options ...ClientOption) *ClientFactory {
 		option(&cfg)
 	}
 	return &ClientFactory{
-		observer: cfg.observer,
-		options:  cfg.dialOptions,
+		observer:     cfg.observer,
+		interceptors: cfg.interceptors,
+		options:      cfg.dialOptions,
 	}
 }
 
 func (f *ClientFactory) NewClient(ctx context.Context, target string, _ ...stellargrpc.ClientOption) (any, error) {
-	return NewClientConn(ctx, target, WithClientObservability(f.observer), WithDialOption(f.options...))
+	return NewClientConn(ctx, target, WithClientObservability(f.observer), WithInterceptors(f.interceptors), WithDialOption(f.options...))
 }
 
 func clientOptionsFromConfig(cfg *stellarconfig.GRPCClientConfig, named stellarconfig.GRPCNamedClientConfig) (string, []ClientOption, error) {
@@ -207,4 +229,64 @@ func boolValue(value *bool, fallback bool) bool {
 		return fallback
 	}
 	return *value
+}
+
+func unaryClientInterceptor(registry *interceptor.Registry) grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req any, reply any, conn *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		inv := grpcClientInvocation(ctx, method, conn)
+		chain := registry.Chain(interceptor.KindGRPCClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
+			return nil, invoker(ctx, method, payload, reply, conn, opts...)
+		})
+		_, err := chain(ctx, inv, req)
+		return err
+	}
+}
+
+func streamClientInterceptor(registry *interceptor.Registry) grpc.StreamClientInterceptor {
+	return func(ctx context.Context, desc *grpc.StreamDesc, conn *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		inv := grpcClientInvocation(ctx, method, conn)
+		chain := registry.Chain(interceptor.KindGRPCClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
+			return streamer(ctx, desc, conn, method, opts...)
+		})
+		stream, err := chain(ctx, inv, nil)
+		if err != nil {
+			return nil, err
+		}
+		clientStream, ok := stream.(grpc.ClientStream)
+		if !ok {
+			return nil, fmt.Errorf("stellar: unexpected grpc client stream type %T", stream)
+		}
+		return clientStream, nil
+	}
+}
+
+func grpcClientInvocation(ctx context.Context, fullMethod string, conn *grpc.ClientConn) *interceptor.Invocation {
+	service, method := splitFullMethod(fullMethod)
+	target := ""
+	if conn != nil {
+		target = conn.Target()
+	}
+	return &interceptor.Invocation{
+		Kind:      interceptor.KindGRPCClient,
+		Protocol:  "grpc",
+		Service:   service,
+		Operation: fullMethod,
+		Method:    method,
+		Path:      fullMethod,
+		Target:    target,
+		Headers:   headersFromOutgoingContext(ctx),
+		Raw:       conn,
+	}
+}
+
+func headersFromOutgoingContext(ctx context.Context) interceptor.Header {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		return nil
+	}
+	headers := make(interceptor.Header, len(md))
+	for key, values := range md {
+		headers[key] = append([]string(nil), values...)
+	}
+	return headers
 }

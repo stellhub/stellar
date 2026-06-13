@@ -6,6 +6,7 @@ import (
 
 	"github.com/stellhub/stellar/config"
 	apperrors "github.com/stellhub/stellar/errors"
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/observability"
 	bootgrpc "github.com/stellhub/stellar/transport/grpc"
 )
@@ -68,4 +69,8 @@ type HealthIndicator interface {
 
 type observabilityConsumer interface {
 	UseObservability(*observability.Provider)
+}
+
+type interceptorConsumer interface {
+	UseInterceptors(*interceptor.Registry)
 }

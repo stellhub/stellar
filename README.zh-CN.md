@@ -219,9 +219,20 @@ go run ./examples/grpc/server/simple
 go run ./examples/grpc/server/custom-router
 ```
 
+运行 interceptor 示例：
+
+```bash
+go run ./examples/http/server/interceptor
+go run ./examples/http/client/interceptor
+go run ./examples/grpc/server/interceptor
+go run ./examples/grpc/client/interceptor
+```
+
 ## 传输适配器
 
 Stellar 将 HTTP 和 RPC 隔离在适配器接口之后。
+
+HTTP/gRPC server 与 client 的拦截器顺序规范见 [Interceptor.md](Interceptor.md)。
 
 | 层 | 默认实现 | 可选实现 |
 | --- | --- | --- |

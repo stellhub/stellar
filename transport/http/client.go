@@ -1,22 +1,26 @@
 package http
 
 import (
+	"context"
 	"fmt"
 	stdhttp "net/http"
 	"time"
 
 	stellarconfig "github.com/stellhub/stellar/config"
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/observability"
 )
 
 type ClientOption func(*clientConfig)
 
 type clientConfig struct {
-	base       *stdhttp.Client
-	transport  stdhttp.RoundTripper
-	observer   *observability.Provider
-	timeout    time.Duration
-	copyClient bool
+	base         *stdhttp.Client
+	transport    stdhttp.RoundTripper
+	observer     *observability.Provider
+	interceptors *interceptor.Registry
+	clientName   string
+	timeout      time.Duration
+	copyClient   bool
 }
 
 func WithClient(base *stdhttp.Client) ClientOption {
@@ -50,6 +54,18 @@ func WithClientObservability(provider *observability.Provider) ClientOption {
 	}
 }
 
+func WithClientInterceptors(registry *interceptor.Registry) ClientOption {
+	return func(cfg *clientConfig) {
+		cfg.interceptors = registry
+	}
+}
+
+func WithClientName(name string) ClientOption {
+	return func(cfg *clientConfig) {
+		cfg.clientName = name
+	}
+}
+
 func NewClient(options ...ClientOption) *stdhttp.Client {
 	cfg := clientConfig{
 		base:     stdhttp.DefaultClient,
@@ -75,6 +91,13 @@ func NewClient(options ...ClientOption) *stdhttp.Client {
 	}
 	if baseTransport == nil {
 		baseTransport = stdhttp.DefaultTransport
+	}
+	if cfg.interceptors != nil {
+		baseTransport = &interceptorRoundTripper{
+			base:       baseTransport,
+			registry:   cfg.interceptors,
+			clientName: cfg.clientName,
+		}
 	}
 	client.Transport = cfg.observer.HTTPClientTransport(baseTransport)
 	return client
@@ -108,6 +131,9 @@ func NewNamedClientFromConfig(cfg *stellarconfig.HTTPClientConfig, name string, 
 	}
 	if provider != nil {
 		cfgOptions = append(cfgOptions, WithClientObservability(provider))
+	}
+	if name != "" {
+		cfgOptions = append(cfgOptions, WithClientName(name))
 	}
 	cfgOptions = append(cfgOptions, options...)
 	return NewClient(cfgOptions...), named.BaseURL, nil
@@ -165,4 +191,50 @@ func transportFromConfig(cfg *stellarconfig.HTTPClientConfig) (stdhttp.RoundTrip
 		transport.IdleConnTimeout = timeout
 	}
 	return transport, nil
+}
+
+type interceptorRoundTripper struct {
+	base       stdhttp.RoundTripper
+	registry   *interceptor.Registry
+	clientName string
+}
+
+func (t *interceptorRoundTripper) RoundTrip(req *stdhttp.Request) (*stdhttp.Response, error) {
+	base := t.base
+	if base == nil {
+		base = stdhttp.DefaultTransport
+	}
+	if t.registry == nil {
+		return base.RoundTrip(req)
+	}
+	inv := &interceptor.Invocation{
+		Kind:      interceptor.KindHTTPClient,
+		Protocol:  "http",
+		Service:   t.clientName,
+		Operation: req.Method + " " + req.URL.Path,
+		Method:    req.Method,
+		Path:      req.URL.Path,
+		Target:    req.URL.String(),
+		Headers:   interceptor.HeaderFromHTTP(req.Header),
+		Raw:       req,
+	}
+	handler := t.registry.Chain(interceptor.KindHTTPClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
+		request, ok := payload.(*stdhttp.Request)
+		if !ok {
+			return nil, fmt.Errorf("stellar: unexpected HTTP client request type %T", payload)
+		}
+		return base.RoundTrip(request.WithContext(ctx))
+	})
+	resp, err := handler(req.Context(), inv, req)
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, nil
+	}
+	httpResp, ok := resp.(*stdhttp.Response)
+	if !ok {
+		return nil, fmt.Errorf("stellar: unexpected HTTP client response type %T", resp)
+	}
+	return httpResp, nil
 }

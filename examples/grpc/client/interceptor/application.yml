@@ -1,0 +1,27 @@
+app:
+  name: stellar-grpc-client-interceptor-example
+  env: dev
+  zone: local
+
+grpc:
+  client:
+    enabled: true
+    timeout: 3s
+    insecure: true
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+    clients:
+      user-service:
+        target: passthrough:///127.0.0.1:19097
+        timeout: 2s
+        insecure: true
+
+opentelemetry:
+  log:
+    enabled: false
+    output: stdout
+  trace: false
+  metrics: false
+  trace_output: none

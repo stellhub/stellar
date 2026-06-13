@@ -5,25 +5,29 @@ import (
 	stderrors "errors"
 	"fmt"
 	"net"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/observability"
 	stellargrpc "github.com/stellhub/stellar/transport/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 const Name = "rpc-grpc-go"
 
 type Adapter struct {
-	addr     string
-	server   *grpc.Server
-	options  []grpc.ServerOption
-	observer *observability.Provider
-	services []stellargrpc.Service
-	listener net.Listener
-	errCh    chan error
-	mu       sync.Mutex
+	addr         string
+	server       *grpc.Server
+	options      []grpc.ServerOption
+	observer     *observability.Provider
+	interceptors *interceptor.Registry
+	services     []stellargrpc.Service
+	listener     net.Listener
+	errCh        chan error
+	mu           sync.Mutex
 }
 
 type Option func(*Adapter)
@@ -49,6 +53,12 @@ func WithServerOption(options ...grpc.ServerOption) Option {
 	}
 }
 
+func WithServerInterceptors(registry *interceptor.Registry) Option {
+	return func(adapter *Adapter) {
+		adapter.interceptors = registry
+	}
+}
+
 func (a *Adapter) Name() string {
 	return Name
 }
@@ -69,6 +79,12 @@ func (a *Adapter) UseObservability(provider *observability.Provider) {
 	if provider != nil {
 		a.observer = provider
 	}
+}
+
+func (a *Adapter) UseInterceptors(registry *interceptor.Registry) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.interceptors = registry
 }
 
 func (a *Adapter) Register(service stellargrpc.Service) error {
@@ -150,10 +166,94 @@ func (a *Adapter) Stop(ctx context.Context) error {
 }
 
 func (a *Adapter) buildServerLocked() {
-	options := append(a.observer.GRPCServerOptions(), a.options...)
+	options := []grpc.ServerOption{
+		grpc.StatsHandler(a.observer.GRPCServerStatsHandler()),
+	}
+	unaryInterceptors := []grpc.UnaryServerInterceptor{a.observer.UnaryServerInterceptor()}
+	streamInterceptors := []grpc.StreamServerInterceptor{a.observer.StreamServerInterceptor()}
+	if a.interceptors != nil {
+		unaryInterceptors = append(unaryInterceptors, unaryServerInterceptor(a.interceptors))
+		streamInterceptors = append(streamInterceptors, streamServerInterceptor(a.interceptors))
+	}
+	options = append(options,
+		grpc.ChainUnaryInterceptor(unaryInterceptors...),
+		grpc.ChainStreamInterceptor(streamInterceptors...),
+	)
+	options = append(options, a.options...)
 	a.server = grpc.NewServer(options...)
 	for _, service := range a.services {
 		desc := service.Description.(*grpc.ServiceDesc)
 		a.server.RegisterService(desc, service.Implementation)
 	}
+}
+
+func unaryServerInterceptor(registry *interceptor.Registry) grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		inv := grpcInvocation(interceptor.KindGRPCServer, info.FullMethod, headersFromIncomingContext(ctx), info)
+		chain := registry.Chain(interceptor.KindGRPCServer, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
+			return handler(ctx, payload)
+		})
+		return chain(ctx, inv, req)
+	}
+}
+
+func streamServerInterceptor(registry *interceptor.Registry) grpc.StreamServerInterceptor {
+	return func(srv any, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		ctx := stream.Context()
+		inv := grpcInvocation(interceptor.KindGRPCServer, info.FullMethod, headersFromIncomingContext(ctx), info)
+		chain := registry.Chain(interceptor.KindGRPCServer, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
+			serverStream, ok := payload.(grpc.ServerStream)
+			if !ok {
+				return nil, fmt.Errorf("stellar: unexpected grpc server stream type %T", payload)
+			}
+			return nil, handler(srv, &serverStreamWithContext{ServerStream: serverStream, ctx: ctx})
+		})
+		_, err := chain(ctx, inv, stream)
+		return err
+	}
+}
+
+type serverStreamWithContext struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+func (s *serverStreamWithContext) Context() context.Context {
+	return s.ctx
+}
+
+func grpcInvocation(kind interceptor.Kind, fullMethod string, headers interceptor.Header, raw any) *interceptor.Invocation {
+	service, method := splitFullMethod(fullMethod)
+	return &interceptor.Invocation{
+		Kind:      kind,
+		Protocol:  "grpc",
+		Service:   service,
+		Operation: fullMethod,
+		Method:    method,
+		Path:      fullMethod,
+		Target:    fullMethod,
+		Headers:   headers,
+		Raw:       raw,
+	}
+}
+
+func headersFromIncomingContext(ctx context.Context) interceptor.Header {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil
+	}
+	headers := make(interceptor.Header, len(md))
+	for key, values := range md {
+		headers[key] = append([]string(nil), values...)
+	}
+	return headers
+}
+
+func splitFullMethod(fullMethod string) (string, string) {
+	fullMethod = strings.Trim(fullMethod, "/")
+	service, method, ok := strings.Cut(fullMethod, "/")
+	if !ok {
+		return "", fullMethod
+	}
+	return service, method
 }
