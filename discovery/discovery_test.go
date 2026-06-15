@@ -87,6 +87,15 @@ func TestCachedResolverPickUsesRefreshedEndpoints(t *testing.T) {
 	}
 }
 
+func TestNewPickerDefaultsToP2C(t *testing.T) {
+	if _, ok := NewPicker("").(*P2CPicker); !ok {
+		t.Fatalf("expected empty load balance policy to use P2C")
+	}
+	if _, ok := NewPicker("unknown").(*P2CPicker); !ok {
+		t.Fatalf("expected unknown load balance policy to use P2C")
+	}
+}
+
 type fakeResolver struct {
 	endpoints []Endpoint
 }

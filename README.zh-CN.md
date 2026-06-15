@@ -400,7 +400,7 @@ instances, err := registry.Discover(ctx, stellar.ServiceQuery{
 })
 ```
 
-正常出站调用建议使用客户端侧 discovery。HTTP 和 gRPC named client 可以通过配置的注册中心后端发现 endpoint，并维护本地缓存：
+正常出站调用建议使用客户端侧 discovery。HTTP 和 gRPC named client 可以通过配置的注册中心后端发现 endpoint，并维护本地缓存。Stellar 会先执行流量路由，再做负载均衡；默认负载均衡策略是 `p2c`。
 
 ```yaml
 http:
@@ -412,7 +412,7 @@ http:
           service: user-service
           protocol: http
           endpoint_name: http
-          load_balance: round_robin
+          load_balance: p2c
           observability:
             metrics: true
 
@@ -425,7 +425,7 @@ grpc:
           service: user-service
           protocol: grpc
           endpoint_name: grpc
-          load_balance: round_robin
+          load_balance: p2c
           observability:
             metrics: true
 ```
@@ -716,6 +716,7 @@ conn, _, err := app.NewGRPCClient(context.Background(), "user-service")
 详细架构文档：
 
 - [服务注册与服务发现架构设计](docs/registry-discovery-architecture.md)
+- [客户端负载均衡模型](docs/loadbalancer.md)
 - [拦截器顺序模型](docs/Interceptor.md)
 
 ```mermaid

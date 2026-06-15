@@ -18,6 +18,7 @@ import (
 	"github.com/stellhub/stellar/governance"
 	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/lifecycle"
+	"github.com/stellhub/stellar/loadbalancer"
 	"github.com/stellhub/stellar/observability"
 	serviceregistry "github.com/stellhub/stellar/registry"
 	transportgrpc "github.com/stellhub/stellar/transport/grpc"
@@ -101,6 +102,30 @@ type DiscoveryTarget = discovery.Target
 type DiscoveryEndpoint = discovery.Endpoint
 
 type DiscoveryPicker = discovery.Picker
+
+type LoadBalancer = loadbalancer.Balancer
+
+type LoadBalancerPicker = loadbalancer.Picker
+
+type LoadBalancerRouter = loadbalancer.Router
+
+type LoadBalancerRouterFunc = loadbalancer.RouterFunc
+
+type LoadBalancerRequest = loadbalancer.Request
+
+type LoadBalancerResult = loadbalancer.Result
+
+type LoadBalancerPick = loadbalancer.Pick
+
+type LoadBalancerRouteRule = loadbalancer.RouteRule
+
+type LoadBalancerRouteMatch = loadbalancer.RouteMatch
+
+type LoadBalancerEndpointFilter = loadbalancer.EndpointFilter
+
+type LoadBalancerStaticRouter = loadbalancer.StaticRouter
+
+type LoadBalancerGovernanceRouter = loadbalancer.GovernanceRouter
 
 type Runtime = boot.Runtime
 
@@ -223,9 +248,16 @@ const (
 	RegistryConsul              = serviceregistry.AdapterConsul
 	RegistryNacos               = serviceregistry.AdapterNacos
 	RegistryStellMap            = serviceregistry.AdapterStellMap
+	DiscoveryP2C                = discovery.LoadBalanceP2C
 	DiscoveryRoundRobin         = discovery.LoadBalanceRoundRobin
 	DiscoveryRandom             = discovery.LoadBalanceRandom
 	DiscoveryWeightedRoundRobin = discovery.LoadBalanceWeightedRound
+	LoadBalanceP2C              = loadbalancer.PolicyP2C
+	LoadBalanceRoundRobin       = loadbalancer.PolicyRoundRobin
+	LoadBalanceRandom           = loadbalancer.PolicyRandom
+	LoadBalanceWeightedRound    = loadbalancer.PolicyWeightedRound
+	LoadBalanceLeastRequest     = loadbalancer.PolicyLeastRequest
+	LoadBalanceConsistentHash   = loadbalancer.PolicyConsistentHash
 )
 
 func New(cfg Config, options ...Option) *App {
@@ -295,6 +327,14 @@ func NewServiceRegistry(adapter ServiceRegistryAdapter) (*ServiceRegistry, error
 
 func NewDiscoveryPicker(policy string) DiscoveryPicker {
 	return discovery.NewPicker(policy)
+}
+
+func NewLoadBalancer(policy string) *LoadBalancerPicker {
+	return loadbalancer.New(policy)
+}
+
+func NewGovernanceRouter(store *GovernanceStore, fallback LoadBalancerRouter) *LoadBalancerGovernanceRouter {
+	return loadbalancer.NewGovernanceRouter(store, fallback)
 }
 
 func WithObservability(provider *ObservabilityProvider) Option {

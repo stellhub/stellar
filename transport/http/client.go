@@ -11,6 +11,7 @@ import (
 	stellarconfig "github.com/stellhub/stellar/config"
 	"github.com/stellhub/stellar/discovery"
 	"github.com/stellhub/stellar/interceptor"
+	"github.com/stellhub/stellar/loadbalancer"
 	"github.com/stellhub/stellar/observability"
 )
 
@@ -23,6 +24,8 @@ type clientConfig struct {
 	interceptors *interceptor.Registry
 	discovery    *discovery.CachedResolver
 	picker       discovery.Picker
+	director     *loadbalancer.Director
+	router       loadbalancer.Router
 	clientName   string
 	timeout      time.Duration
 	copyClient   bool
@@ -80,6 +83,20 @@ func WithClientDiscovery(resolver *discovery.CachedResolver, picker discovery.Pi
 	}
 }
 
+func WithClientLoadBalancer(director *loadbalancer.Director) ClientOption {
+	return func(cfg *clientConfig) {
+		if director != nil {
+			cfg.director = director
+		}
+	}
+}
+
+func WithClientRouter(router loadbalancer.Router) ClientOption {
+	return func(cfg *clientConfig) {
+		cfg.router = router
+	}
+}
+
 func NewClient(options ...ClientOption) *stdhttp.Client {
 	cfg := clientConfig{
 		base:     stdhttp.DefaultClient,
@@ -106,7 +123,13 @@ func NewClient(options ...ClientOption) *stdhttp.Client {
 	if baseTransport == nil {
 		baseTransport = stdhttp.DefaultTransport
 	}
-	if cfg.discovery != nil {
+	if cfg.director != nil {
+		baseTransport = &loadBalancingRoundTripper{
+			base:     baseTransport,
+			director: cfg.director,
+			service:  cfg.clientName,
+		}
+	} else if cfg.discovery != nil {
 		baseTransport = &discoveryRoundTripper{
 			base:     baseTransport,
 			resolver: cfg.discovery,
@@ -164,7 +187,13 @@ func NewNamedClientFromConfig(cfg *stellarconfig.HTTPClientConfig, name string, 
 			if err != nil {
 				return nil, "", err
 			}
-			cfgOptions = append(cfgOptions, WithClientDiscovery(resolver, discovery.NewPicker(discoveryCfg.LoadBalance)))
+			director := loadbalancer.NewDirector(
+				resolver,
+				target,
+				loadbalancer.WithPolicy(discoveryCfg.LoadBalance),
+				loadbalancer.WithRouter(routeEvaluatorFromOptions(options)),
+			)
+			cfgOptions = append(cfgOptions, WithClientLoadBalancer(director))
 			if strings.TrimSpace(named.BaseURL) == "" {
 				named.BaseURL = logicalHTTPBaseURL(target)
 			}
@@ -228,6 +257,16 @@ func transportFromConfig(cfg *stellarconfig.HTTPClientConfig) (stdhttp.RoundTrip
 	return transport, nil
 }
 
+func routeEvaluatorFromOptions(options []ClientOption) loadbalancer.Router {
+	cfg := clientConfig{}
+	for _, option := range options {
+		if option != nil {
+			option(&cfg)
+		}
+	}
+	return cfg.router
+}
+
 type discoveryRoundTripper struct {
 	base     stdhttp.RoundTripper
 	resolver *discovery.CachedResolver
@@ -251,6 +290,49 @@ func (t *discoveryRoundTripper) RoundTrip(req *stdhttp.Request) (*stdhttp.Respon
 	rewriteHTTPURL(next.URL, endpoint)
 	next.Host = next.URL.Host
 	return base.RoundTrip(next)
+}
+
+type loadBalancingRoundTripper struct {
+	base     stdhttp.RoundTripper
+	director *loadbalancer.Director
+	service  string
+}
+
+func (t *loadBalancingRoundTripper) RoundTrip(req *stdhttp.Request) (*stdhttp.Response, error) {
+	base := t.base
+	if base == nil {
+		base = stdhttp.DefaultTransport
+	}
+	if t.director == nil {
+		return base.RoundTrip(req)
+	}
+	request := loadbalancer.MergeContextRequest(req.Context(), loadbalancer.Request{
+		Protocol:  "http",
+		Service:   t.service,
+		Operation: req.Method + " " + req.URL.Path,
+		Method:    req.Method,
+		Path:      req.URL.Path,
+		Target:    req.URL.String(),
+		Headers:   cloneHeader(req.Header),
+	})
+	start := time.Now()
+	pick, err := t.director.Pick(req.Context(), request)
+	if err != nil {
+		return nil, err
+	}
+	next := req.Clone(loadbalancer.ContextWithRequest(req.Context(), request))
+	next.URL = cloneURL(req.URL)
+	rewriteHTTPURL(next.URL, pick.Endpoint)
+	next.Host = next.URL.Host
+	resp, err := base.RoundTrip(next)
+	status := 0
+	if resp != nil {
+		status = resp.StatusCode
+	}
+	if pick.Done != nil {
+		pick.Done(loadbalancer.Result{StatusCode: status, Duration: time.Since(start), Err: err})
+	}
+	return resp, err
 }
 
 func logicalHTTPBaseURL(target discovery.Target) string {
@@ -280,6 +362,14 @@ func cloneURL(value *url.URL) *url.URL {
 	}
 	copied := *value
 	return &copied
+}
+
+func cloneHeader(header stdhttp.Header) map[string][]string {
+	values := make(map[string][]string, len(header))
+	for key, items := range header {
+		values[key] = append([]string(nil), items...)
+	}
+	return values
 }
 
 func joinURLPath(prefix string, path string) string {
@@ -319,6 +409,16 @@ func (t *interceptorRoundTripper) RoundTrip(req *stdhttp.Request) (*stdhttp.Resp
 		Headers:   interceptor.HeaderFromHTTP(req.Header),
 		Raw:       req,
 	}
+	req = req.WithContext(loadbalancer.ContextWithRequest(req.Context(), loadbalancer.Request{
+		Protocol:   "http",
+		Service:    t.clientName,
+		Operation:  inv.Operation,
+		Method:     inv.Method,
+		Path:       inv.Path,
+		Target:     inv.Target,
+		Headers:    cloneHeader(req.Header),
+		Attributes: inv.Attributes,
+	}))
 	handler := t.registry.Chain(interceptor.KindHTTPClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
 		request, ok := payload.(*stdhttp.Request)
 		if !ok {

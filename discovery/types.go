@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	DefaultLoadBalance       = "round_robin"
+	DefaultLoadBalance       = "p2c"
+	LoadBalanceP2C           = "p2c"
 	LoadBalanceRoundRobin    = "round_robin"
 	LoadBalanceRandom        = "random"
 	LoadBalanceWeightedRound = "weighted_round_robin"

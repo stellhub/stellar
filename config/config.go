@@ -512,7 +512,7 @@ func normalizeDiscoveryConfig(value *DiscoveryConfig) *DiscoveryConfig {
 		discovery.Endpoints = []string{discovery.Endpoint}
 	}
 	if strings.TrimSpace(discovery.LoadBalance) == "" {
-		discovery.LoadBalance = "round_robin"
+		discovery.LoadBalance = "p2c"
 	}
 	if strings.TrimSpace(discovery.RefreshInterval) == "" {
 		discovery.RefreshInterval = "10s"

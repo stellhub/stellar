@@ -34,7 +34,7 @@ http:
       endpoints:
         - http://localhost:18090
       namespace: default
-      load_balance: round_robin
+      load_balance: p2c
     observability:
       trace: true
       metrics: true
@@ -69,7 +69,7 @@ grpc:
       endpoints:
         - http://localhost:18090
       namespace: default
-      load_balance: round_robin
+      load_balance: p2c
     observability:
       trace: true
       metrics: true

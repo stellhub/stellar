@@ -12,12 +12,16 @@ type Picker interface {
 
 func NewPicker(policy string) Picker {
 	switch strings.ToLower(strings.TrimSpace(policy)) {
+	case LoadBalanceRoundRobin:
+		return &RoundRobinPicker{}
 	case LoadBalanceRandom:
 		return &RandomPicker{}
 	case LoadBalanceWeightedRound:
 		return &WeightedRoundRobinPicker{}
+	case LoadBalanceP2C, "":
+		return &P2CPicker{}
 	default:
-		return &RoundRobinPicker{}
+		return &P2CPicker{}
 	}
 }
 
@@ -40,6 +44,28 @@ func (p *RandomPicker) Pick(endpoints []Endpoint) (Endpoint, error) {
 		return Endpoint{}, ErrNoAvailableEndpoint
 	}
 	return endpoints[rand.IntN(len(endpoints))], nil
+}
+
+type P2CPicker struct{}
+
+func (p *P2CPicker) Pick(endpoints []Endpoint) (Endpoint, error) {
+	if len(endpoints) == 0 {
+		return Endpoint{}, ErrNoAvailableEndpoint
+	}
+	if len(endpoints) == 1 {
+		return endpoints[0], nil
+	}
+	firstIndex := rand.IntN(len(endpoints))
+	secondIndex := rand.IntN(len(endpoints) - 1)
+	if secondIndex >= firstIndex {
+		secondIndex++
+	}
+	first := endpoints[firstIndex]
+	second := endpoints[secondIndex]
+	if second.Weight > first.Weight {
+		return second, nil
+	}
+	return first, nil
 }
 
 type WeightedRoundRobinPicker struct {

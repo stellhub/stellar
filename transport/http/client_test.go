@@ -9,6 +9,7 @@ import (
 	"github.com/stellhub/stellar/config"
 	"github.com/stellhub/stellar/discovery"
 	"github.com/stellhub/stellar/interceptor"
+	"github.com/stellhub/stellar/loadbalancer"
 	stellarhttp "github.com/stellhub/stellar/transport/http"
 )
 
@@ -104,6 +105,68 @@ func TestHTTPClientUsesDiscoveryEndpoint(t *testing.T) {
 		stellarhttp.WithTransport(roundTripperFunc(func(req *stdhttp.Request) (*stdhttp.Response, error) {
 			if req.URL.Host != "127.0.0.1:18081" {
 				t.Fatalf("unexpected discovered host %q", req.URL.Host)
+			}
+			return &stdhttp.Response{
+				StatusCode: stdhttp.StatusOK,
+				Body:       stdhttp.NoBody,
+				Header:     stdhttp.Header{},
+				Request:    req,
+			}, nil
+		})),
+	)
+
+	req, err := stdhttp.NewRequest(stdhttp.MethodGet, "http://user-service/users/42", nil)
+	if err != nil {
+		t.Fatalf("new request: %v", err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("do request: %v", err)
+	}
+	defer resp.Body.Close()
+}
+
+func TestHTTPClientRoutesBeforeLoadBalancing(t *testing.T) {
+	resolver := &staticResolver{
+		endpoints: []discovery.Endpoint{
+			{
+				Name:     "http",
+				Protocol: "http",
+				Host:     "127.0.0.1",
+				Port:     18081,
+				Labels:   map[string]string{"version": "v1"},
+			},
+			{
+				Name:     "http",
+				Protocol: "http",
+				Host:     "127.0.0.1",
+				Port:     18082,
+				Labels:   map[string]string{"version": "v2"},
+			},
+		},
+	}
+	director := loadbalancer.NewDirector(
+		resolver,
+		discovery.Target{Namespace: "default", Service: "user-service", Protocol: "http", PassingOnly: true},
+		loadbalancer.WithPolicy(loadbalancer.PolicyP2C),
+		loadbalancer.WithRouter(loadbalancer.StaticRouter{Rules: []loadbalancer.RouteRule{{
+			Name: "v2",
+			Match: loadbalancer.RouteMatch{
+				Protocol: "http",
+				Service:  "user-service",
+			},
+			Filter: loadbalancer.EndpointFilter{
+				Labels: map[string]string{"version": "v2"},
+			},
+		}}}),
+	)
+
+	client := stellarhttp.NewClient(
+		stellarhttp.WithClientName("user-service"),
+		stellarhttp.WithClientLoadBalancer(director),
+		stellarhttp.WithTransport(roundTripperFunc(func(req *stdhttp.Request) (*stdhttp.Response, error) {
+			if req.URL.Host != "127.0.0.1:18082" {
+				t.Fatalf("unexpected load-balanced host %q", req.URL.Host)
 			}
 			return &stdhttp.Response{
 				StatusCode: stdhttp.StatusOK,

@@ -46,7 +46,8 @@ flowchart LR
     App --> Client["HTTP/gRPC Client"]
     Client --> Resolver["Discovery Resolver"]
     Resolver --> Cache["Local Discovery Cache"]
-    Resolver --> Picker["Endpoint Picker"]
+    Cache --> Router["Traffic Router"]
+    Router --> LoadBalancer["Load Balancer"]
     Resolver --> DiscoveryAdapter["Registry Adapter"]
     DiscoveryAdapter --> StellMap
     DiscoveryAdapter --> Etcd
@@ -54,7 +55,8 @@ flowchart LR
     DiscoveryAdapter --> Nacos
 
     Client --> Interceptors["Client Interceptors"]
-    Interceptors --> Remote["Remote Endpoint"]
+    Interceptors --> Router
+    LoadBalancer --> Remote["Remote Endpoint"]
 ```
 
 ## 组件职责
@@ -138,7 +140,7 @@ type Resolver interface {
 }
 ```
 
-请求路径不应该每次都调用 `Resolve` 访问远端注册中心，而应该走本地缓存和 picker。
+请求路径不应该每次都调用 `Resolve` 访问远端注册中心，而应该走本地缓存、traffic router 和 load balancer。
 
 ### Discovery Cache
 
@@ -150,7 +152,7 @@ Discovery Cache 保存 resolver 发现到的实例列表。
 - 处理 watch 事件更新。
 - 支持 TTL 或周期性 refresh。
 - 支持 stale cache 策略，避免注册中心短暂故障直接打断业务请求。
-- 提供只读快照给 picker。
+- 提供只读快照给 traffic router 和 load balancer。
 
 建议策略：
 
@@ -159,15 +161,40 @@ Discovery Cache 保存 resolver 发现到的实例列表。
 - 注册中心短暂不可用时保留上一份可用实例。
 - 缓存为空时返回明确错误，让 client 的重试/熔断策略接手。
 
-### Endpoint Picker
+### Traffic Router and Load Balancer
 
-Picker 从本地缓存中选择一个 endpoint。
+Traffic Router 和 Load Balancer 属于 discovery 之上的客户端治理层。
 
-第一阶段建议支持：
+完整负载均衡模型见 [负载均衡模型设计](loadbalancer.md)。
+
+请求路径应该先从本地 discovery cache 读取候选 endpoint，再执行流量路由，最后只在路由筛选后的 endpoint 集合中做负载均衡：
+
+```text
+discovery cache
+-> traffic router
+-> load balancer
+-> selected endpoint
+```
+
+职责边界：
+
+- Traffic Router 负责根据治理规则筛选候选实例，例如 namespace、service、protocol、endpoint name、zone、instance id、labels、metadata、path 和 method。
+- Load Balancer 只负责在已筛选的候选实例中选择一个 endpoint，不直接访问注册中心，也不解析完整治理语义。
+- Router 通过 `governance.Store` 读取 route 规则，同时保留 `loadbalancer.Router` 扩展口，后续可以接入服务治理规则中心下发。
+
+默认策略：
+
+- `p2c`
+
+可选策略：
 
 - `round_robin`
 - `random`
 - `weighted_round_robin`
+- `least_request`
+- `consistent_hash`
+
+其中 P2C 是默认策略，适合作为通用微服务默认负载均衡；`consistent_hash` 可以通过请求上下文中的 hash key 或 `x-stellar-lb-key` header 进行稳定选择。
 
 后续可以由服务治理规则扩展：
 
@@ -200,7 +227,8 @@ conn, target, err := app.NewGRPCClient(ctx, "user-service")
 named client
 -> discovery resolver
 -> local cache
--> picker
+-> traffic router
+-> load balancer
 -> selected endpoint
 -> client interceptors
 -> remote call
@@ -255,7 +283,7 @@ http:
           service: user-service
           protocol: http
           endpoint_name: http
-          load_balance: round_robin
+          load_balance: p2c
           refresh_interval: 10s
           stale_ttl: 1m
 ```
@@ -281,7 +309,7 @@ grpc:
           service: user-service
           protocol: grpc
           endpoint_name: grpc
-          load_balance: round_robin
+          load_balance: p2c
           refresh_interval: 10s
           stale_ttl: 1m
 ```
@@ -309,7 +337,7 @@ named client discovery
 服务注册与发现使用同一套 OpenTelemetry MeterProvider，但指标语义分两层：
 
 - `registry.client.*`：记录注册中心 adapter 的通用操作，包括 `register`、`deregister`、`discover`、`watch` 和 `close` 的次数、耗时、实例数、endpoint 数与 watch event 数。
-- `discovery.client.*`：记录客户端侧 resolver/cache/picker 的行为，包括 `resolve`、`refresh`、`pick` 的次数、耗时、可见 endpoint 数、cache age 与 watch event 数。
+- `discovery.client.*`：记录客户端侧 resolver/cache/load balancer 的行为，包括 `resolve`、`refresh`、`pick` 的次数、耗时、可见 endpoint 数、cache age 与 watch event 数。
 
 配置上可以使用 `registry.observability.metrics` 控制注册中心操作指标，使用 `discovery.observability.metrics` 或 named client 下 `discovery.observability.metrics` 控制客户端侧发现指标。全局 `opentelemetry.metrics` 决定这些指标最终是否导出到 `/metrics` 或 OTLP。
 
@@ -353,7 +381,8 @@ business code
 -> app.NewHTTPClient("user-service")
 -> discovery resolver starts watch/refresh
 -> request
--> pick http endpoint from local cache
+-> route endpoints from local cache
+-> load balance selected endpoint
 -> build URL
 -> context propagation
 -> tracing/logging/metrics
@@ -372,7 +401,8 @@ business code
 business code
 -> app.NewGRPCClient(ctx, "user-service")
 -> discovery resolver starts watch/refresh
--> grpc resolver or custom dial target receives endpoint updates
+-> grpc resolver receives endpoint updates
+-> grpc balancer routes endpoints and picks selected SubConn
 -> context propagation
 -> tracing/logging/metrics
 -> timeout
@@ -436,28 +466,28 @@ Discovery Resolver 只负责“找到候选 endpoint”，不直接实现完整�
 - circuit breaker
 - retry policy
 
-Resolver 和 Picker 应预留规则输入，但不要在第一阶段把所有治理语义硬编码到注册中心 adapter 内。
+Resolver、Traffic Router 和 Load Balancer 应预留规则输入，但不要把完整治理语义硬编码到注册中心 adapter 内。
 
 ## 当前实现状态
 
 当前代码已经完成第一阶段 discovery resolver：
 
-1. 新增 `discovery` 包，提供 `Resolver`、`Target`、`Endpoint`、`CachedResolver` 和 `Picker`。
+1. 新增 `discovery` 包，提供 `Resolver`、`Target`、`Endpoint` 和 `CachedResolver`。
 2. `discovery.RegistryResolver` 复用现有 `registry.Adapter`，因此可通过 StellMap、Etcd、Consul、Nacos 发现服务。
 3. 配置模型已支持顶层 `discovery`、`http.client.discovery`、`grpc.client.discovery` 以及 named client 级别的 `discovery`。
-4. HTTP named client 已接入 discovery RoundTripper，在请求路径上从本地缓存 pick endpoint 并改写真实 URL。
-5. gRPC named client 已接入 gRPC resolver 和标准 `round_robin` balancer。
-6. 如果 named client 没有显式 discovery，且没有静态 `base_url` 或 `target`，会先继承顶层 `discovery`，再回退到全局 `registry` 的连接配置。
+4. 新增 `loadbalancer` 包，提供 Router、Balancer、Director、P2C 默认策略和多种可选策略。
+5. HTTP named client 已接入 discovery + traffic router + load balancer，在请求路径上选择 endpoint 并改写真实 URL。
+6. gRPC named client 已接入 gRPC resolver 和 Stellar 自定义 balancer，在 gRPC Pick 阶段执行路由和负载均衡。
+7. 如果 named client 没有显式 discovery，且没有静态 `base_url` 或 `target`，会先继承顶层 `discovery`，再回退到全局 `registry` 的连接配置。
 
 ## 后续演进
 
 后续可以继续补强：
 
-1. 增加 discovery 指标、日志和 trace。
-2. 支持更完整的 gRPC 自定义 balancer，以表达 random、weighted round robin 等策略。
-3. 接入治理规则，让 resolver/picker 根据规则过滤和选择 endpoint。
-4. 增加 outlier detection、zone-aware、canary、traffic split 等治理能力。
-5. 增加更多端到端示例，覆盖 HTTP client discovery 和 gRPC client discovery。
+1. 增加负载均衡维度的指标、日志和 trace。
+2. 接入治理规则下发，让 Router 读取远端规则并动态筛选 endpoint。
+3. 增加 outlier detection、zone-aware、canary、traffic split 等治理能力。
+4. 增加更多端到端示例，覆盖 HTTP client discovery 和 gRPC client discovery。
 
 ## 总结
 
@@ -465,7 +495,7 @@ Resolver 和 Picker 应预留规则输入，但不要在第一阶段把所有治
 
 ```text
 服务端：HTTP/gRPC server 启动 -> registry 自动注册当前实例
-客户端：HTTP/gRPC client 创建 -> discovery 自动发现下游实例 -> 本地 picker 选择 endpoint -> 出站调用
+客户端：HTTP/gRPC client 创建 -> discovery 自动发现下游实例 -> traffic router 筛选候选实例 -> load balancer 选择 endpoint -> 出站调用
 ```
 
 `registry` 是底层基础设施抽象，`discovery resolver` 是客户端出站调用能力，二者可以默认复用配置，但不应该被强制绑定为同一个注册中心。

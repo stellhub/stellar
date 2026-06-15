@@ -400,7 +400,7 @@ instances, err := registry.Discover(ctx, stellar.ServiceQuery{
 })
 ```
 
-For normal outbound calls, prefer client-side discovery. HTTP and gRPC named clients can discover endpoints through the configured registry backend and keep a local cache:
+For normal outbound calls, prefer client-side discovery. HTTP and gRPC named clients can discover endpoints through the configured registry backend and keep a local cache. Stellar then applies traffic routing before load balancing; the default load-balancing policy is `p2c`.
 
 ```yaml
 http:
@@ -412,7 +412,7 @@ http:
           service: user-service
           protocol: http
           endpoint_name: http
-          load_balance: round_robin
+          load_balance: p2c
           observability:
             metrics: true
 
@@ -425,7 +425,7 @@ grpc:
           service: user-service
           protocol: grpc
           endpoint_name: grpc
-          load_balance: round_robin
+          load_balance: p2c
           observability:
             metrics: true
 ```
@@ -716,6 +716,7 @@ conn, _, err := app.NewGRPCClient(context.Background(), "user-service")
 Detailed architecture documents:
 
 - [Service registration and discovery architecture](docs/registry-discovery-architecture.md)
+- [Client-side load balancing model](docs/loadbalancer.md)
 - [Interceptor ordering model](docs/Interceptor.md)
 
 ```mermaid

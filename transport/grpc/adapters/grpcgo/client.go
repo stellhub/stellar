@@ -10,10 +10,11 @@ import (
 	stellarconfig "github.com/stellhub/stellar/config"
 	"github.com/stellhub/stellar/discovery"
 	"github.com/stellhub/stellar/interceptor"
+	"github.com/stellhub/stellar/loadbalancer"
 	"github.com/stellhub/stellar/observability"
 	stellargrpc "github.com/stellhub/stellar/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/balancer/roundrobin"
+	grpcbalancer "google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	grpcresolver "google.golang.org/grpc/resolver"
@@ -26,6 +27,7 @@ type clientConfig struct {
 	dialOptions    []grpc.DialOption
 	observer       *observability.Provider
 	interceptors   *interceptor.Registry
+	router         loadbalancer.Router
 	defaultTimeout time.Duration
 }
 
@@ -46,6 +48,12 @@ func WithClientObservability(provider *observability.Provider) ClientOption {
 func WithInterceptors(registry *interceptor.Registry) ClientOption {
 	return func(cfg *clientConfig) {
 		cfg.interceptors = registry
+	}
+}
+
+func WithRouter(router loadbalancer.Router) ClientOption {
+	return func(cfg *clientConfig) {
+		cfg.router = router
 	}
 }
 
@@ -127,7 +135,7 @@ func NewNamedClientConnFromConfig(ctx context.Context, cfg *stellarconfig.GRPCCl
 		if discoveryCfg, discoveryTarget, ok, err := discovery.GRPCConfigForNamed(cfg, named, name); err != nil {
 			return nil, "", err
 		} else if ok {
-			discoveredTarget, discoveryOptions, err := discoveryDialOptions(ctx, discoveryCfg, discoveryTarget, provider)
+			discoveredTarget, discoveryOptions, err := discoveryDialOptions(ctx, discoveryCfg, discoveryTarget, provider, routeEvaluatorFromOptions(options))
 			if err != nil {
 				return nil, "", err
 			}
@@ -152,6 +160,7 @@ func NewNamedClientConnFromConfig(ctx context.Context, cfg *stellarconfig.GRPCCl
 type ClientFactory struct {
 	observer     *observability.Provider
 	interceptors *interceptor.Registry
+	router       loadbalancer.Router
 	options      []grpc.DialOption
 }
 
@@ -165,12 +174,13 @@ func NewClientFactory(options ...ClientOption) *ClientFactory {
 	return &ClientFactory{
 		observer:     cfg.observer,
 		interceptors: cfg.interceptors,
+		router:       cfg.router,
 		options:      cfg.dialOptions,
 	}
 }
 
 func (f *ClientFactory) NewClient(ctx context.Context, target string, _ ...stellargrpc.ClientOption) (any, error) {
-	return NewClientConn(ctx, target, WithClientObservability(f.observer), WithInterceptors(f.interceptors), WithDialOption(f.options...))
+	return NewClientConn(ctx, target, WithClientObservability(f.observer), WithInterceptors(f.interceptors), WithRouter(f.router), WithDialOption(f.options...))
 }
 
 func clientOptionsFromConfig(cfg *stellarconfig.GRPCClientConfig, named stellarconfig.GRPCNamedClientConfig) (string, []ClientOption, error) {
@@ -213,6 +223,16 @@ func clientOptionsFromConfig(cfg *stellarconfig.GRPCClientConfig, named stellarc
 	return target, options, nil
 }
 
+func routeEvaluatorFromOptions(options []ClientOption) loadbalancer.Router {
+	cfg := clientConfig{}
+	for _, option := range options {
+		if option != nil {
+			option(&cfg)
+		}
+	}
+	return cfg.router
+}
+
 func defaultTimeoutUnaryInterceptor(timeout time.Duration) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req any, reply any, conn *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		ctx, cancel := contextWithDefaultTimeout(ctx, timeout)
@@ -251,6 +271,7 @@ func boolValue(value *bool, fallback bool) bool {
 func unaryClientInterceptor(registry *interceptor.Registry) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req any, reply any, conn *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		inv := grpcClientInvocation(ctx, method, conn)
+		ctx = loadbalancer.ContextWithRequest(ctx, loadBalancerRequestFromInvocation(inv))
 		chain := registry.Chain(interceptor.KindGRPCClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
 			return nil, invoker(ctx, method, payload, reply, conn, opts...)
 		})
@@ -262,6 +283,7 @@ func unaryClientInterceptor(registry *interceptor.Registry) grpc.UnaryClientInte
 func streamClientInterceptor(registry *interceptor.Registry) grpc.StreamClientInterceptor {
 	return func(ctx context.Context, desc *grpc.StreamDesc, conn *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		inv := grpcClientInvocation(ctx, method, conn)
+		ctx = loadbalancer.ContextWithRequest(ctx, loadBalancerRequestFromInvocation(inv))
 		chain := registry.Chain(interceptor.KindGRPCClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
 			return streamer(ctx, desc, conn, method, opts...)
 		})
@@ -298,7 +320,7 @@ func grpcClientInvocation(ctx context.Context, fullMethod string, conn *grpc.Cli
 
 var discoveryResolverID atomic.Uint64
 
-func discoveryDialOptions(ctx context.Context, cfg *stellarconfig.DiscoveryConfig, target discovery.Target, provider *observability.Provider) (string, []ClientOption, error) {
+func discoveryDialOptions(ctx context.Context, cfg *stellarconfig.DiscoveryConfig, target discovery.Target, provider *observability.Provider, router loadbalancer.Router) (string, []ClientOption, error) {
 	cached, err := discovery.NewCachedResolverFromConfig(ctx, cfg, target, discovery.WithObservability(provider))
 	if err != nil {
 		return "", nil, err
@@ -311,6 +333,8 @@ func discoveryDialOptions(ctx context.Context, cfg *stellarconfig.DiscoveryConfi
 	scheme := fmt.Sprintf("stellar-discovery-%d", discoveryResolverID.Add(1))
 	builder := manual.NewBuilderWithScheme(scheme)
 	builder.InitialState(grpcResolverState(endpoints))
+	balancerName := scheme + "-lb"
+	grpcbalancer.Register(newLoadBalancerBuilder(balancerName, cfg.LoadBalance, router, target.Service))
 
 	updateCtx, cancel := context.WithCancel(context.Background())
 	builder.CloseCallback = func() {
@@ -325,7 +349,7 @@ func discoveryDialOptions(ctx context.Context, cfg *stellarconfig.DiscoveryConfi
 	}
 	go updateGRPCResolverLoop(updateCtx, cached, target, builder, refreshInterval)
 
-	serviceConfig := fmt.Sprintf(`{"loadBalancingConfig":[{"%s":{}}]}`, roundrobin.Name)
+	serviceConfig := fmt.Sprintf(`{"loadBalancingConfig":[{"%s":{}}]}`, balancerName)
 	return builder.Scheme() + ":///" + target.Service, []ClientOption{
 		WithDialOption(
 			grpc.WithResolvers(builder),
@@ -360,9 +384,25 @@ func grpcResolverState(endpoints []discovery.Endpoint) grpcresolver.State {
 		if strings.TrimSpace(address) == "" {
 			continue
 		}
-		addresses = append(addresses, grpcresolver.Address{Addr: address})
+		addresses = append(addresses, grpcResolverAddress(endpoint, address))
 	}
 	return grpcresolver.State{Addresses: addresses}
+}
+
+func loadBalancerRequestFromInvocation(inv *interceptor.Invocation) loadbalancer.Request {
+	if inv == nil {
+		return loadbalancer.Request{Protocol: "grpc"}
+	}
+	return loadbalancer.Request{
+		Protocol:   "grpc",
+		Service:    inv.Service,
+		Operation:  inv.Operation,
+		Method:     inv.Method,
+		Path:       inv.Path,
+		Target:     inv.Target,
+		Headers:    map[string][]string(inv.Headers),
+		Attributes: inv.Attributes,
+	}
 }
 
 func headersFromOutgoingContext(ctx context.Context) interceptor.Header {

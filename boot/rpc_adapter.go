@@ -3,6 +3,7 @@ package boot
 import (
 	"context"
 
+	"github.com/stellhub/stellar/loadbalancer"
 	bootgrpc "github.com/stellhub/stellar/transport/grpc"
 	grpcgoadapter "github.com/stellhub/stellar/transport/grpc/adapters/grpcgo"
 	"google.golang.org/grpc"
@@ -29,7 +30,14 @@ func WithRPCServer(addr string) Option {
 
 func (a *App) NewGRPCClient(ctx context.Context, name string) (*grpc.ClientConn, string, error) {
 	cfg := a.Config()
-	return grpcgoadapter.NewNamedClientConnFromConfig(ctx, grpcClientConfigWithDiscovery(cfg), name, a.observability, grpcgoadapter.WithInterceptors(a.interceptors))
+	return grpcgoadapter.NewNamedClientConnFromConfig(
+		ctx,
+		grpcClientConfigWithDiscovery(cfg),
+		name,
+		a.observability,
+		grpcgoadapter.WithInterceptors(a.interceptors),
+		grpcgoadapter.WithRouter(loadbalancer.NewGovernanceRouter(a.governance, nil)),
+	)
 }
 
 func (a *App) setRPCAdapter(adapter bootgrpc.Adapter, registerTransport bool) {
