@@ -159,6 +159,8 @@ registry:
     version: v1
   metadata:
     owner: platform
+  observability:
+    metrics: true
   service_endpoints:
     - name: http
       protocol: http
@@ -174,6 +176,8 @@ discovery:
   namespace: default
   refresh_interval: 10s
   stale_ttl: 1m
+  observability:
+    metrics: true
 opentelemetry:
   log: true
   trace: true
@@ -302,11 +306,17 @@ opentelemetry:
 	if cfg.Registry.Labels["version"] != "v1" || cfg.Registry.Metadata["owner"] != "platform" {
 		t.Fatalf("unexpected registry metadata labels=%#v metadata=%#v", cfg.Registry.Labels, cfg.Registry.Metadata)
 	}
+	if cfg.Registry.Observability.Metrics == nil || !*cfg.Registry.Observability.Metrics {
+		t.Fatalf("expected registry metrics observability")
+	}
 	if len(cfg.Registry.ServiceEndpoints) != 1 || cfg.Registry.ServiceEndpoints[0].Port != 18080 {
 		t.Fatalf("unexpected registry service endpoints %#v", cfg.Registry.ServiceEndpoints)
 	}
 	if cfg.Discovery == nil || cfg.Discovery.Adapter != "stellmap" || cfg.Discovery.RefreshInterval != "10s" {
 		t.Fatalf("unexpected discovery config %#v", cfg.Discovery)
+	}
+	if cfg.Discovery.Observability.Metrics == nil || !*cfg.Discovery.Observability.Metrics {
+		t.Fatalf("expected discovery metrics observability")
 	}
 	if cfg.Starter.OpenTelemetry == nil || !cfg.Starter.OpenTelemetry.Log.Enabled {
 		t.Fatalf("expected opentelemetry log starter")

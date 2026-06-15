@@ -44,6 +44,8 @@ type Provider struct {
 	cacheClientTrace        bool
 	cacheClientMetrics      bool
 	cacheClientLogs         bool
+	registryMetrics         bool
+	discoveryMetrics        bool
 
 	httpServerRequests     metric.Int64Counter
 	httpServerDuration     metric.Float64Histogram
@@ -52,6 +54,16 @@ type Provider struct {
 	cacheClientValueSize   metric.Int64Histogram
 	cacheClientEntries     metric.Int64Gauge
 	cacheClientCapacity    metric.Int64Gauge
+	registryOperations     metric.Int64Counter
+	registryDuration       metric.Float64Histogram
+	registryInstances      metric.Int64Gauge
+	registryEndpoints      metric.Int64Gauge
+	registryWatchEvents    metric.Int64Counter
+	discoveryOperations    metric.Int64Counter
+	discoveryDuration      metric.Float64Histogram
+	discoveryEndpoints     metric.Int64Gauge
+	discoveryCacheAge      metric.Float64Gauge
+	discoveryWatchEvents   metric.Int64Counter
 	httpClientLogger       log.Logger
 	redisClientLogger      log.Logger
 	mysqlClientLogger      log.Logger
@@ -87,6 +99,8 @@ type providerConfig struct {
 	cacheClientTrace        *bool
 	cacheClientMetrics      *bool
 	cacheClientLogs         *bool
+	registryMetrics         *bool
+	discoveryMetrics        *bool
 }
 
 func New(options ...Option) *Provider {
@@ -129,6 +143,8 @@ func New(options ...Option) *Provider {
 		cacheClientTrace:        boolValue(cfg.cacheClientTrace, true),
 		cacheClientMetrics:      boolValue(cfg.cacheClientMetrics, true),
 		cacheClientLogs:         boolValue(cfg.cacheClientLogs, true),
+		registryMetrics:         boolValue(cfg.registryMetrics, true),
+		discoveryMetrics:        boolValue(cfg.discoveryMetrics, true),
 		httpClientLogger: cfg.loggerProvider.Logger(
 			ScopeName + "/http-client",
 		),
@@ -148,6 +164,8 @@ func New(options ...Option) *Provider {
 	}
 	provider.initHTTPMetrics()
 	provider.initCacheMetrics()
+	provider.initRegistryMetrics()
+	provider.initDiscoveryMetrics()
 	return provider
 }
 
@@ -234,6 +252,18 @@ func WithCacheClientObservability(trace *bool, metrics *bool, logs *bool) Option
 		cfg.cacheClientTrace = trace
 		cfg.cacheClientMetrics = metrics
 		cfg.cacheClientLogs = logs
+	}
+}
+
+func WithRegistryObservability(metrics *bool) Option {
+	return func(cfg *providerConfig) {
+		cfg.registryMetrics = metrics
+	}
+}
+
+func WithDiscoveryObservability(metrics *bool) Option {
+	return func(cfg *providerConfig) {
+		cfg.discoveryMetrics = metrics
 	}
 }
 
@@ -375,6 +405,20 @@ func (p *Provider) CacheClientLogsEnabled() bool {
 		return true
 	}
 	return p.cacheClientLogs
+}
+
+func (p *Provider) RegistryMetricsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.registryMetrics
+}
+
+func (p *Provider) DiscoveryMetricsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.discoveryMetrics
 }
 
 func (p *Provider) MetricsHandler() http.Handler {

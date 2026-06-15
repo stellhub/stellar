@@ -73,6 +73,14 @@ func NewFromConfig(ctx context.Context, cfg stellarconfig.Config) (*Provider, er
 		signals := cfg.Cache.Observability
 		providerCfg = append(providerCfg, WithCacheClientObservability(signals.Trace, signals.Metrics, signals.Logs))
 	}
+	if cfg.Registry != nil {
+		signals := cfg.Registry.Observability
+		providerCfg = append(providerCfg, WithRegistryObservability(signals.Metrics))
+	}
+	if cfg.Discovery != nil {
+		signals := cfg.Discovery.Observability
+		providerCfg = append(providerCfg, WithDiscoveryObservability(signals.Metrics))
+	}
 	var shutdowns []func(context.Context) error
 	var metricsHandler http.Handler
 

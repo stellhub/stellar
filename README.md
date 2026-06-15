@@ -371,6 +371,8 @@ registry:
     version: v1
   metadata:
     owner: platform
+  observability:
+    metrics: true
   service_endpoints:
     - name: http
       protocol: http
@@ -411,6 +413,8 @@ http:
           protocol: http
           endpoint_name: http
           load_balance: round_robin
+          observability:
+            metrics: true
 
 grpc:
   client:
@@ -422,6 +426,8 @@ grpc:
           protocol: grpc
           endpoint_name: grpc
           load_balance: round_robin
+          observability:
+            metrics: true
 ```
 
 If a named client does not configure `discovery` and does not configure a static `base_url` or `target`, Stellar inherits the top-level `discovery` config, then falls back to the global `registry` connection config.
@@ -623,7 +629,7 @@ Cache create/update body:
 
 ## OpenTelemetry
 
-Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, MySQL client, PostgreSQL client, and local cache client with OpenTelemetry trace, logs, and metrics.
+Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, MySQL client, PostgreSQL client, local cache client, service registry, and client-side discovery with OpenTelemetry trace, logs, and metrics where applicable.
 
 Stellar reads configuration in this order:
 
@@ -654,6 +660,8 @@ OpenTelemetry defaults:
 - `log`: defaults to local `stdout`/`stderr`; set `log.enabled: false` with `log.output: file` for local rolling files, or set `log.enabled: true` for OTLP export to `localhost:4317`.
 - `trace`: when enabled, spans are generated without export; set `trace_output: otlp` for `localhost:4317`.
 - `metrics`: when enabled, exposes `/metrics` on the configured HTTP port; set `metrics_output: otlp` for `localhost:4317`.
+
+Registry and discovery metrics are controlled by `registry.observability.metrics` and `discovery.observability.metrics`, or by the `observability.metrics` block inside a named client discovery config.
 
 Example with explicit OTLP output:
 

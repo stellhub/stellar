@@ -371,6 +371,8 @@ registry:
     version: v1
   metadata:
     owner: platform
+  observability:
+    metrics: true
   service_endpoints:
     - name: http
       protocol: http
@@ -411,6 +413,8 @@ http:
           protocol: http
           endpoint_name: http
           load_balance: round_robin
+          observability:
+            metrics: true
 
 grpc:
   client:
@@ -422,6 +426,8 @@ grpc:
           protocol: grpc
           endpoint_name: grpc
           load_balance: round_robin
+          observability:
+            metrics: true
 ```
 
 如果 named client 没有配置 `discovery`，也没有配置静态 `base_url` 或 `target`，Stellar 会先继承顶层 `discovery` 配置，再回退到全局 `registry` 的连接配置。
@@ -623,7 +629,7 @@ Cache 创建/更新请求体：
 
 ## OpenTelemetry
 
-Stellar 会为 HTTP server、gRPC server、HTTP client、gRPC client、Redis client、MySQL client、PostgreSQL client 和本地 cache client 接入 OpenTelemetry trace、logs 与 metrics。
+Stellar 会为 HTTP server、gRPC server、HTTP client、gRPC client、Redis client、MySQL client、PostgreSQL client、本地 cache client、服务注册中心和客户端侧 discovery 接入可适用的 OpenTelemetry trace、logs 与 metrics。
 
 Stellar 会按下面顺序读取配置：
 
@@ -654,6 +660,8 @@ OpenTelemetry 默认行为：
 - `log`：默认输出到本地 `stdout`/`stderr`；设置 `log.enabled: false` 并配合 `log.output: file` 可输出到本地滚动文件；设置 `log.enabled: true` 可通过 OTLP 输出到 `localhost:4317`。
 - `trace`：启用后会生成 spans，但默认不导出；设置 `trace_output: otlp` 可输出到 `localhost:4317`。
 - `metrics`：启用后会在当前 HTTP 端口暴露 `/metrics`；设置 `metrics_output: otlp` 可输出到 `localhost:4317`。
+
+注册中心和服务发现指标分别通过 `registry.observability.metrics`、`discovery.observability.metrics` 控制；named client 下的 discovery 也可以使用自己的 `observability.metrics`。
 
 显式 OTLP 输出示例：
 

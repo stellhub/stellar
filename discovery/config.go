@@ -39,6 +39,7 @@ func FromRegistryConfig(registryCfg *config.RegistryConfig) *config.DiscoveryCon
 		PassingOnly:     boolPtr(true),
 		Labels:          cloneStringMap(registryCfg.Labels),
 		Metadata:        cloneStringMap(registryCfg.Metadata),
+		Observability:   registryCfg.Observability,
 	})
 }
 
@@ -127,6 +128,15 @@ func MergeConfig(base *config.DiscoveryConfig, override *config.DiscoveryConfig)
 	}
 	if override.Metadata != nil {
 		merged.Metadata = cloneStringMap(override.Metadata)
+	}
+	if override.Observability.Trace != nil {
+		merged.Observability.Trace = override.Observability.Trace
+	}
+	if override.Observability.Metrics != nil {
+		merged.Observability.Metrics = override.Observability.Metrics
+	}
+	if override.Observability.Logs != nil {
+		merged.Observability.Logs = override.Observability.Logs
 	}
 	return normalizeDiscoveryConfig(&merged)
 }
@@ -239,24 +249,25 @@ func RegistryConfigFromDiscovery(cfg *config.DiscoveryConfig) *config.RegistryCo
 		return nil
 	}
 	return &config.RegistryConfig{
-		Enabled:    cfg.Enabled,
-		Adapter:    cfg.Adapter,
-		Endpoints:  append([]string(nil), cfg.Endpoints...),
-		Endpoint:   cfg.Endpoint,
-		Namespace:  cfg.Namespace,
-		Group:      cfg.Group,
-		Cluster:    cfg.Cluster,
-		Service:    cfg.Service,
-		Zone:       cfg.Zone,
-		Username:   cfg.Username,
-		Password:   cfg.Password,
-		Token:      cfg.Token,
-		Scheme:     cfg.Scheme,
-		Datacenter: cfg.Datacenter,
-		Prefix:     cfg.Prefix,
-		Timeout:    cfg.Timeout,
-		Labels:     cloneStringMap(cfg.Labels),
-		Metadata:   cloneStringMap(cfg.Metadata),
+		Enabled:       cfg.Enabled,
+		Adapter:       cfg.Adapter,
+		Endpoints:     append([]string(nil), cfg.Endpoints...),
+		Endpoint:      cfg.Endpoint,
+		Namespace:     cfg.Namespace,
+		Group:         cfg.Group,
+		Cluster:       cfg.Cluster,
+		Service:       cfg.Service,
+		Zone:          cfg.Zone,
+		Username:      cfg.Username,
+		Password:      cfg.Password,
+		Token:         cfg.Token,
+		Scheme:        cfg.Scheme,
+		Datacenter:    cfg.Datacenter,
+		Prefix:        cfg.Prefix,
+		Timeout:       cfg.Timeout,
+		Labels:        cloneStringMap(cfg.Labels),
+		Metadata:      cloneStringMap(cfg.Metadata),
+		Observability: cfg.Observability,
 	}
 }
 

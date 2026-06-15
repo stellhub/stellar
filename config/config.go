@@ -175,33 +175,35 @@ type RegistryConfig struct {
 	Labels            map[string]string               `yaml:"labels"`
 	Metadata          map[string]string               `yaml:"metadata"`
 	ServiceEndpoints  []RegistryServiceEndpointConfig `yaml:"service_endpoints"`
+	Observability     ObservabilitySignalConfig       `yaml:"observability"`
 }
 
 type DiscoveryConfig struct {
-	Enabled         *bool             `yaml:"enabled"`
-	Adapter         string            `yaml:"adapter"`
-	Endpoints       []string          `yaml:"endpoints"`
-	Endpoint        string            `yaml:"endpoint"`
-	Namespace       string            `yaml:"namespace"`
-	Group           string            `yaml:"group"`
-	Cluster         string            `yaml:"cluster"`
-	Service         string            `yaml:"service"`
-	Zone            string            `yaml:"zone"`
-	Protocol        string            `yaml:"protocol"`
-	EndpointName    string            `yaml:"endpoint_name"`
-	LoadBalance     string            `yaml:"load_balance"`
-	RefreshInterval string            `yaml:"refresh_interval"`
-	StaleTTL        string            `yaml:"stale_ttl"`
-	Timeout         string            `yaml:"timeout"`
-	Username        string            `yaml:"username"`
-	Password        string            `yaml:"password"`
-	Token           string            `yaml:"token"`
-	Scheme          string            `yaml:"scheme"`
-	Datacenter      string            `yaml:"datacenter"`
-	Prefix          string            `yaml:"prefix"`
-	PassingOnly     *bool             `yaml:"passing_only"`
-	Labels          map[string]string `yaml:"labels"`
-	Metadata        map[string]string `yaml:"metadata"`
+	Enabled         *bool                     `yaml:"enabled"`
+	Adapter         string                    `yaml:"adapter"`
+	Endpoints       []string                  `yaml:"endpoints"`
+	Endpoint        string                    `yaml:"endpoint"`
+	Namespace       string                    `yaml:"namespace"`
+	Group           string                    `yaml:"group"`
+	Cluster         string                    `yaml:"cluster"`
+	Service         string                    `yaml:"service"`
+	Zone            string                    `yaml:"zone"`
+	Protocol        string                    `yaml:"protocol"`
+	EndpointName    string                    `yaml:"endpoint_name"`
+	LoadBalance     string                    `yaml:"load_balance"`
+	RefreshInterval string                    `yaml:"refresh_interval"`
+	StaleTTL        string                    `yaml:"stale_ttl"`
+	Timeout         string                    `yaml:"timeout"`
+	Username        string                    `yaml:"username"`
+	Password        string                    `yaml:"password"`
+	Token           string                    `yaml:"token"`
+	Scheme          string                    `yaml:"scheme"`
+	Datacenter      string                    `yaml:"datacenter"`
+	Prefix          string                    `yaml:"prefix"`
+	PassingOnly     *bool                     `yaml:"passing_only"`
+	Labels          map[string]string         `yaml:"labels"`
+	Metadata        map[string]string         `yaml:"metadata"`
+	Observability   ObservabilitySignalConfig `yaml:"observability"`
 }
 
 type RegistryServiceEndpointConfig struct {

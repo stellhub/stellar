@@ -221,7 +221,7 @@ func configureRegistryStarter(ctx context.Context, app *App, cfg config.Config) 
 		return nil
 	}
 
-	registry, err := serviceregistry.NewFromConfig(ctx, cfg.Registry)
+	registry, err := serviceregistry.NewFromConfig(ctx, cfg.Registry, serviceregistry.WithObservability(app.observability))
 	if err != nil {
 		return fmt.Errorf("configure service registry: %w", err)
 	}

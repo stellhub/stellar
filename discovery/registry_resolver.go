@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/stellhub/stellar/config"
+	"github.com/stellhub/stellar/observability"
 	serviceregistry "github.com/stellhub/stellar/registry"
 )
 
@@ -21,8 +22,19 @@ func NewRegistryResolver(registry *serviceregistry.Registry) (*RegistryResolver,
 	return &RegistryResolver{registry: registry}, nil
 }
 
-func NewRegistryResolverFromConfig(ctx context.Context, cfg *config.DiscoveryConfig) (*RegistryResolver, error) {
-	registry, err := serviceregistry.NewFromConfig(ctx, RegistryConfigFromDiscovery(cfg))
+func NewRegistryResolverFromConfig(ctx context.Context, cfg *config.DiscoveryConfig, providers ...*observability.Provider) (*RegistryResolver, error) {
+	var provider *observability.Provider
+	for _, candidate := range providers {
+		if candidate != nil {
+			provider = candidate
+			break
+		}
+	}
+	options := []serviceregistry.Option(nil)
+	if provider != nil {
+		options = append(options, serviceregistry.WithObservability(provider))
+	}
+	registry, err := serviceregistry.NewFromConfig(ctx, RegistryConfigFromDiscovery(cfg), options...)
 	if err != nil {
 		return nil, err
 	}

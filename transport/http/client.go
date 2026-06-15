@@ -160,7 +160,7 @@ func NewNamedClientFromConfig(cfg *stellarconfig.HTTPClientConfig, name string, 
 		if discoveryCfg, target, ok, err := discovery.HTTPConfigForNamed(cfg, named, name); err != nil {
 			return nil, "", err
 		} else if ok {
-			resolver, err := discovery.NewCachedResolverFromConfig(context.Background(), discoveryCfg, target)
+			resolver, err := discovery.NewCachedResolverFromConfig(context.Background(), discoveryCfg, target, discovery.WithObservability(provider))
 			if err != nil {
 				return nil, "", err
 			}

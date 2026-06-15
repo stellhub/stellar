@@ -127,7 +127,7 @@ func NewNamedClientConnFromConfig(ctx context.Context, cfg *stellarconfig.GRPCCl
 		if discoveryCfg, discoveryTarget, ok, err := discovery.GRPCConfigForNamed(cfg, named, name); err != nil {
 			return nil, "", err
 		} else if ok {
-			discoveredTarget, discoveryOptions, err := discoveryDialOptions(ctx, discoveryCfg, discoveryTarget)
+			discoveredTarget, discoveryOptions, err := discoveryDialOptions(ctx, discoveryCfg, discoveryTarget, provider)
 			if err != nil {
 				return nil, "", err
 			}
@@ -298,8 +298,8 @@ func grpcClientInvocation(ctx context.Context, fullMethod string, conn *grpc.Cli
 
 var discoveryResolverID atomic.Uint64
 
-func discoveryDialOptions(ctx context.Context, cfg *stellarconfig.DiscoveryConfig, target discovery.Target) (string, []ClientOption, error) {
-	cached, err := discovery.NewCachedResolverFromConfig(ctx, cfg, target)
+func discoveryDialOptions(ctx context.Context, cfg *stellarconfig.DiscoveryConfig, target discovery.Target, provider *observability.Provider) (string, []ClientOption, error) {
+	cached, err := discovery.NewCachedResolverFromConfig(ctx, cfg, target, discovery.WithObservability(provider))
 	if err != nil {
 		return "", nil, err
 	}

@@ -304,6 +304,15 @@ named client discovery
 - registry connection config 只作为简单项目默认值复用，不能把当前服务的 `service/instance_id/service_endpoints` 继承给下游。
 - 如果配置了静态 `base_url` 或 `target`，并且未启用 discovery，则继续走静态地址。
 
+## OpenTelemetry 指标边界
+
+服务注册与发现使用同一套 OpenTelemetry MeterProvider，但指标语义分两层：
+
+- `registry.client.*`：记录注册中心 adapter 的通用操作，包括 `register`、`deregister`、`discover`、`watch` 和 `close` 的次数、耗时、实例数、endpoint 数与 watch event 数。
+- `discovery.client.*`：记录客户端侧 resolver/cache/picker 的行为，包括 `resolve`、`refresh`、`pick` 的次数、耗时、可见 endpoint 数、cache age 与 watch event 数。
+
+配置上可以使用 `registry.observability.metrics` 控制注册中心操作指标，使用 `discovery.observability.metrics` 或 named client 下 `discovery.observability.metrics` 控制客户端侧发现指标。全局 `opentelemetry.metrics` 决定这些指标最终是否导出到 `/metrics` 或 OTLP。
+
 ## 校验规则
 
 ### 不做强校验
