@@ -1,0 +1,50 @@
+app:
+  name: stellar-message-stellflow-quickstart
+  env: dev
+  zone: local
+
+http:
+  server:
+    enabled: true
+    port: 18085
+    adapter: gin
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - localhost:9092
+  client_id: stellar-message-stellflow-quickstart
+  observability:
+    trace: true
+    metrics: true
+    logs: false
+  producer:
+    enabled: true
+    default_topic: stellar.quickstart.messages
+    auto_create_topic_partition_count: 2
+    observability:
+      trace: true
+      metrics: true
+  consumer:
+    enabled: true
+    group_id: stellar-message-stellflow-quickstart
+    auto_offset_reset: earliest
+    enable_auto_commit: false
+    poll_timeout: 2s
+    observability:
+      trace: true
+      metrics: true
+
+opentelemetry:
+  log:
+    enabled: false
+    output: stdout
+  trace: false
+  metrics: true
+  metrics_output: prometheus
+  trace_output: none

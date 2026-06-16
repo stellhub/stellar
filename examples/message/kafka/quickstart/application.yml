@@ -1,0 +1,53 @@
+app:
+  name: stellar-message-kafka-quickstart
+  env: dev
+  zone: local
+
+http:
+  server:
+    enabled: true
+    port: 18086
+    adapter: gin
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+
+mq:
+  enabled: true
+  adapter: kafka
+  brokers:
+    - localhost:9092
+  client_id: stellar-message-kafka-quickstart
+  observability:
+    trace: true
+    metrics: true
+    logs: false
+  producer:
+    enabled: true
+    default_topic: stellar.quickstart.messages
+    delivery_timeout: 30s
+    flush_timeout: 10s
+    observability:
+      trace: true
+      metrics: true
+  consumer:
+    enabled: true
+    group_id: stellar-message-kafka-quickstart
+    auto_offset_reset: earliest
+    enable_auto_commit: false
+    poll_timeout: 2s
+    properties:
+      enable.partition.eof: "false"
+    observability:
+      trace: true
+      metrics: true
+
+opentelemetry:
+  log:
+    enabled: false
+    output: stdout
+  trace: false
+  metrics: true
+  metrics_output: prometheus
+  trace_output: none

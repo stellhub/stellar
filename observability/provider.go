@@ -44,6 +44,12 @@ type Provider struct {
 	cacheClientTrace        bool
 	cacheClientMetrics      bool
 	cacheClientLogs         bool
+	messageProducerTrace    bool
+	messageProducerMetrics  bool
+	messageProducerLogs     bool
+	messageConsumerTrace    bool
+	messageConsumerMetrics  bool
+	messageConsumerLogs     bool
 	registryMetrics         bool
 	discoveryMetrics        bool
 
@@ -54,6 +60,9 @@ type Provider struct {
 	cacheClientValueSize   metric.Int64Histogram
 	cacheClientEntries     metric.Int64Gauge
 	cacheClientCapacity    metric.Int64Gauge
+	messagingDuration      metric.Float64Histogram
+	messagingSentMessages  metric.Int64Counter
+	messagingReadMessages  metric.Int64Counter
 	registryOperations     metric.Int64Counter
 	registryDuration       metric.Float64Histogram
 	registryInstances      metric.Int64Gauge
@@ -69,6 +78,8 @@ type Provider struct {
 	mysqlClientLogger      log.Logger
 	postgresqlClientLogger log.Logger
 	cacheClientLogger      log.Logger
+	messageProducerLogger  log.Logger
+	messageConsumerLogger  log.Logger
 	metricsHandler         http.Handler
 	shutdowns              []func(context.Context) error
 }
@@ -99,6 +110,12 @@ type providerConfig struct {
 	cacheClientTrace        *bool
 	cacheClientMetrics      *bool
 	cacheClientLogs         *bool
+	messageProducerTrace    *bool
+	messageProducerMetrics  *bool
+	messageProducerLogs     *bool
+	messageConsumerTrace    *bool
+	messageConsumerMetrics  *bool
+	messageConsumerLogs     *bool
 	registryMetrics         *bool
 	discoveryMetrics        *bool
 }
@@ -143,6 +160,12 @@ func New(options ...Option) *Provider {
 		cacheClientTrace:        boolValue(cfg.cacheClientTrace, true),
 		cacheClientMetrics:      boolValue(cfg.cacheClientMetrics, true),
 		cacheClientLogs:         boolValue(cfg.cacheClientLogs, true),
+		messageProducerTrace:    boolValue(cfg.messageProducerTrace, true),
+		messageProducerMetrics:  boolValue(cfg.messageProducerMetrics, true),
+		messageProducerLogs:     boolValue(cfg.messageProducerLogs, true),
+		messageConsumerTrace:    boolValue(cfg.messageConsumerTrace, true),
+		messageConsumerMetrics:  boolValue(cfg.messageConsumerMetrics, true),
+		messageConsumerLogs:     boolValue(cfg.messageConsumerLogs, true),
 		registryMetrics:         boolValue(cfg.registryMetrics, true),
 		discoveryMetrics:        boolValue(cfg.discoveryMetrics, true),
 		httpClientLogger: cfg.loggerProvider.Logger(
@@ -160,10 +183,17 @@ func New(options ...Option) *Provider {
 		cacheClientLogger: cfg.loggerProvider.Logger(
 			ScopeName + "/cache-client",
 		),
+		messageProducerLogger: cfg.loggerProvider.Logger(
+			ScopeName + "/messaging-producer",
+		),
+		messageConsumerLogger: cfg.loggerProvider.Logger(
+			ScopeName + "/messaging-consumer",
+		),
 		propagator: cfg.propagator,
 	}
 	provider.initHTTPMetrics()
 	provider.initCacheMetrics()
+	provider.initMessagingMetrics()
 	provider.initRegistryMetrics()
 	provider.initDiscoveryMetrics()
 	return provider
@@ -252,6 +282,22 @@ func WithCacheClientObservability(trace *bool, metrics *bool, logs *bool) Option
 		cfg.cacheClientTrace = trace
 		cfg.cacheClientMetrics = metrics
 		cfg.cacheClientLogs = logs
+	}
+}
+
+func WithMessageProducerObservability(trace *bool, metrics *bool, logs *bool) Option {
+	return func(cfg *providerConfig) {
+		cfg.messageProducerTrace = trace
+		cfg.messageProducerMetrics = metrics
+		cfg.messageProducerLogs = logs
+	}
+}
+
+func WithMessageConsumerObservability(trace *bool, metrics *bool, logs *bool) Option {
+	return func(cfg *providerConfig) {
+		cfg.messageConsumerTrace = trace
+		cfg.messageConsumerMetrics = metrics
+		cfg.messageConsumerLogs = logs
 	}
 }
 
@@ -405,6 +451,48 @@ func (p *Provider) CacheClientLogsEnabled() bool {
 		return true
 	}
 	return p.cacheClientLogs
+}
+
+func (p *Provider) MessageProducerTraceEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.messageProducerTrace
+}
+
+func (p *Provider) MessageProducerMetricsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.messageProducerMetrics
+}
+
+func (p *Provider) MessageProducerLogsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.messageProducerLogs
+}
+
+func (p *Provider) MessageConsumerTraceEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.messageConsumerTrace
+}
+
+func (p *Provider) MessageConsumerMetricsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.messageConsumerMetrics
+}
+
+func (p *Provider) MessageConsumerLogsEnabled() bool {
+	if p == nil {
+		return true
+	}
+	return p.messageConsumerLogs
 }
 
 func (p *Provider) RegistryMetricsEnabled() bool {

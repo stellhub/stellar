@@ -141,6 +141,33 @@ cache:
     trace: false
     metrics: true
     logs: false
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - stellflow://localhost:9092
+  client_id: order-service
+  observability:
+    trace: true
+    metrics: true
+    logs: false
+  producer:
+    enabled: true
+    default_topic: orders.created
+    delivery_timeout: 30s
+    retry_max_attempts: 3
+    auto_create_topic_partition_count: 4
+    observability:
+      metrics: true
+  consumer:
+    enabled: true
+    group_id: order-worker
+    topics:
+      - orders.created
+    auto_offset_reset: earliest
+    poll_timeout: 1s
+    observability:
+      metrics: true
 registry:
   enabled: true
   adapter: consul
@@ -293,6 +320,24 @@ opentelemetry:
 	}
 	if cfg.Cache.Observability.Logs == nil || *cfg.Cache.Observability.Logs {
 		t.Fatalf("expected cache logs observability disabled")
+	}
+	if cfg.MQ == nil || cfg.MQ.Adapter != "stellflow" || cfg.MQ.ClientID != "order-service" {
+		t.Fatalf("unexpected mq config %#v", cfg.MQ)
+	}
+	if len(cfg.MQ.Brokers) != 1 || cfg.MQ.Brokers[0] != "stellflow://localhost:9092" {
+		t.Fatalf("unexpected mq brokers %#v", cfg.MQ.Brokers)
+	}
+	if cfg.MQ.Producer.DefaultTopic != "orders.created" || cfg.MQ.Producer.AutoCreateTopicPartitionCount != 4 {
+		t.Fatalf("unexpected mq producer config %#v", cfg.MQ.Producer)
+	}
+	if cfg.MQ.Consumer.GroupID != "order-worker" || cfg.MQ.Consumer.AutoOffsetReset != "earliest" || len(cfg.MQ.Consumer.Topics) != 1 {
+		t.Fatalf("unexpected mq consumer config %#v", cfg.MQ.Consumer)
+	}
+	if cfg.MQ.Producer.Observability.Metrics == nil || !*cfg.MQ.Producer.Observability.Metrics {
+		t.Fatalf("expected mq producer metrics observability")
+	}
+	if cfg.MQ.Consumer.Observability.Metrics == nil || !*cfg.MQ.Consumer.Observability.Metrics {
+		t.Fatalf("expected mq consumer metrics observability")
 	}
 	if cfg.Registry == nil || cfg.Registry.Adapter != "consul" || cfg.Registry.Namespace != "platform" {
 		t.Fatalf("unexpected registry config %#v", cfg.Registry)

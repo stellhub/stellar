@@ -3,6 +3,7 @@ package boot
 import (
 	goredis "github.com/redis/go-redis/v9"
 	cacheclient "github.com/stellhub/stellar/clients/cache"
+	mqclient "github.com/stellhub/stellar/clients/mq"
 	mysqlclient "github.com/stellhub/stellar/clients/mysql"
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
@@ -23,6 +24,10 @@ func (a *App) PostgreSQLDB() (*postgresqlclient.DB, bool) {
 
 func (a *App) Cache() (*cacheclient.Cache, bool) {
 	return GetAs[*cacheclient.Cache](a.Registry(), cacheclient.DefaultName)
+}
+
+func (a *App) MessageQueue() (*mqclient.Client, bool) {
+	return GetAs[*mqclient.Client](a.Registry(), mqclient.DefaultName)
 }
 
 func (a *App) ServiceRegistry() (*serviceregistry.Registry, bool) {

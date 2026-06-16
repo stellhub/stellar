@@ -10,6 +10,7 @@ import (
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/stellhub/stellar/boot"
 	cacheclient "github.com/stellhub/stellar/clients/cache"
+	mqclient "github.com/stellhub/stellar/clients/mq"
 	mysqlclient "github.com/stellhub/stellar/clients/mysql"
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
@@ -61,6 +62,12 @@ type PostgreSQLConfig = config.PostgreSQLConfig
 
 type CacheConfig = config.CacheConfig
 
+type MQConfig = config.MQConfig
+
+type MQProducerConfig = config.MQProducerConfig
+
+type MQConsumerConfig = config.MQConsumerConfig
+
 type RegistryConfig = config.RegistryConfig
 
 type RegistryServiceEndpointConfig = config.RegistryServiceEndpointConfig
@@ -78,6 +85,20 @@ type PostgreSQLDB = postgresqlclient.DB
 type Cache = cacheclient.Cache
 
 type CacheAdapter = cacheclient.Adapter
+
+type MessageQueue = mqclient.Client
+
+type MessageQueueMessage = mqclient.Message
+
+type MessageQueueHeader = mqclient.Header
+
+type MessageQueueMetadata = mqclient.Metadata
+
+type MessageQueueAdapter = mqclient.Adapter
+
+type MessageQueueProducer = mqclient.Producer
+
+type MessageQueueConsumer = mqclient.Consumer
 
 type ServiceRegistry = serviceregistry.Registry
 
@@ -243,6 +264,9 @@ const (
 	CacheName                   = cacheclient.DefaultName
 	CacheBigCache               = cacheclient.AdapterBigCache
 	CacheFreeCache              = cacheclient.AdapterFreeCache
+	MessageQueueName            = mqclient.DefaultName
+	MessageQueueStellFlow       = mqclient.AdapterStellFlow
+	MessageQueueKafka           = mqclient.AdapterKafka
 	RegistryName                = serviceregistry.DefaultName
 	RegistryEtcd                = serviceregistry.AdapterEtcd
 	RegistryConsul              = serviceregistry.AdapterConsul

@@ -182,6 +182,27 @@ cache:
     trace: true
     metrics: true
     logs: true
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - localhost:9092
+  client_id: example-service
+  producer:
+    enabled: true
+    default_topic: orders.created
+    auto_create_topic_partition_count: 2
+    observability:
+      metrics: true
+  consumer:
+    enabled: true
+    group_id: example-service
+    topics:
+      - orders.created
+    auto_offset_reset: earliest
+    poll_timeout: 1s
+    observability:
+      metrics: true
 registry:
   enabled: true
   adapter: stellmap
@@ -627,9 +648,86 @@ Cache create/update body:
 }
 ```
 
+## Message Queue
+
+Stellar exposes messaging through one MQ client abstraction. The default adapter is `stellflow`, backed by `github.com/stellhub/stellflow-go-sdk`. You can switch to `kafka`, backed by Confluent Kafka Go SDK. The Kafka adapter depends on CGO/librdkafka; non-CGO builds return a clear configuration error.
+
+```yaml
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - localhost:9092
+  client_id: orders-service
+  producer:
+    enabled: true
+    default_topic: orders.created
+    auto_create_topic_partition_count: 2
+    observability:
+      metrics: true
+  consumer:
+    enabled: true
+    group_id: orders-worker
+    topics:
+      - orders.created
+    auto_offset_reset: earliest
+    enable_auto_commit: false
+    poll_timeout: 1s
+    observability:
+      metrics: true
+```
+
+Application code sends and consumes through the same entry point:
+
+```go
+mq, ok := app.MessageQueue()
+if !ok {
+	panic("mq is not configured")
+}
+
+metadata, err := mq.Send(ctx, stellar.MessageQueueMessage{
+	Value: []byte(`{"order_id":"1001"}`),
+})
+if err != nil {
+	return err
+}
+_ = metadata
+
+records, err := mq.Poll(ctx)
+if err != nil {
+	return err
+}
+if len(records) > 0 {
+	if err := mq.Commit(ctx); err != nil {
+		return err
+	}
+}
+```
+
+Switching to Kafka only changes configuration:
+
+```yaml
+mq:
+  enabled: true
+  adapter: kafka
+  brokers:
+    - localhost:9092
+  producer:
+    enabled: true
+    default_topic: orders.created
+  consumer:
+    enabled: true
+    group_id: orders-worker
+    topics:
+      - orders.created
+    auto_offset_reset: earliest
+```
+
+MQ producer/consumer records standard OpenTelemetry messaging metrics: `messaging.client.operation.duration`, `messaging.client.sent.messages`, and `messaging.client.consumed.messages`.
+
 ## OpenTelemetry
 
-Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, MySQL client, PostgreSQL client, local cache client, service registry, and client-side discovery with OpenTelemetry trace, logs, and metrics where applicable.
+Stellar instruments HTTP server, gRPC server, HTTP client, gRPC client, Redis client, MySQL client, PostgreSQL client, local cache client, MQ producer/consumer, service registry, and client-side discovery with OpenTelemetry trace, logs, and metrics where applicable.
 
 Stellar reads configuration in this order:
 

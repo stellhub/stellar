@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	cacheclient "github.com/stellhub/stellar/clients/cache"
+	mqclient "github.com/stellhub/stellar/clients/mq"
 	mysqlclient "github.com/stellhub/stellar/clients/mysql"
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
@@ -62,6 +63,9 @@ func NewConfigured(ctx context.Context, cfg config.Config, options ...Option) (*
 		return nil, err
 	}
 	if err := configureCacheStarter(ctx, app, cfg); err != nil {
+		return nil, err
+	}
+	if err := configureMQStarter(ctx, app, cfg); err != nil {
 		return nil, err
 	}
 	if err := configureRegistryStarter(ctx, app, cfg); err != nil {
@@ -208,6 +212,28 @@ func configureCacheStarter(ctx context.Context, app *App, cfg config.Config) err
 		Name: cacheclient.DefaultName,
 		OnStop: func(context.Context) error {
 			return cache.Close()
+		},
+	})
+	return nil
+}
+
+func configureMQStarter(ctx context.Context, app *App, cfg config.Config) error {
+	if cfg.MQ == nil {
+		return nil
+	}
+	if cfg.MQ.Enabled != nil && !*cfg.MQ.Enabled {
+		return nil
+	}
+
+	client, err := mqclient.NewFromConfig(ctx, cfg.MQ, app.observability)
+	if err != nil {
+		return fmt.Errorf("configure mq client: %w", err)
+	}
+	app.registry.Set(mqclient.DefaultName, client)
+	app.lifecycle.Append(lifecycle.Hook{
+		Name: mqclient.DefaultName,
+		OnStop: func(ctx context.Context) error {
+			return client.Close(ctx)
 		},
 	})
 	return nil

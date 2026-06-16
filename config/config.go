@@ -151,6 +151,62 @@ type CacheConfig struct {
 	DebugAPI           *DebugAPIConfig           `yaml:"debug_api"`
 }
 
+type MQConfig struct {
+	Enabled          *bool                     `yaml:"enabled"`
+	Adapter          string                    `yaml:"adapter"`
+	Brokers          []string                  `yaml:"brokers"`
+	BootstrapServers []string                  `yaml:"bootstrap_servers"`
+	Endpoint         string                    `yaml:"endpoint"`
+	ClientID         string                    `yaml:"client_id"`
+	Properties       map[string]string         `yaml:"properties"`
+	Producer         MQProducerConfig          `yaml:"producer"`
+	Consumer         MQConsumerConfig          `yaml:"consumer"`
+	Observability    ObservabilitySignalConfig `yaml:"observability"`
+}
+
+type MQProducerConfig struct {
+	Enabled                       *bool                     `yaml:"enabled"`
+	DefaultTopic                  string                    `yaml:"default_topic"`
+	Acks                          int16                     `yaml:"acks"`
+	TimeoutMs                     int32                     `yaml:"timeout_ms"`
+	DeliveryTimeout               string                    `yaml:"delivery_timeout"`
+	RequestTimeout                string                    `yaml:"request_timeout"`
+	RetryMaxAttempts              int                       `yaml:"retry_max_attempts"`
+	RetryBackoff                  string                    `yaml:"retry_backoff"`
+	MaxInFlight                   int                       `yaml:"max_in_flight"`
+	Ordering                      string                    `yaml:"ordering"`
+	BatchSize                     int                       `yaml:"batch_size"`
+	BatchBytes                    int                       `yaml:"batch_bytes"`
+	Linger                        string                    `yaml:"linger"`
+	QueueSize                     int                       `yaml:"queue_size"`
+	DisableAutoCreateTopics       bool                      `yaml:"disable_auto_create_topics"`
+	AutoCreateTopicPartitionCount int32                     `yaml:"auto_create_topic_partition_count"`
+	Idempotent                    bool                      `yaml:"idempotent"`
+	TransactionalID               string                    `yaml:"transactional_id"`
+	FlushTimeout                  string                    `yaml:"flush_timeout"`
+	Properties                    map[string]string         `yaml:"properties"`
+	Observability                 ObservabilitySignalConfig `yaml:"observability"`
+}
+
+type MQConsumerConfig struct {
+	Enabled            *bool                     `yaml:"enabled"`
+	GroupID            string                    `yaml:"group_id"`
+	MemberID           string                    `yaml:"member_id"`
+	Topics             []string                  `yaml:"topics"`
+	AutoOffsetReset    string                    `yaml:"auto_offset_reset"`
+	SessionTimeout     string                    `yaml:"session_timeout"`
+	HeartbeatInterval  string                    `yaml:"heartbeat_interval"`
+	MaxPollInterval    string                    `yaml:"max_poll_interval"`
+	FetchMaxBytes      int32                     `yaml:"fetch_max_bytes"`
+	PartitionMaxBytes  int32                     `yaml:"partition_max_bytes"`
+	CommitMetadata     string                    `yaml:"commit_metadata"`
+	EnableAutoCommit   bool                      `yaml:"enable_auto_commit"`
+	AutoCommitInterval string                    `yaml:"auto_commit_interval"`
+	PollTimeout        string                    `yaml:"poll_timeout"`
+	Properties         map[string]string         `yaml:"properties"`
+	Observability      ObservabilitySignalConfig `yaml:"observability"`
+}
+
 type RegistryConfig struct {
 	Enabled           *bool                           `yaml:"enabled"`
 	Adapter           string                          `yaml:"adapter"`
@@ -232,6 +288,7 @@ type Config struct {
 	MySQL       *MySQLConfig
 	PostgreSQL  *PostgreSQLConfig
 	Cache       *CacheConfig
+	MQ          *MQConfig
 	Registry    *RegistryConfig
 	Discovery   *DiscoveryConfig
 	Starter     StarterConfig
@@ -300,6 +357,7 @@ type fileConfig struct {
 	MySQL         *MySQLConfig                `yaml:"mysql"`
 	PostgreSQL    *PostgreSQLConfig           `yaml:"postgresql"`
 	Cache         *CacheConfig                `yaml:"cache"`
+	MQ            *MQConfig                   `yaml:"mq"`
 	Registry      *RegistryConfig             `yaml:"registry"`
 	Discovery     *DiscoveryConfig            `yaml:"discovery"`
 	OpenTelemetry *OpenTelemetryStarterConfig `yaml:"opentelemetry"`
@@ -389,6 +447,47 @@ func (c Config) Normalize() Config {
 			cache.SizeBytes = 64 * 1024 * 1024
 		}
 		c.Cache = &cache
+	}
+	if c.MQ != nil {
+		mq := *c.MQ
+		if strings.TrimSpace(mq.Adapter) == "" {
+			mq.Adapter = "stellflow"
+		}
+		mq.Adapter = strings.ToLower(strings.TrimSpace(mq.Adapter))
+		if strings.TrimSpace(mq.ClientID) == "" {
+			mq.ClientID = c.AppName
+		}
+		if strings.TrimSpace(mq.ClientID) == "" {
+			mq.ClientID = "stellar"
+		}
+		if strings.TrimSpace(mq.Endpoint) != "" && len(mq.Brokers) == 0 && len(mq.BootstrapServers) == 0 {
+			mq.Brokers = []string{mq.Endpoint}
+		}
+		if len(mq.Brokers) == 0 && len(mq.BootstrapServers) > 0 {
+			mq.Brokers = append([]string(nil), mq.BootstrapServers...)
+		}
+		if len(mq.Brokers) == 0 {
+			mq.Brokers = []string{"localhost:9092"}
+		} else {
+			mq.Brokers = append([]string(nil), mq.Brokers...)
+		}
+		mq.BootstrapServers = append([]string(nil), mq.Brokers...)
+		if mq.Properties != nil {
+			mq.Properties = cloneStringMapConfig(mq.Properties)
+		}
+		if mq.Producer.Properties != nil {
+			mq.Producer.Properties = cloneStringMapConfig(mq.Producer.Properties)
+		}
+		if mq.Consumer.Topics != nil {
+			mq.Consumer.Topics = append([]string(nil), mq.Consumer.Topics...)
+		}
+		if mq.Consumer.Properties != nil {
+			mq.Consumer.Properties = cloneStringMapConfig(mq.Consumer.Properties)
+		}
+		if strings.TrimSpace(mq.Consumer.AutoOffsetReset) == "" {
+			mq.Consumer.AutoOffsetReset = "latest"
+		}
+		c.MQ = &mq
 	}
 	if c.Registry != nil {
 		registry := *c.Registry
@@ -729,6 +828,7 @@ func LoadFile(path string) (Config, error) {
 		MySQL:       raw.MySQL,
 		PostgreSQL:  raw.PostgreSQL,
 		Cache:       raw.Cache,
+		MQ:          raw.MQ,
 		Registry:    raw.Registry,
 		Discovery:   raw.Discovery,
 		Starter: StarterConfig{
@@ -808,6 +908,14 @@ func ensureGRPCServerConfig(cfg *Config) *GRPCServerConfig {
 		cfg.GRPC.Server = &GRPCServerConfig{}
 	}
 	return cfg.GRPC.Server
+}
+
+func cloneStringMapConfig(values map[string]string) map[string]string {
+	cloned := make(map[string]string, len(values))
+	for key, value := range values {
+		cloned[key] = value
+	}
+	return cloned
 }
 
 func envBool(key string) (bool, bool) {

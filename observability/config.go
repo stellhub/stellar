@@ -73,6 +73,14 @@ func NewFromConfig(ctx context.Context, cfg stellarconfig.Config) (*Provider, er
 		signals := cfg.Cache.Observability
 		providerCfg = append(providerCfg, WithCacheClientObservability(signals.Trace, signals.Metrics, signals.Logs))
 	}
+	if cfg.MQ != nil {
+		producerSignals := mergeSignals(cfg.MQ.Observability, cfg.MQ.Producer.Observability)
+		consumerSignals := mergeSignals(cfg.MQ.Observability, cfg.MQ.Consumer.Observability)
+		providerCfg = append(providerCfg,
+			WithMessageProducerObservability(producerSignals.Trace, producerSignals.Metrics, producerSignals.Logs),
+			WithMessageConsumerObservability(consumerSignals.Trace, consumerSignals.Metrics, consumerSignals.Logs),
+		)
+	}
 	if cfg.Registry != nil {
 		signals := cfg.Registry.Observability
 		providerCfg = append(providerCfg, WithRegistryObservability(signals.Metrics))
@@ -283,6 +291,19 @@ func endpointFor(primary string, fallback string) string {
 		return fallback
 	}
 	return DefaultOTLPEndpoint
+}
+
+func mergeSignals(base stellarconfig.ObservabilitySignalConfig, override stellarconfig.ObservabilitySignalConfig) stellarconfig.ObservabilitySignalConfig {
+	if override.Trace != nil {
+		base.Trace = override.Trace
+	}
+	if override.Metrics != nil {
+		base.Metrics = override.Metrics
+	}
+	if override.Logs != nil {
+		base.Logs = override.Logs
+	}
+	return base
 }
 
 func insecure(value *bool) bool {

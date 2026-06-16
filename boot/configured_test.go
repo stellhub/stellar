@@ -80,7 +80,7 @@ func TestNewConfiguredDoesNotStartGRPCForClientOnlyConfig(t *testing.T) {
 	}
 }
 
-func TestNewConfiguredRegistersRedisAndMySQLClients(t *testing.T) {
+func TestNewConfiguredRegistersConfiguredClients(t *testing.T) {
 	cfg := config.Config{
 		AppName:     "configured-service",
 		Environment: config.EnvDev,
@@ -96,6 +96,13 @@ func TestNewConfiguredRegistersRedisAndMySQLClients(t *testing.T) {
 		Cache: &config.CacheConfig{
 			Adapter: "freecache",
 			TTL:     "1m",
+		},
+		MQ: &config.MQConfig{
+			Adapter: "stellflow",
+			Brokers: []string{"localhost:9092"},
+			Producer: config.MQProducerConfig{
+				DefaultTopic: "orders.created",
+			},
 		},
 	}.Normalize()
 
@@ -119,6 +126,13 @@ func TestNewConfiguredRegistersRedisAndMySQLClients(t *testing.T) {
 	if !ok || cache == nil {
 		t.Fatalf("expected cache to be registered")
 	}
+	mq, ok := app.MessageQueue()
+	if !ok || mq == nil {
+		t.Fatalf("expected mq client to be registered")
+	}
+	if mq.AdapterName() != "stellflow" {
+		t.Fatalf("unexpected mq adapter %q", mq.AdapterName())
+	}
 	if err := redisClient.Close(); err != nil {
 		t.Fatalf("close redis client: %v", err)
 	}
@@ -130,6 +144,9 @@ func TestNewConfiguredRegistersRedisAndMySQLClients(t *testing.T) {
 	}
 	if err := cache.Close(); err != nil {
 		t.Fatalf("close cache: %v", err)
+	}
+	if err := mq.Close(context.Background()); err != nil {
+		t.Fatalf("close mq client: %v", err)
 	}
 }
 

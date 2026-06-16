@@ -182,6 +182,27 @@ cache:
     trace: true
     metrics: true
     logs: true
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - localhost:9092
+  client_id: example-service
+  producer:
+    enabled: true
+    default_topic: orders.created
+    auto_create_topic_partition_count: 2
+    observability:
+      metrics: true
+  consumer:
+    enabled: true
+    group_id: example-service
+    topics:
+      - orders.created
+    auto_offset_reset: earliest
+    poll_timeout: 1s
+    observability:
+      metrics: true
 registry:
   enabled: true
   adapter: stellmap
@@ -627,9 +648,86 @@ Cache 创建/更新请求体：
 }
 ```
 
+## 消息队列
+
+Stellar 将消息队列抽象为统一 MQ client。默认 adapter 是 `stellflow`，底层使用 `github.com/stellhub/stellflow-go-sdk`；也可以切换到 `kafka`，底层使用 Confluent Kafka Go SDK。Kafka adapter 依赖 CGO/librdkafka，非 CGO 构建会返回明确的配置错误。
+
+```yaml
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - localhost:9092
+  client_id: orders-service
+  producer:
+    enabled: true
+    default_topic: orders.created
+    auto_create_topic_partition_count: 2
+    observability:
+      metrics: true
+  consumer:
+    enabled: true
+    group_id: orders-worker
+    topics:
+      - orders.created
+    auto_offset_reset: earliest
+    enable_auto_commit: false
+    poll_timeout: 1s
+    observability:
+      metrics: true
+```
+
+业务代码通过同一个入口发送和消费消息：
+
+```go
+mq, ok := app.MessageQueue()
+if !ok {
+	panic("mq is not configured")
+}
+
+metadata, err := mq.Send(ctx, stellar.MessageQueueMessage{
+	Value: []byte(`{"order_id":"1001"}`),
+})
+if err != nil {
+	return err
+}
+_ = metadata
+
+records, err := mq.Poll(ctx)
+if err != nil {
+	return err
+}
+if len(records) > 0 {
+	if err := mq.Commit(ctx); err != nil {
+		return err
+	}
+}
+```
+
+切换到 Kafka 时只需要修改配置：
+
+```yaml
+mq:
+  enabled: true
+  adapter: kafka
+  brokers:
+    - localhost:9092
+  producer:
+    enabled: true
+    default_topic: orders.created
+  consumer:
+    enabled: true
+    group_id: orders-worker
+    topics:
+      - orders.created
+    auto_offset_reset: earliest
+```
+
+消息队列 producer/consumer 会记录标准 OpenTelemetry messaging metrics：`messaging.client.operation.duration`、`messaging.client.sent.messages`、`messaging.client.consumed.messages`。
+
 ## OpenTelemetry
 
-Stellar 会为 HTTP server、gRPC server、HTTP client、gRPC client、Redis client、MySQL client、PostgreSQL client、本地 cache client、服务注册中心和客户端侧 discovery 接入可适用的 OpenTelemetry trace、logs 与 metrics。
+Stellar 会为 HTTP server、gRPC server、HTTP client、gRPC client、Redis client、MySQL client、PostgreSQL client、本地 cache client、消息队列 producer/consumer、服务注册中心和客户端侧 discovery 接入可适用的 OpenTelemetry trace、logs 与 metrics。
 
 Stellar 会按下面顺序读取配置：
 
