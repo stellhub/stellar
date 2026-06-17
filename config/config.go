@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
@@ -207,6 +208,53 @@ type MQConsumerConfig struct {
 	Observability      ObservabilitySignalConfig `yaml:"observability"`
 }
 
+type ConfigCenterConfig struct {
+	Enabled             *bool                      `yaml:"enabled"`
+	Adapter             string                     `yaml:"adapter"`
+	Endpoints           []string                   `yaml:"endpoints"`
+	Endpoint            string                     `yaml:"endpoint"`
+	Namespace           string                     `yaml:"namespace"`
+	Group               string                     `yaml:"group"`
+	Cluster             string                     `yaml:"cluster"`
+	Region              string                     `yaml:"region"`
+	Zone                string                     `yaml:"zone"`
+	Env                 string                     `yaml:"env"`
+	DataID              string                     `yaml:"data_id"`
+	ConfigKey           string                     `yaml:"config_key"`
+	Format              string                     `yaml:"format"`
+	AppID               string                     `yaml:"app_id"`
+	ClientID            string                     `yaml:"client_id"`
+	ClientIP            string                     `yaml:"client_ip"`
+	HostName            string                     `yaml:"host_name"`
+	Username            string                     `yaml:"username"`
+	Password            string                     `yaml:"password"`
+	Token               string                     `yaml:"token"`
+	Scheme              string                     `yaml:"scheme"`
+	APIToken            string                     `yaml:"api_token"`
+	APIVersion          string                     `yaml:"api_version"`
+	SDKVersion          string                     `yaml:"sdk_version"`
+	GRPCEndpoint        string                     `yaml:"grpc_endpoint"`
+	GRPCPlaintext       *bool                      `yaml:"grpc_plaintext"`
+	WatchEnabled        *bool                      `yaml:"watch_enabled"`
+	FailFastOnBootstrap bool                       `yaml:"fail_fast_on_bootstrap"`
+	RequestTimeout      string                     `yaml:"request_timeout"`
+	WatchTimeout        string                     `yaml:"watch_timeout"`
+	RetryDelay          string                     `yaml:"retry_delay"`
+	SnapshotDirectory   string                     `yaml:"snapshot_directory"`
+	Sources             []ConfigCenterSourceConfig `yaml:"sources"`
+	Labels              map[string]string          `yaml:"labels"`
+	Properties          map[string]string          `yaml:"properties"`
+	Observability       ObservabilitySignalConfig  `yaml:"observability"`
+}
+
+type ConfigCenterSourceConfig struct {
+	DataID    string `yaml:"data_id"`
+	ConfigKey string `yaml:"config_key"`
+	Group     string `yaml:"group"`
+	Format    string `yaml:"format"`
+	Required  *bool  `yaml:"required"`
+}
+
 type RegistryConfig struct {
 	Enabled           *bool                           `yaml:"enabled"`
 	Adapter           string                          `yaml:"adapter"`
@@ -277,22 +325,23 @@ type DebugAPIConfig struct {
 }
 
 type Config struct {
-	AppName     string
-	Environment Environment
-	Zone        string
-	Version     string
-	Disabled    bool
-	HTTP        HTTPConfig
-	GRPC        GRPCConfig
-	Redis       *RedisConfig
-	MySQL       *MySQLConfig
-	PostgreSQL  *PostgreSQLConfig
-	Cache       *CacheConfig
-	MQ          *MQConfig
-	Registry    *RegistryConfig
-	Discovery   *DiscoveryConfig
-	Starter     StarterConfig
-	Metadata    map[string]string
+	AppName      string
+	Environment  Environment
+	Zone         string
+	Version      string
+	Disabled     bool
+	HTTP         HTTPConfig
+	GRPC         GRPCConfig
+	Redis        *RedisConfig
+	MySQL        *MySQLConfig
+	PostgreSQL   *PostgreSQLConfig
+	Cache        *CacheConfig
+	MQ           *MQConfig
+	ConfigCenter *ConfigCenterConfig
+	Registry     *RegistryConfig
+	Discovery    *DiscoveryConfig
+	Starter      StarterConfig
+	Metadata     map[string]string
 }
 
 type StarterConfig struct {
@@ -358,6 +407,7 @@ type fileConfig struct {
 	PostgreSQL    *PostgreSQLConfig           `yaml:"postgresql"`
 	Cache         *CacheConfig                `yaml:"cache"`
 	MQ            *MQConfig                   `yaml:"mq"`
+	ConfigCenter  *ConfigCenterConfig         `yaml:"config_center"`
 	Registry      *RegistryConfig             `yaml:"registry"`
 	Discovery     *DiscoveryConfig            `yaml:"discovery"`
 	OpenTelemetry *OpenTelemetryStarterConfig `yaml:"opentelemetry"`
@@ -488,6 +538,51 @@ func (c Config) Normalize() Config {
 			mq.Consumer.AutoOffsetReset = "latest"
 		}
 		c.MQ = &mq
+	}
+	if c.ConfigCenter != nil {
+		configCenter := *c.ConfigCenter
+		if strings.TrimSpace(configCenter.Adapter) == "" {
+			configCenter.Adapter = "stellnula"
+		}
+		configCenter.Adapter = strings.ToLower(strings.TrimSpace(configCenter.Adapter))
+		if strings.TrimSpace(configCenter.Endpoint) != "" && len(configCenter.Endpoints) == 0 {
+			configCenter.Endpoints = []string{configCenter.Endpoint}
+		}
+		if configCenter.Endpoints != nil {
+			configCenter.Endpoints = append([]string(nil), configCenter.Endpoints...)
+		}
+		if strings.TrimSpace(configCenter.AppID) == "" {
+			configCenter.AppID = c.AppName
+		}
+		if strings.TrimSpace(configCenter.ClientID) == "" {
+			configCenter.ClientID = c.AppName
+		}
+		if strings.TrimSpace(configCenter.ClientID) == "" {
+			configCenter.ClientID = "stellar"
+		}
+		if strings.TrimSpace(configCenter.Env) == "" {
+			configCenter.Env = string(c.Environment)
+		}
+		if strings.TrimSpace(configCenter.Zone) == "" {
+			configCenter.Zone = c.Zone
+		}
+		if strings.TrimSpace(configCenter.Namespace) == "" {
+			configCenter.Namespace = "default"
+		}
+		if strings.TrimSpace(configCenter.DataID) == "" && strings.TrimSpace(configCenter.ConfigKey) == "" && len(configCenter.Sources) == 0 {
+			configCenter.ConfigKey = "application.yaml"
+			configCenter.DataID = "application.yaml"
+		}
+		if configCenter.Labels != nil {
+			configCenter.Labels = cloneStringMapConfig(configCenter.Labels)
+		}
+		if configCenter.Properties != nil {
+			configCenter.Properties = cloneStringMapConfig(configCenter.Properties)
+		}
+		if configCenter.Sources != nil {
+			configCenter.Sources = append([]ConfigCenterSourceConfig(nil), configCenter.Sources...)
+		}
+		c.ConfigCenter = &configCenter
 	}
 	if c.Registry != nil {
 		registry := *c.Registry
@@ -801,14 +896,25 @@ func LoadFile(path string) (Config, error) {
 		return Config{}, err
 	}
 
+	return loadConfigData(path, data, "stellar: only application.yml or application.yaml is supported")
+}
+
+func LoadBytes(name string, data []byte) (Config, error) {
+	if strings.TrimSpace(name) == "" {
+		name = "application.yaml"
+	}
+	return loadConfigData(name, data, "stellar: only yaml config data is supported")
+}
+
+func loadConfigData(name string, data []byte, unsupportedMessage string) (Config, error) {
 	var raw fileConfig
-	switch strings.ToLower(filepath.Ext(path)) {
+	switch strings.ToLower(filepath.Ext(name)) {
 	case ".yaml", ".yml":
 		if err := yaml.Unmarshal(data, &raw); err != nil {
 			return Config{}, err
 		}
 	default:
-		return Config{}, errors.New("stellar: only application.yml or application.yaml is supported")
+		return Config{}, errors.New(unsupportedMessage)
 	}
 
 	env := Environment(raw.App.Environment)
@@ -817,20 +923,21 @@ func LoadFile(path string) (Config, error) {
 	}
 
 	cfg := Config{
-		AppName:     raw.App.Name,
-		Environment: env,
-		Zone:        raw.App.Zone,
-		Version:     raw.App.Version,
-		Disabled:    raw.App.Disabled,
-		HTTP:        derefHTTPConfig(raw.HTTP),
-		GRPC:        derefGRPCConfig(raw.GRPC),
-		Redis:       raw.Redis,
-		MySQL:       raw.MySQL,
-		PostgreSQL:  raw.PostgreSQL,
-		Cache:       raw.Cache,
-		MQ:          raw.MQ,
-		Registry:    raw.Registry,
-		Discovery:   raw.Discovery,
+		AppName:      raw.App.Name,
+		Environment:  env,
+		Zone:         raw.App.Zone,
+		Version:      raw.App.Version,
+		Disabled:     raw.App.Disabled,
+		HTTP:         derefHTTPConfig(raw.HTTP),
+		GRPC:         derefGRPCConfig(raw.GRPC),
+		Redis:        raw.Redis,
+		MySQL:        raw.MySQL,
+		PostgreSQL:   raw.PostgreSQL,
+		Cache:        raw.Cache,
+		MQ:           raw.MQ,
+		ConfigCenter: raw.ConfigCenter,
+		Registry:     raw.Registry,
+		Discovery:    raw.Discovery,
 		Starter: StarterConfig{
 			HTTP:          raw.HTTP,
 			GRPC:          raw.GRPC,
@@ -839,6 +946,11 @@ func LoadFile(path string) (Config, error) {
 		Metadata: raw.App.Metadata,
 	}
 	return cfg.Normalize(), nil
+}
+
+func Merge(base Config, override Config) Config {
+	merged := mergeConfigValue(reflect.ValueOf(base), reflect.ValueOf(override)).Interface().(Config)
+	return merged.Normalize()
 }
 
 func isSupportedConfigFileName(path string) bool {
@@ -916,6 +1028,63 @@ func cloneStringMapConfig(values map[string]string) map[string]string {
 		cloned[key] = value
 	}
 	return cloned
+}
+
+func mergeConfigValue(base reflect.Value, override reflect.Value) reflect.Value {
+	if !override.IsValid() {
+		return base
+	}
+	if !base.IsValid() {
+		return override
+	}
+	switch override.Kind() {
+	case reflect.Pointer:
+		if override.IsNil() {
+			return base
+		}
+		if base.IsNil() {
+			return override
+		}
+		if override.Elem().Kind() == reflect.Struct && base.Elem().Kind() == reflect.Struct {
+			merged := mergeConfigValue(base.Elem(), override.Elem())
+			ptr := reflect.New(merged.Type())
+			ptr.Elem().Set(merged)
+			return ptr
+		}
+		return override
+	case reflect.Struct:
+		merged := reflect.New(base.Type()).Elem()
+		merged.Set(base)
+		for i := 0; i < override.NumField(); i++ {
+			field := merged.Field(i)
+			if !field.CanSet() {
+				continue
+			}
+			field.Set(mergeConfigValue(field, override.Field(i)))
+		}
+		return merged
+	case reflect.String:
+		if strings.TrimSpace(override.String()) != "" {
+			return override
+		}
+	case reflect.Bool:
+		if override.Bool() {
+			return override
+		}
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		if override.Int() != 0 {
+			return override
+		}
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		if override.Uint() != 0 {
+			return override
+		}
+	case reflect.Slice, reflect.Map:
+		if !override.IsNil() && override.Len() > 0 {
+			return override
+		}
+	}
+	return base
 }
 
 func envBool(key string) (bool, bool) {

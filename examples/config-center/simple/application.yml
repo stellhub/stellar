@@ -1,0 +1,39 @@
+app:
+  name: stellar-config-center-example
+  env: dev
+  zone: local
+
+http:
+  server:
+    enabled: true
+    port: 18087
+    adapter: gin
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+
+config_center:
+  enabled: true
+  adapter: stellnula
+  endpoint: http://localhost:8060
+  app_id: stellar-config-center-example
+  client_id: stellar-config-center-example-local
+  env: dev
+  namespace: default
+  group: default
+  config_key: application.yaml
+  watch_enabled: false
+  request_timeout: 5s
+  labels:
+    region: local
+
+opentelemetry:
+  log:
+    enabled: false
+    output: stdout
+  trace: false
+  metrics: true
+  metrics_output: prometheus
+  trace_output: none
+

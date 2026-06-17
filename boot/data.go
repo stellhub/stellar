@@ -7,6 +7,7 @@ import (
 	mysqlclient "github.com/stellhub/stellar/clients/mysql"
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
+	configcenterclient "github.com/stellhub/stellar/configcenter"
 	serviceregistry "github.com/stellhub/stellar/registry"
 )
 
@@ -28,6 +29,10 @@ func (a *App) Cache() (*cacheclient.Cache, bool) {
 
 func (a *App) MessageQueue() (*mqclient.Client, bool) {
 	return GetAs[*mqclient.Client](a.Registry(), mqclient.DefaultName)
+}
+
+func (a *App) ConfigCenter() (*configcenterclient.Client, bool) {
+	return GetAs[*configcenterclient.Client](a.Registry(), configcenterclient.DefaultName)
 }
 
 func (a *App) ServiceRegistry() (*serviceregistry.Registry, bool) {

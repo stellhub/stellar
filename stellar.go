@@ -15,6 +15,7 @@ import (
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
 	"github.com/stellhub/stellar/config"
+	configcenterclient "github.com/stellhub/stellar/configcenter"
 	"github.com/stellhub/stellar/discovery"
 	"github.com/stellhub/stellar/governance"
 	"github.com/stellhub/stellar/interceptor"
@@ -68,6 +69,10 @@ type MQProducerConfig = config.MQProducerConfig
 
 type MQConsumerConfig = config.MQConsumerConfig
 
+type ConfigCenterConfig = config.ConfigCenterConfig
+
+type ConfigCenterSourceConfig = config.ConfigCenterSourceConfig
+
 type RegistryConfig = config.RegistryConfig
 
 type RegistryServiceEndpointConfig = config.RegistryServiceEndpointConfig
@@ -99,6 +104,12 @@ type MessageQueueAdapter = mqclient.Adapter
 type MessageQueueProducer = mqclient.Producer
 
 type MessageQueueConsumer = mqclient.Consumer
+
+type ConfigCenter = configcenterclient.Client
+
+type ConfigCenterAdapter = configcenterclient.Adapter
+
+type ConfigCenterSource = configcenterclient.Source
 
 type ServiceRegistry = serviceregistry.Registry
 
@@ -267,6 +278,9 @@ const (
 	MessageQueueName            = mqclient.DefaultName
 	MessageQueueStellFlow       = mqclient.AdapterStellFlow
 	MessageQueueKafka           = mqclient.AdapterKafka
+	ConfigCenterName            = configcenterclient.DefaultName
+	ConfigCenterStellNula       = configcenterclient.AdapterStellNula
+	ConfigCenterNacos           = configcenterclient.AdapterNacos
 	RegistryName                = serviceregistry.DefaultName
 	RegistryEtcd                = serviceregistry.AdapterEtcd
 	RegistryConsul              = serviceregistry.AdapterConsul
@@ -343,6 +357,10 @@ func NewGovernanceStore(initial ...GovernanceSnapshot) *GovernanceStore {
 
 func NewCache(adapter CacheAdapter, provider *ObservabilityProvider) (*Cache, error) {
 	return cacheclient.New(adapter, provider)
+}
+
+func NewConfigCenter(adapter ConfigCenterAdapter) (*ConfigCenter, error) {
+	return configcenterclient.New(adapter)
 }
 
 func NewServiceRegistry(adapter ServiceRegistryAdapter) (*ServiceRegistry, error) {

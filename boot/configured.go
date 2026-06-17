@@ -11,6 +11,7 @@ import (
 	postgresqlclient "github.com/stellhub/stellar/clients/postgresql"
 	redisclient "github.com/stellhub/stellar/clients/redis"
 	"github.com/stellhub/stellar/config"
+	configcenterclient "github.com/stellhub/stellar/configcenter"
 	"github.com/stellhub/stellar/lifecycle"
 	"github.com/stellhub/stellar/observability"
 	serviceregistry "github.com/stellhub/stellar/registry"
@@ -23,6 +24,12 @@ import (
 
 func NewConfigured(ctx context.Context, cfg config.Config, options ...Option) (*App, error) {
 	cfg = cfg.Normalize()
+	var configCenter *configcenterclient.Client
+	var err error
+	cfg, configCenter, err = configcenterclient.Load(ctx, cfg, nil)
+	if err != nil {
+		return nil, fmt.Errorf("configure config center: %w", err)
+	}
 	observer, err := observability.NewFromConfig(ctx, cfg)
 	if err != nil {
 		return nil, err
@@ -39,6 +46,7 @@ func NewConfigured(ctx context.Context, cfg config.Config, options ...Option) (*
 	}
 	baseOptions = append(baseOptions, options...)
 	app := New(cfg, baseOptions...)
+	configureConfigCenterStarter(app, configCenter)
 
 	metricsHandler := observer.MetricsHandler()
 	httpStarted := configureHTTPStarter(app, cfg)
@@ -237,6 +245,19 @@ func configureMQStarter(ctx context.Context, app *App, cfg config.Config) error 
 		},
 	})
 	return nil
+}
+
+func configureConfigCenterStarter(app *App, client *configcenterclient.Client) {
+	if client == nil {
+		return
+	}
+	app.registry.Set(configcenterclient.DefaultName, client)
+	app.lifecycle.Append(lifecycle.Hook{
+		Name: configcenterclient.DefaultName,
+		OnStop: func(ctx context.Context) error {
+			return client.Close(ctx)
+		},
+	})
 }
 
 func configureRegistryStarter(ctx context.Context, app *App, cfg config.Config) error {

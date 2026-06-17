@@ -393,6 +393,8 @@ github.com/stellhub/stellflow-go-sdk v0.0.2 h1:Zngzt+PQahZ004D+5pWJsgqizcPFjdsGT
 github.com/stellhub/stellflow-go-sdk v0.0.2/go.mod h1:7nJmoFLRe4R6YUKH6RNMvPKP/LjFSGXx8hlayshGk7w=
 github.com/stellhub/stellmap-go-sdk v0.1.0 h1:upPwI14SMvQdraSzAMc0zEKgT9LgSNkF62K7dKjXChg=
 github.com/stellhub/stellmap-go-sdk v0.1.0/go.mod h1:8vynoUd3yZpSJMcMbBjztqAd1o836vliF0DneOfX3X8=
+github.com/stellhub/stellnula-go-sdk v0.0.1 h1:SPN7szEFsZqopPiPo9qNS+4CGJ1sA8FENxnvqr3FRC0=
+github.com/stellhub/stellnula-go-sdk v0.0.1/go.mod h1:ROEl0YDrhv+agSVebF21dFOQcfz3TFBwxtDoEn9wv84=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.2.0/go.mod h1:qt09Ya8vawLte6SNmTgCsAVtYtaKzEcn8ATUoHMkEqE=

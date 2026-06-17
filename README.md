@@ -648,6 +648,70 @@ Cache create/update body:
 }
 ```
 
+## Configuration Center
+
+Stellar can bootstrap remote `application.yaml` content through a configuration center before other starters are created. The default adapter is `stellnula`, backed by `github.com/stellhub/stellnula-go-sdk`. Remote YAML is parsed as the same Stellar configuration model and merged into the local bootstrap config.
+
+The local `application.yml` only needs the bootstrap connection:
+
+```yaml
+config_center:
+  enabled: true
+  adapter: stellnula
+  endpoint: http://localhost:8060
+  app_id: orders-service
+  client_id: orders-service-local
+  env: dev
+  namespace: default
+  group: default
+  config_key: application.yaml
+  labels:
+    region: local
+```
+
+The StellNula snapshot should contain a config value whose key or id is `application.yaml`. Its content can be a normal Stellar config file, for example:
+
+```yaml
+http:
+  server:
+    enabled: true
+    port: 18080
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - localhost:9092
+```
+
+Switching to Nacos only changes `config_center.adapter` and the Nacos identity fields:
+
+```yaml
+config_center:
+  enabled: true
+  adapter: nacos
+  endpoint: http://localhost:8848
+  namespace: public
+  group: DEFAULT_GROUP
+  data_id: application.yaml
+```
+
+Application code can also access the configured client abstraction:
+
+```go
+configCenter, ok := app.ConfigCenter()
+if ok {
+	sources, err := configCenter.Load(ctx)
+	_ = sources
+	_ = err
+}
+```
+
+Run the simple config center example:
+
+```bash
+go run ./examples/config-center/simple
+```
+
 ## Message Queue
 
 Stellar exposes messaging through one MQ client abstraction. The default adapter is `stellflow`, backed by `github.com/stellhub/stellflow-go-sdk`. You can switch to `kafka`, backed by Confluent Kafka Go SDK. The Kafka adapter depends on CGO/librdkafka; non-CGO builds return a clear configuration error.

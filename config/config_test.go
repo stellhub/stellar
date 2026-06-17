@@ -168,6 +168,20 @@ mq:
     poll_timeout: 1s
     observability:
       metrics: true
+config_center:
+  enabled: true
+  adapter: stellnula
+  endpoint: http://localhost:8060
+  namespace: platform
+  group: app
+  app_id: order-service
+  client_id: order-service-local
+  config_key: application.yaml
+  labels:
+    region: local
+  sources:
+    - config_key: application.yaml
+      format: yaml
 registry:
   enabled: true
   adapter: consul
@@ -339,6 +353,18 @@ opentelemetry:
 	if cfg.MQ.Consumer.Observability.Metrics == nil || !*cfg.MQ.Consumer.Observability.Metrics {
 		t.Fatalf("expected mq consumer metrics observability")
 	}
+	if cfg.ConfigCenter == nil || cfg.ConfigCenter.Adapter != "stellnula" || cfg.ConfigCenter.Endpoint != "http://localhost:8060" {
+		t.Fatalf("unexpected config center config %#v", cfg.ConfigCenter)
+	}
+	if len(cfg.ConfigCenter.Endpoints) != 1 || cfg.ConfigCenter.Endpoints[0] != "http://localhost:8060" {
+		t.Fatalf("unexpected config center endpoints %#v", cfg.ConfigCenter.Endpoints)
+	}
+	if cfg.ConfigCenter.AppID != "order-service" || cfg.ConfigCenter.ClientID != "order-service-local" || cfg.ConfigCenter.Env != "uat" {
+		t.Fatalf("unexpected config center identity %#v", cfg.ConfigCenter)
+	}
+	if cfg.ConfigCenter.Labels["region"] != "local" || len(cfg.ConfigCenter.Sources) != 1 {
+		t.Fatalf("unexpected config center labels/sources %#v", cfg.ConfigCenter)
+	}
 	if cfg.Registry == nil || cfg.Registry.Adapter != "consul" || cfg.Registry.Namespace != "platform" {
 		t.Fatalf("unexpected registry config %#v", cfg.Registry)
 	}
@@ -365,6 +391,57 @@ opentelemetry:
 	}
 	if cfg.Starter.OpenTelemetry == nil || !cfg.Starter.OpenTelemetry.Log.Enabled {
 		t.Fatalf("expected opentelemetry log starter")
+	}
+}
+
+func TestLoadBytesAndMergeConfig(t *testing.T) {
+	enabled := true
+	base := Config{
+		AppName:     "local-service",
+		Environment: EnvDev,
+		HTTP: HTTPConfig{
+			Server: &HTTPServerConfig{
+				Enabled: &enabled,
+				Port:    8080,
+			},
+		},
+		ConfigCenter: &ConfigCenterConfig{
+			Adapter:  "stellnula",
+			Endpoint: "http://localhost:8060",
+		},
+	}.Normalize()
+
+	remote, err := LoadBytes("remote-config.yaml", []byte(`
+http:
+  server:
+    port: 18080
+    adapter: chi
+mq:
+  adapter: kafka
+  brokers:
+    - localhost:9092
+  producer:
+    default_topic: orders.created
+`))
+	if err != nil {
+		t.Fatalf("load remote config bytes: %v", err)
+	}
+
+	merged := Merge(base, remote)
+	if merged.AppName != "local-service" {
+		t.Fatalf("expected local app name to be preserved, got %q", merged.AppName)
+	}
+	if merged.HTTP.Server == nil || merged.HTTP.Server.Enabled == nil || !*merged.HTTP.Server.Enabled {
+		t.Fatalf("expected local http enabled flag to be preserved, got %#v", merged.HTTP.Server)
+	}
+	if merged.HTTP.Server.Addr != ":18080" || merged.HTTP.Server.Adapter != "chi" {
+		t.Fatalf("unexpected merged http server %#v", merged.HTTP.Server)
+	}
+	if merged.MQ == nil || merged.MQ.Adapter != "kafka" || merged.MQ.Producer.DefaultTopic != "orders.created" {
+		t.Fatalf("unexpected merged mq config %#v", merged.MQ)
+	}
+	if merged.ConfigCenter == nil || merged.ConfigCenter.Adapter != "stellnula" {
+		t.Fatalf("expected local config center bootstrap to be preserved, got %#v", merged.ConfigCenter)
 	}
 }
 

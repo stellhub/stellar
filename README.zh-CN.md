@@ -648,6 +648,70 @@ Cache 创建/更新请求体：
 }
 ```
 
+## 配置中心
+
+Stellar 可以在其它 starter 创建之前，通过配置中心拉取远端 `application.yaml` 内容。默认 adapter 是 `stellnula`，底层使用 `github.com/stellhub/stellnula-go-sdk`。远端 YAML 会按同一套 Stellar 配置模型解析，并合并到本地 bootstrap 配置中。
+
+本地 `application.yml` 只需要保留连接配置中心的最小配置：
+
+```yaml
+config_center:
+  enabled: true
+  adapter: stellnula
+  endpoint: http://localhost:8060
+  app_id: orders-service
+  client_id: orders-service-local
+  env: dev
+  namespace: default
+  group: default
+  config_key: application.yaml
+  labels:
+    region: local
+```
+
+StellNula snapshot 中需要包含 key 或 id 为 `application.yaml` 的配置项，其内容可以是普通 Stellar 配置文件，例如：
+
+```yaml
+http:
+  server:
+    enabled: true
+    port: 18080
+mq:
+  enabled: true
+  adapter: stellflow
+  brokers:
+    - localhost:9092
+```
+
+切换到 Nacos 时只需要调整 `config_center.adapter` 和 Nacos 身份字段：
+
+```yaml
+config_center:
+  enabled: true
+  adapter: nacos
+  endpoint: http://localhost:8848
+  namespace: public
+  group: DEFAULT_GROUP
+  data_id: application.yaml
+```
+
+业务代码也可以访问配置中心抽象：
+
+```go
+configCenter, ok := app.ConfigCenter()
+if ok {
+	sources, err := configCenter.Load(ctx)
+	_ = sources
+	_ = err
+}
+```
+
+运行配置中心 simple 示例：
+
+```bash
+go run ./examples/config-center/simple
+```
+
 ## 消息队列
 
 Stellar 将消息队列抽象为统一 MQ client。默认 adapter 是 `stellflow`，底层使用 `github.com/stellhub/stellflow-go-sdk`；也可以切换到 `kafka`，底层使用 Confluent Kafka Go SDK。Kafka adapter 依赖 CGO/librdkafka，非 CGO 构建会返回明确的配置错误。
