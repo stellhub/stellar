@@ -1,0 +1,25 @@
+app:
+  name: stellar-opentelemetry-custom-metrics-example
+  env: dev
+  zone: local
+
+http:
+  server:
+    enabled: true
+    port: 18088
+    adapter: gin
+    observability:
+      trace: true
+      metrics: true
+      logs: true
+
+opentelemetry:
+  log:
+    enabled: false
+    output: stdout
+  trace: false
+  metrics: true
+  metrics_output: prometheus
+  metrics_path: /metrics
+  trace_output: none
+
