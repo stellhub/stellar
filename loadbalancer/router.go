@@ -62,6 +62,7 @@ func (r StaticRouter) Route(_ context.Context, request Request, endpoints []disc
 type GovernanceRouter struct {
 	Store    *governance.Store
 	Fallback Router
+	Metrics  *governance.Metrics
 }
 
 func NewGovernanceRouter(store *governance.Store, fallback Router) *GovernanceRouter {
@@ -79,6 +80,18 @@ func (r *GovernanceRouter) Route(ctx context.Context, request Request, endpoints
 		filter := filterFromSpec(rule.Spec)
 		filtered := filterEndpoints(endpoints, filter)
 		if len(filtered) > 0 {
+			if r.Metrics != nil {
+				r.Metrics.RecordRouteMatch(ctx, governance.MetricAttrs{
+					Adapter:   "stellorbit",
+					RuleKind:  string(rule.Kind),
+					RuleID:    rule.ID,
+					Transport: request.Protocol + ".client",
+					Service:   request.Service,
+					Method:    request.Method,
+					Resource:  request.Path,
+					Outcome:   "matched",
+				})
+			}
 			return filtered, nil
 		}
 	}

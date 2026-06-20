@@ -6,6 +6,7 @@ import (
 
 	"github.com/stellhub/stellar/config"
 	"github.com/stellhub/stellar/discovery"
+	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/loadbalancer"
 	grpcbalancer "google.golang.org/grpc/balancer"
 )
@@ -89,6 +90,28 @@ func TestLoadBalancerRequestUsesDiscoveryServiceForRouting(t *testing.T) {
 	}
 	if request.Attributes["grpc.service"] != "example.v1.UserAPI" {
 		t.Fatalf("expected grpc service attribute, got %#v", request.Attributes)
+	}
+}
+
+func TestGRPCClientInvocationUsesNamedService(t *testing.T) {
+	inv := grpcClientInvocation(context.Background(), "/example.v1.UserAPI/Get", nil, "user-service")
+
+	if inv.Service != "user-service" {
+		t.Fatalf("expected named client service, got %q", inv.Service)
+	}
+	if inv.Attributes["grpc.service"] != "example.v1.UserAPI" {
+		t.Fatalf("expected protobuf service attribute, got %#v", inv.Attributes)
+	}
+}
+
+func TestGRPCServerInvocationUsesConfiguredServiceName(t *testing.T) {
+	inv := grpcInvocation(interceptor.KindGRPCServer, "/example.v1.UserAPI/Get", nil, nil, "order-service")
+
+	if inv.Service != "order-service" {
+		t.Fatalf("expected configured service name, got %q", inv.Service)
+	}
+	if inv.Attributes["grpc.service"] != "example.v1.UserAPI" {
+		t.Fatalf("expected protobuf service attribute, got %#v", inv.Attributes)
 	}
 }
 

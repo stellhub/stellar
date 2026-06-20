@@ -255,6 +255,97 @@ type ConfigCenterSourceConfig struct {
 	Required  *bool  `yaml:"required"`
 }
 
+type GovernanceConfig struct {
+	Enabled             *bool                        `yaml:"enabled"`
+	Adapter             string                       `yaml:"adapter"`
+	Endpoint            string                       `yaml:"endpoint"`
+	APIKey              string                       `yaml:"api_key"`
+	AppID               string                       `yaml:"app_id"`
+	ClientID            string                       `yaml:"client_id"`
+	Env                 string                       `yaml:"env"`
+	Region              string                       `yaml:"region"`
+	Zone                string                       `yaml:"zone"`
+	Cluster             string                       `yaml:"cluster"`
+	WatchEnabled        *bool                        `yaml:"watch_enabled"`
+	FailFastOnBootstrap bool                         `yaml:"fail_fast_on_bootstrap"`
+	SyncInterval        string                       `yaml:"sync_interval"`
+	RequestTimeout      string                       `yaml:"request_timeout"`
+	SnapshotDirectory   string                       `yaml:"snapshot_directory"`
+	ConfigCenter        GovernanceConfigCenterConfig `yaml:"config_center"`
+	Route               GovernanceFeatureConfig      `yaml:"route"`
+	CircuitBreaker      GovernanceFeatureConfig      `yaml:"circuit_breaker"`
+	RateLimit           GovernanceRateLimitConfig    `yaml:"rate_limit"`
+	Auth                GovernanceAuthConfig         `yaml:"auth"`
+	Labels              map[string]string            `yaml:"labels"`
+	Properties          map[string]string            `yaml:"properties"`
+	Observability       ObservabilitySignalConfig    `yaml:"observability"`
+}
+
+type GovernanceConfigCenterConfig struct {
+	Adapter                  string            `yaml:"adapter"`
+	Endpoint                 string            `yaml:"endpoint"`
+	Endpoints                []string          `yaml:"endpoints"`
+	Namespace                string            `yaml:"namespace"`
+	Group                    string            `yaml:"group"`
+	Cluster                  string            `yaml:"cluster"`
+	Region                   string            `yaml:"region"`
+	Zone                     string            `yaml:"zone"`
+	Env                      string            `yaml:"env"`
+	AppID                    string            `yaml:"app_id"`
+	ClientID                 string            `yaml:"client_id"`
+	APIToken                 string            `yaml:"api_token"`
+	GRPCEndpoint             string            `yaml:"grpc_endpoint"`
+	GRPCPlaintext            *bool             `yaml:"grpc_plaintext"`
+	WatchEnabled             *bool             `yaml:"watch_enabled"`
+	FailFastOnBootstrap      bool              `yaml:"fail_fast_on_bootstrap"`
+	SnapshotDirectory        string            `yaml:"snapshot_directory"`
+	AcceptLargeFileReference bool              `yaml:"accept_large_file_reference"`
+	Labels                   map[string]string `yaml:"labels"`
+}
+
+type GovernanceFeatureConfig struct {
+	Enabled *bool `yaml:"enabled"`
+}
+
+type GovernanceRateLimitConfig struct {
+	Enabled     *bool                                `yaml:"enabled"`
+	Mode        string                               `yaml:"mode"`
+	Behavior    string                               `yaml:"behavior"`
+	Local       GovernanceLocalRateLimitConfig       `yaml:"local"`
+	Distributed GovernanceDistributedRateLimitConfig `yaml:"distributed"`
+}
+
+type GovernanceLocalRateLimitConfig struct {
+	Algorithm    string `yaml:"algorithm"`
+	DefaultRate  int64  `yaml:"default_rate"`
+	DefaultBurst int64  `yaml:"default_burst"`
+}
+
+type GovernanceDistributedRateLimitConfig struct {
+	Enabled            *bool  `yaml:"enabled"`
+	Adapter            string `yaml:"adapter"`
+	Address            string `yaml:"address"`
+	APIToken           string `yaml:"api_token"`
+	Timeout            string `yaml:"timeout"`
+	RetryDelay         string `yaml:"retry_delay"`
+	Fallback           string `yaml:"fallback"`
+	GRPCPlaintext      *bool  `yaml:"grpc_plaintext"`
+	MaxAcquireAttempts int    `yaml:"max_acquire_attempts"`
+}
+
+type GovernanceAuthConfig struct {
+	Enabled     *bool                     `yaml:"enabled"`
+	KeyProvider GovernanceAuthKeyProvider `yaml:"key_provider"`
+}
+
+type GovernanceAuthKeyProvider struct {
+	Adapter     string `yaml:"adapter"`
+	Endpoint    string `yaml:"endpoint"`
+	SPIFFEID    string `yaml:"spiffe_id"`
+	Token       string `yaml:"token"`
+	Placeholder bool   `yaml:"placeholder"`
+}
+
 type RegistryConfig struct {
 	Enabled           *bool                           `yaml:"enabled"`
 	Adapter           string                          `yaml:"adapter"`
@@ -338,6 +429,7 @@ type Config struct {
 	Cache        *CacheConfig
 	MQ           *MQConfig
 	ConfigCenter *ConfigCenterConfig
+	Governance   *GovernanceConfig
 	Registry     *RegistryConfig
 	Discovery    *DiscoveryConfig
 	Starter      StarterConfig
@@ -408,6 +500,7 @@ type fileConfig struct {
 	Cache         *CacheConfig                `yaml:"cache"`
 	MQ            *MQConfig                   `yaml:"mq"`
 	ConfigCenter  *ConfigCenterConfig         `yaml:"config_center"`
+	Governance    *GovernanceConfig           `yaml:"governance"`
 	Registry      *RegistryConfig             `yaml:"registry"`
 	Discovery     *DiscoveryConfig            `yaml:"discovery"`
 	OpenTelemetry *OpenTelemetryStarterConfig `yaml:"opentelemetry"`
@@ -450,6 +543,7 @@ func (e Environment) Valid() bool {
 }
 
 func (c Config) Normalize() Config {
+	environmentExplicit := strings.TrimSpace(string(c.Environment)) != ""
 	if c.Environment == "" {
 		c.Environment = EnvDev
 	}
@@ -583,6 +677,10 @@ func (c Config) Normalize() Config {
 			configCenter.Sources = append([]ConfigCenterSourceConfig(nil), configCenter.Sources...)
 		}
 		c.ConfigCenter = &configCenter
+	}
+	if c.Governance != nil {
+		governance := normalizeGovernanceConfig(*c.Governance, c, environmentExplicit)
+		c.Governance = &governance
 	}
 	if c.Registry != nil {
 		registry := *c.Registry
@@ -732,6 +830,217 @@ func normalizeDiscoveryConfig(value *DiscoveryConfig) *DiscoveryConfig {
 		discovery.Metadata = metadata
 	}
 	return &discovery
+}
+
+func normalizeGovernanceConfig(value GovernanceConfig, root Config, environmentExplicit bool) GovernanceConfig {
+	if strings.TrimSpace(value.Adapter) == "" {
+		value.Adapter = "stellorbit"
+	}
+	value.Adapter = strings.ToLower(strings.TrimSpace(value.Adapter))
+	if strings.TrimSpace(value.AppID) == "" {
+		value.AppID = root.AppName
+	}
+	if root.ConfigCenter != nil && strings.TrimSpace(value.AppID) == "" {
+		value.AppID = root.ConfigCenter.AppID
+	}
+	if strings.TrimSpace(value.ClientID) == "" && root.ConfigCenter != nil {
+		value.ClientID = root.ConfigCenter.ClientID
+	}
+	if strings.TrimSpace(value.ClientID) == "" {
+		value.ClientID = value.AppID
+	}
+	if strings.TrimSpace(value.ClientID) == "" {
+		value.ClientID = "stellar"
+	}
+	if strings.TrimSpace(value.Env) == "" && environmentExplicit {
+		value.Env = string(root.Environment)
+	}
+	if root.ConfigCenter != nil && strings.TrimSpace(value.Env) == "" {
+		value.Env = root.ConfigCenter.Env
+	}
+	if strings.TrimSpace(value.Env) == "" {
+		value.Env = string(root.Environment)
+	}
+	if strings.TrimSpace(value.Zone) == "" {
+		value.Zone = root.Zone
+	}
+	if root.ConfigCenter != nil {
+		if strings.TrimSpace(value.Region) == "" {
+			value.Region = root.ConfigCenter.Region
+		}
+		if strings.TrimSpace(value.Zone) == "" {
+			value.Zone = root.ConfigCenter.Zone
+		}
+		if strings.TrimSpace(value.Cluster) == "" {
+			value.Cluster = root.ConfigCenter.Cluster
+		}
+	}
+	if strings.TrimSpace(value.SyncInterval) == "" {
+		value.SyncInterval = "5s"
+	}
+	if strings.TrimSpace(value.RequestTimeout) == "" {
+		value.RequestTimeout = "10s"
+	}
+	if value.Labels != nil {
+		value.Labels = cloneStringMapConfig(value.Labels)
+	}
+	if value.Properties != nil {
+		value.Properties = cloneStringMapConfig(value.Properties)
+	}
+	value.ConfigCenter = normalizeGovernanceConfigCenter(value.ConfigCenter, value, root.ConfigCenter)
+	value.RateLimit = normalizeGovernanceRateLimit(value.RateLimit)
+	value.Auth = normalizeGovernanceAuth(value.Auth)
+	return value
+}
+
+func normalizeGovernanceConfigCenter(value GovernanceConfigCenterConfig, governance GovernanceConfig, fallback *ConfigCenterConfig) GovernanceConfigCenterConfig {
+	if strings.TrimSpace(value.Adapter) == "" {
+		value.Adapter = "stellnula"
+	}
+	value.Adapter = strings.ToLower(strings.TrimSpace(value.Adapter))
+	if fallback != nil {
+		if strings.TrimSpace(value.Endpoint) == "" {
+			value.Endpoint = fallback.Endpoint
+		}
+		if len(value.Endpoints) == 0 && len(fallback.Endpoints) > 0 {
+			value.Endpoints = append([]string(nil), fallback.Endpoints...)
+		}
+		if strings.TrimSpace(value.Env) == "" {
+			value.Env = fallback.Env
+		}
+		if strings.TrimSpace(value.AppID) == "" {
+			value.AppID = fallback.AppID
+		}
+		if strings.TrimSpace(value.ClientID) == "" {
+			value.ClientID = fallback.ClientID
+		}
+		if strings.TrimSpace(value.Region) == "" {
+			value.Region = fallback.Region
+		}
+		if strings.TrimSpace(value.Zone) == "" {
+			value.Zone = fallback.Zone
+		}
+		if strings.TrimSpace(value.Cluster) == "" {
+			value.Cluster = fallback.Cluster
+		}
+		if strings.TrimSpace(value.APIToken) == "" {
+			value.APIToken = fallback.APIToken
+		}
+		if strings.TrimSpace(value.GRPCEndpoint) == "" {
+			value.GRPCEndpoint = fallback.GRPCEndpoint
+		}
+		if value.GRPCPlaintext == nil {
+			value.GRPCPlaintext = fallback.GRPCPlaintext
+		}
+		if value.WatchEnabled == nil {
+			value.WatchEnabled = fallback.WatchEnabled
+		}
+		if !value.FailFastOnBootstrap {
+			value.FailFastOnBootstrap = fallback.FailFastOnBootstrap
+		}
+		if strings.TrimSpace(value.SnapshotDirectory) == "" {
+			value.SnapshotDirectory = fallback.SnapshotDirectory
+		}
+		if value.Labels == nil && fallback.Labels != nil {
+			value.Labels = cloneStringMapConfig(fallback.Labels)
+		}
+	}
+	if strings.TrimSpace(value.Endpoint) != "" && len(value.Endpoints) == 0 {
+		value.Endpoints = []string{value.Endpoint}
+	}
+	if len(value.Endpoints) > 0 {
+		value.Endpoints = append([]string(nil), value.Endpoints...)
+		if strings.TrimSpace(value.Endpoint) == "" {
+			value.Endpoint = value.Endpoints[0]
+		}
+	}
+	if strings.TrimSpace(value.Namespace) == "" {
+		value.Namespace = "governance"
+	}
+	if strings.TrimSpace(value.Group) == "" {
+		value.Group = "service-governance"
+	}
+	if strings.TrimSpace(value.AppID) == "" {
+		value.AppID = governance.AppID
+	}
+	if strings.TrimSpace(value.ClientID) == "" {
+		value.ClientID = governance.ClientID
+	}
+	if strings.TrimSpace(value.Env) == "" {
+		value.Env = governance.Env
+	}
+	if strings.TrimSpace(value.Region) == "" {
+		value.Region = governance.Region
+	}
+	if strings.TrimSpace(value.Zone) == "" {
+		value.Zone = governance.Zone
+	}
+	if strings.TrimSpace(value.Cluster) == "" {
+		value.Cluster = governance.Cluster
+	}
+	if value.WatchEnabled == nil {
+		value.WatchEnabled = governance.WatchEnabled
+	}
+	if value.WatchEnabled == nil {
+		enabled := true
+		value.WatchEnabled = &enabled
+	}
+	if !value.FailFastOnBootstrap {
+		value.FailFastOnBootstrap = governance.FailFastOnBootstrap
+	}
+	if strings.TrimSpace(value.SnapshotDirectory) == "" {
+		value.SnapshotDirectory = governance.SnapshotDirectory
+	}
+	if value.Labels == nil && governance.Labels != nil {
+		value.Labels = cloneStringMapConfig(governance.Labels)
+	} else if value.Labels != nil {
+		value.Labels = cloneStringMapConfig(value.Labels)
+	}
+	return value
+}
+
+func normalizeGovernanceRateLimit(value GovernanceRateLimitConfig) GovernanceRateLimitConfig {
+	if strings.TrimSpace(value.Mode) == "" {
+		value.Mode = "local"
+	}
+	value.Mode = strings.ToLower(strings.TrimSpace(value.Mode))
+	if strings.TrimSpace(value.Behavior) == "" {
+		value.Behavior = "reject"
+	}
+	value.Behavior = strings.ToLower(strings.TrimSpace(value.Behavior))
+	if strings.TrimSpace(value.Local.Algorithm) == "" {
+		value.Local.Algorithm = "token_bucket"
+	}
+	value.Local.Algorithm = strings.ToLower(strings.TrimSpace(value.Local.Algorithm))
+	if value.Local.DefaultRate <= 0 {
+		value.Local.DefaultRate = 100
+	}
+	if value.Local.DefaultBurst <= 0 {
+		value.Local.DefaultBurst = value.Local.DefaultRate
+	}
+	if strings.TrimSpace(value.Distributed.Adapter) == "" {
+		value.Distributed.Adapter = "stellpulsar"
+	}
+	value.Distributed.Adapter = strings.ToLower(strings.TrimSpace(value.Distributed.Adapter))
+	if strings.TrimSpace(value.Distributed.Fallback) == "" {
+		value.Distributed.Fallback = "fail_open"
+	}
+	value.Distributed.Fallback = strings.ToLower(strings.TrimSpace(value.Distributed.Fallback))
+	if strings.TrimSpace(value.Distributed.Timeout) == "" {
+		value.Distributed.Timeout = "100ms"
+	}
+	if strings.TrimSpace(value.Distributed.RetryDelay) == "" {
+		value.Distributed.RetryDelay = "50ms"
+	}
+	return value
+}
+
+func normalizeGovernanceAuth(value GovernanceAuthConfig) GovernanceAuthConfig {
+	if strings.TrimSpace(value.KeyProvider.Adapter) == "" {
+		value.KeyProvider.Adapter = "stellguard-agent"
+	}
+	value.KeyProvider.Adapter = strings.ToLower(strings.TrimSpace(value.KeyProvider.Adapter))
+	return value
 }
 
 func Load() (Config, error) {
@@ -936,6 +1245,7 @@ func loadConfigData(name string, data []byte, unsupportedMessage string) (Config
 		Cache:        raw.Cache,
 		MQ:           raw.MQ,
 		ConfigCenter: raw.ConfigCenter,
+		Governance:   raw.Governance,
 		Registry:     raw.Registry,
 		Discovery:    raw.Discovery,
 		Starter: StarterConfig{

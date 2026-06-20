@@ -18,6 +18,8 @@ import (
 	configcenterclient "github.com/stellhub/stellar/configcenter"
 	"github.com/stellhub/stellar/discovery"
 	"github.com/stellhub/stellar/governance"
+	governanceratelimit "github.com/stellhub/stellar/governance/ratelimit"
+	governanceorbit "github.com/stellhub/stellar/governance/stellorbit"
 	"github.com/stellhub/stellar/interceptor"
 	"github.com/stellhub/stellar/lifecycle"
 	"github.com/stellhub/stellar/loadbalancer"
@@ -72,6 +74,22 @@ type MQConsumerConfig = config.MQConsumerConfig
 type ConfigCenterConfig = config.ConfigCenterConfig
 
 type ConfigCenterSourceConfig = config.ConfigCenterSourceConfig
+
+type GovernanceConfig = config.GovernanceConfig
+
+type GovernanceConfigCenterConfig = config.GovernanceConfigCenterConfig
+
+type GovernanceFeatureConfig = config.GovernanceFeatureConfig
+
+type GovernanceRateLimitConfig = config.GovernanceRateLimitConfig
+
+type GovernanceLocalRateLimitConfig = config.GovernanceLocalRateLimitConfig
+
+type GovernanceDistributedRateLimitConfig = config.GovernanceDistributedRateLimitConfig
+
+type GovernanceAuthConfig = config.GovernanceAuthConfig
+
+type GovernanceAuthKeyProvider = config.GovernanceAuthKeyProvider
 
 type RegistryConfig = config.RegistryConfig
 
@@ -207,6 +225,18 @@ type GovernanceRuleKind = governance.RuleKind
 
 type GovernanceScope = governance.Scope
 
+type GovernanceMetrics = governance.Metrics
+
+type GovernanceClient = governanceorbit.Client
+
+type GovernanceLimiter = governanceratelimit.Limiter
+
+type GovernanceLimitRequest = governanceratelimit.LimitRequest
+
+type GovernanceLimitDecision = governanceratelimit.LimitDecision
+
+type GovernanceLimitBehavior = governanceratelimit.LimitBehavior
+
 type HealthStatus = boot.HealthStatus
 
 type HealthCheck = boot.HealthCheck
@@ -264,6 +294,12 @@ const (
 	GovernanceRuleRetry            = governance.RuleKindRetry
 	GovernanceRuleSigning          = governance.RuleKindSigning
 	GovernanceRuleQuota            = governance.RuleKindQuota
+)
+
+const (
+	GovernanceStellOrbitName  = governanceorbit.DefaultName
+	GovernanceRateLimitReject = governanceratelimit.LimitBehaviorReject
+	GovernanceRateLimitBlock  = governanceratelimit.LimitBehaviorBlock
 )
 
 var ErrAppNameRequired = boot.ErrAppNameRequired
@@ -353,6 +389,10 @@ func NewObservability(options ...ObservabilityOption) *ObservabilityProvider {
 
 func NewGovernanceStore(initial ...GovernanceSnapshot) *GovernanceStore {
 	return governance.NewStore(initial...)
+}
+
+func NewGovernanceMetrics(provider *ObservabilityProvider) *GovernanceMetrics {
+	return governance.NewMetrics(provider)
 }
 
 func NewCache(adapter CacheAdapter, provider *ObservabilityProvider) (*Cache, error) {

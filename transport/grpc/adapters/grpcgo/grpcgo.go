@@ -24,6 +24,7 @@ type Adapter struct {
 	options      []grpc.ServerOption
 	observer     *observability.Provider
 	interceptors *interceptor.Registry
+	serviceName  string
 	services     []stellargrpc.Service
 	listener     net.Listener
 	errCh        chan error
@@ -59,6 +60,12 @@ func WithServerInterceptors(registry *interceptor.Registry) Option {
 	}
 }
 
+func WithServiceName(name string) Option {
+	return func(adapter *Adapter) {
+		adapter.serviceName = strings.TrimSpace(name)
+	}
+}
+
 func (a *Adapter) Name() string {
 	return Name
 }
@@ -85,6 +92,12 @@ func (a *Adapter) UseInterceptors(registry *interceptor.Registry) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.interceptors = registry
+}
+
+func (a *Adapter) UseServiceName(name string) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.serviceName = strings.TrimSpace(name)
 }
 
 func (a *Adapter) Register(service stellargrpc.Service) error {
@@ -172,8 +185,8 @@ func (a *Adapter) buildServerLocked() {
 	unaryInterceptors := []grpc.UnaryServerInterceptor{a.observer.UnaryServerInterceptor()}
 	streamInterceptors := []grpc.StreamServerInterceptor{a.observer.StreamServerInterceptor()}
 	if a.interceptors != nil {
-		unaryInterceptors = append(unaryInterceptors, unaryServerInterceptor(a.interceptors))
-		streamInterceptors = append(streamInterceptors, streamServerInterceptor(a.interceptors))
+		unaryInterceptors = append(unaryInterceptors, unaryServerInterceptor(a.interceptors, a.serviceName))
+		streamInterceptors = append(streamInterceptors, streamServerInterceptor(a.interceptors, a.serviceName))
 	}
 	options = append(options,
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
@@ -187,9 +200,9 @@ func (a *Adapter) buildServerLocked() {
 	}
 }
 
-func unaryServerInterceptor(registry *interceptor.Registry) grpc.UnaryServerInterceptor {
+func unaryServerInterceptor(registry *interceptor.Registry, serviceName string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-		inv := grpcInvocation(interceptor.KindGRPCServer, info.FullMethod, headersFromIncomingContext(ctx), info)
+		inv := grpcInvocation(interceptor.KindGRPCServer, info.FullMethod, headersFromIncomingContext(ctx), info, serviceName)
 		chain := registry.Chain(interceptor.KindGRPCServer, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
 			return handler(ctx, payload)
 		})
@@ -197,10 +210,10 @@ func unaryServerInterceptor(registry *interceptor.Registry) grpc.UnaryServerInte
 	}
 }
 
-func streamServerInterceptor(registry *interceptor.Registry) grpc.StreamServerInterceptor {
+func streamServerInterceptor(registry *interceptor.Registry, serviceName string) grpc.StreamServerInterceptor {
 	return func(srv any, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		ctx := stream.Context()
-		inv := grpcInvocation(interceptor.KindGRPCServer, info.FullMethod, headersFromIncomingContext(ctx), info)
+		inv := grpcInvocation(interceptor.KindGRPCServer, info.FullMethod, headersFromIncomingContext(ctx), info, serviceName)
 		chain := registry.Chain(interceptor.KindGRPCServer, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
 			serverStream, ok := payload.(grpc.ServerStream)
 			if !ok {
@@ -222,8 +235,12 @@ func (s *serverStreamWithContext) Context() context.Context {
 	return s.ctx
 }
 
-func grpcInvocation(kind interceptor.Kind, fullMethod string, headers interceptor.Header, raw any) *interceptor.Invocation {
-	service, method := splitFullMethod(fullMethod)
+func grpcInvocation(kind interceptor.Kind, fullMethod string, headers interceptor.Header, raw any, serviceName string) *interceptor.Invocation {
+	grpcService, method := splitFullMethod(fullMethod)
+	service := strings.TrimSpace(serviceName)
+	if service == "" {
+		service = grpcService
+	}
 	return &interceptor.Invocation{
 		Kind:      kind,
 		Protocol:  "grpc",
@@ -233,7 +250,10 @@ func grpcInvocation(kind interceptor.Kind, fullMethod string, headers intercepto
 		Path:      fullMethod,
 		Target:    fullMethod,
 		Headers:   headers,
-		Raw:       raw,
+		Attributes: map[string]any{
+			"grpc.service": grpcService,
+		},
+		Raw: raw,
 	}
 }
 

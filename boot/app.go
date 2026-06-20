@@ -20,25 +20,27 @@ import (
 )
 
 type App struct {
-	mu                sync.Mutex
-	config            config.Config
-	logger            *slog.Logger
-	registry          *Registry
-	governance        *governance.Store
-	interceptors      *interceptor.Registry
-	lifecycle         *lifecycle.Manager
-	observability     *observability.Provider
-	httpRouter        *boothttp.Router
-	httpAdapter       boothttp.Adapter
-	rpcAdapter        RPCAdapter
-	modules           []Module
-	starters          []Starter
-	activeStarters    []Starter
-	transports        []Transport
-	startedModules    []Module
-	startedStarters   []Starter
-	startedTransports []Transport
-	started           bool
+	mu                     sync.Mutex
+	config                 config.Config
+	logger                 *slog.Logger
+	registry               *Registry
+	governance             *governance.Store
+	governanceRouteEnabled bool
+	governanceMetrics      *governance.Metrics
+	interceptors           *interceptor.Registry
+	lifecycle              *lifecycle.Manager
+	observability          *observability.Provider
+	httpRouter             *boothttp.Router
+	httpAdapter            boothttp.Adapter
+	rpcAdapter             RPCAdapter
+	modules                []Module
+	starters               []Starter
+	activeStarters         []Starter
+	transports             []Transport
+	startedModules         []Module
+	startedStarters        []Starter
+	startedTransports      []Transport
+	started                bool
 }
 
 func New(cfg config.Config, options ...Option) *App {
@@ -46,14 +48,16 @@ func New(cfg config.Config, options ...Option) *App {
 	observer := observability.New(observability.WithServiceName(cfg.AppName))
 	interceptors := interceptor.NewRegistry(interceptor.WithDefaultFramework())
 	app := &App{
-		config:        cfg,
-		logger:        slog.New(slog.NewJSONHandler(os.Stdout, nil)),
-		registry:      NewRegistry(),
-		governance:    governance.NewStore(),
-		interceptors:  interceptors,
-		lifecycle:     lifecycle.NewManager(),
-		observability: observer,
-		httpRouter:    boothttp.NewRouter(boothttp.WithObservability(observer), boothttp.WithInterceptors(interceptors)),
+		config:                 cfg,
+		logger:                 slog.New(slog.NewJSONHandler(os.Stdout, nil)),
+		registry:               NewRegistry(),
+		governance:             governance.NewStore(),
+		governanceRouteEnabled: true,
+		governanceMetrics:      governance.NewMetrics(observer),
+		interceptors:           interceptors,
+		lifecycle:              lifecycle.NewManager(),
+		observability:          observer,
+		httpRouter:             boothttp.NewRouter(boothttp.WithObservability(observer), boothttp.WithInterceptors(interceptors), boothttp.WithServiceName(cfg.AppName)),
 	}
 	app.registerManagementRoutes()
 	for _, option := range options {
@@ -77,6 +81,7 @@ func WithObservability(provider *observability.Provider) Option {
 			return
 		}
 		app.observability = provider
+		app.governanceMetrics = governance.NewMetrics(provider)
 		app.httpRouter.SetObservability(provider)
 		if app.rpcAdapter != nil {
 			if consumer, ok := app.rpcAdapter.(observabilityConsumer); ok {

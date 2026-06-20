@@ -29,6 +29,7 @@ type clientConfig struct {
 	interceptors   *interceptor.Registry
 	router         loadbalancer.Router
 	defaultTimeout time.Duration
+	clientName     string
 }
 
 func WithDialOption(options ...grpc.DialOption) ClientOption {
@@ -48,6 +49,12 @@ func WithClientObservability(provider *observability.Provider) ClientOption {
 func WithInterceptors(registry *interceptor.Registry) ClientOption {
 	return func(cfg *clientConfig) {
 		cfg.interceptors = registry
+	}
+}
+
+func WithClientName(name string) ClientOption {
+	return func(cfg *clientConfig) {
+		cfg.clientName = strings.TrimSpace(name)
 	}
 }
 
@@ -87,8 +94,8 @@ func NewClientConn(ctx context.Context, target string, options ...ClientOption) 
 		streamInterceptors = append(streamInterceptors, defaultTimeoutStreamInterceptor(cfg.defaultTimeout))
 	}
 	if cfg.interceptors != nil {
-		unaryInterceptors = append(unaryInterceptors, unaryClientInterceptor(cfg.interceptors))
-		streamInterceptors = append(streamInterceptors, streamClientInterceptor(cfg.interceptors))
+		unaryInterceptors = append(unaryInterceptors, unaryClientInterceptor(cfg.interceptors, cfg.clientName))
+		streamInterceptors = append(streamInterceptors, streamClientInterceptor(cfg.interceptors, cfg.clientName))
 	}
 	dialOptions = append(dialOptions,
 		grpc.WithChainUnaryInterceptor(unaryInterceptors...),
@@ -148,6 +155,9 @@ func NewNamedClientConnFromConfig(ctx context.Context, cfg *stellarconfig.GRPCCl
 	}
 	if provider != nil {
 		cfgOptions = append(cfgOptions, WithClientObservability(provider))
+	}
+	if name != "" {
+		cfgOptions = append(cfgOptions, WithClientName(name))
 	}
 	cfgOptions = append(cfgOptions, options...)
 	conn, err := NewClientConn(ctx, target, cfgOptions...)
@@ -268,9 +278,9 @@ func boolValue(value *bool, fallback bool) bool {
 	return *value
 }
 
-func unaryClientInterceptor(registry *interceptor.Registry) grpc.UnaryClientInterceptor {
+func unaryClientInterceptor(registry *interceptor.Registry, serviceName string) grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req any, reply any, conn *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		inv := grpcClientInvocation(ctx, method, conn)
+		inv := grpcClientInvocation(ctx, method, conn, serviceName)
 		ctx = loadbalancer.ContextWithRequest(ctx, loadBalancerRequestFromInvocation(inv))
 		chain := registry.Chain(interceptor.KindGRPCClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
 			return nil, invoker(ctx, method, payload, reply, conn, opts...)
@@ -280,9 +290,9 @@ func unaryClientInterceptor(registry *interceptor.Registry) grpc.UnaryClientInte
 	}
 }
 
-func streamClientInterceptor(registry *interceptor.Registry) grpc.StreamClientInterceptor {
+func streamClientInterceptor(registry *interceptor.Registry, serviceName string) grpc.StreamClientInterceptor {
 	return func(ctx context.Context, desc *grpc.StreamDesc, conn *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		inv := grpcClientInvocation(ctx, method, conn)
+		inv := grpcClientInvocation(ctx, method, conn, serviceName)
 		ctx = loadbalancer.ContextWithRequest(ctx, loadBalancerRequestFromInvocation(inv))
 		chain := registry.Chain(interceptor.KindGRPCClient, func(ctx context.Context, _ *interceptor.Invocation, payload any) (any, error) {
 			return streamer(ctx, desc, conn, method, opts...)
@@ -299,8 +309,12 @@ func streamClientInterceptor(registry *interceptor.Registry) grpc.StreamClientIn
 	}
 }
 
-func grpcClientInvocation(ctx context.Context, fullMethod string, conn *grpc.ClientConn) *interceptor.Invocation {
-	service, method := splitFullMethod(fullMethod)
+func grpcClientInvocation(ctx context.Context, fullMethod string, conn *grpc.ClientConn, serviceName string) *interceptor.Invocation {
+	grpcService, method := splitFullMethod(fullMethod)
+	service := strings.TrimSpace(serviceName)
+	if service == "" {
+		service = grpcService
+	}
 	target := ""
 	if conn != nil {
 		target = conn.Target()
@@ -314,7 +328,10 @@ func grpcClientInvocation(ctx context.Context, fullMethod string, conn *grpc.Cli
 		Path:      fullMethod,
 		Target:    target,
 		Headers:   headersFromOutgoingContext(ctx),
-		Raw:       conn,
+		Attributes: map[string]any{
+			"grpc.service": grpcService,
+		},
+		Raw: conn,
 	}
 }
 

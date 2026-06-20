@@ -54,6 +54,35 @@ func TestRouterUsesInterceptorsBeforeRouteMiddleware(t *testing.T) {
 	}
 }
 
+func TestRouterInvocationUsesConfiguredServiceName(t *testing.T) {
+	registry := interceptor.NewRegistry()
+	var service string
+	var operation string
+	registry.Register(interceptor.Business(interceptor.KindHTTPServer, "capture", 10, interceptor.New("capture", func(ctx context.Context, inv *interceptor.Invocation, req any, next interceptor.Handler) (any, error) {
+		service = inv.Service
+		operation = inv.Operation
+		return next(ctx, inv, req)
+	})))
+	router := stellarhttp.NewRouter(stellarhttp.WithInterceptors(registry), stellarhttp.WithServiceName("order-service"))
+	router.GET("/orders", func(context.Context, *stellarhttp.Request) (*stellarhttp.Response, error) {
+		return stellarhttp.JSON(stdhttp.StatusOK, pingResponse{Message: "ok"}), nil
+	})
+
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(stdhttp.MethodGet, "/orders", nil)
+
+	adapter := ginadapter.New("")
+	adapter.UseRouter(router)
+	adapter.Handler().ServeHTTP(recorder, request)
+
+	if service != "order-service" {
+		t.Fatalf("expected service name, got %q", service)
+	}
+	if operation != "GET /orders" {
+		t.Fatalf("expected operation route, got %q", operation)
+	}
+}
+
 func TestTypedRouteRunsBusinessInterceptorsAfterBinding(t *testing.T) {
 	registry := interceptor.NewRegistry()
 	order := make([]string, 0, 4)

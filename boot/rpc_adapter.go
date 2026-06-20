@@ -30,13 +30,19 @@ func WithRPCServer(addr string) Option {
 
 func (a *App) NewGRPCClient(ctx context.Context, name string) (*grpc.ClientConn, string, error) {
 	cfg := a.Config()
+	var router loadbalancer.Router
+	if a.governanceRouteEnabled {
+		governanceRouter := loadbalancer.NewGovernanceRouter(a.governance, nil)
+		governanceRouter.Metrics = a.governanceMetrics
+		router = governanceRouter
+	}
 	return grpcgoadapter.NewNamedClientConnFromConfig(
 		ctx,
 		grpcClientConfigWithDiscovery(cfg),
 		name,
 		a.observability,
 		grpcgoadapter.WithInterceptors(a.interceptors),
-		grpcgoadapter.WithRouter(loadbalancer.NewGovernanceRouter(a.governance, nil)),
+		grpcgoadapter.WithRouter(router),
 	)
 }
 
@@ -49,6 +55,9 @@ func (a *App) setRPCAdapter(adapter bootgrpc.Adapter, registerTransport bool) {
 	}
 	if consumer, ok := adapter.(interceptorConsumer); ok {
 		consumer.UseInterceptors(a.interceptors)
+	}
+	if consumer, ok := adapter.(serviceNameConsumer); ok {
+		consumer.UseServiceName(a.config.AppName)
 	}
 	a.rpcAdapter = adapter
 	if registerTransport {

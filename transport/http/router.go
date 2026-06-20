@@ -77,6 +77,7 @@ type Snapshot struct {
 	Routes       []Route
 	Observer     *observability.Provider
 	Interceptors *interceptor.Registry
+	ServiceName  string
 }
 
 type GroupOption func(*groupConfig)
@@ -93,6 +94,7 @@ type Router struct {
 	errorHandler ErrorHandler
 	observer     *observability.Provider
 	interceptors *interceptor.Registry
+	serviceName  string
 }
 
 type groupConfig struct {
@@ -125,6 +127,12 @@ func WithInterceptors(registry *interceptor.Registry) Option {
 		if registry != nil {
 			router.interceptors = registry
 		}
+	}
+}
+
+func WithServiceName(name string) Option {
+	return func(router *Router) {
+		router.serviceName = strings.TrimSpace(name)
 	}
 }
 
@@ -220,7 +228,7 @@ func (r *Router) Snapshot() Snapshot {
 		routes[i] = route
 		routes[i].Middlewares = append([]middleware.Middleware(nil), route.Middlewares...)
 	}
-	return Snapshot{Middlewares: mws, Routes: routes, Observer: root.observer, Interceptors: root.interceptors}
+	return Snapshot{Middlewares: mws, Routes: routes, Observer: root.observer, Interceptors: root.interceptors, ServiceName: root.serviceName}
 }
 
 func (r *Router) ErrorHandler() ErrorHandler {
@@ -300,16 +308,24 @@ func Execute(ctx context.Context, request *Request, snapshot Snapshot, route Rou
 		}
 		return chain(ctx, httpReq)
 	}
+	operation := request.Method + " " + route.Path
+	service := strings.TrimSpace(snapshot.ServiceName)
+	if service == "" {
+		service = operation
+	}
 	inv := &interceptor.Invocation{
 		Kind:      interceptor.KindHTTPServer,
 		Protocol:  "http",
-		Service:   request.Method + " " + route.Path,
-		Operation: request.Method + " " + route.Path,
+		Service:   service,
+		Operation: operation,
 		Method:    request.Method,
 		Path:      route.Path,
 		Target:    request.Path,
 		Headers:   interceptor.HeaderFromHTTP(request.Header),
-		Raw:       request.Raw,
+		Attributes: map[string]any{
+			"http.route": route.Path,
+		},
+		Raw: request.Raw,
 	}
 	request.Invocation = inv
 	if snapshot.Interceptors != nil {
@@ -363,6 +379,13 @@ func (r *Router) SetInterceptors(registry *interceptor.Registry) {
 	if registry != nil {
 		root.interceptors = registry
 	}
+}
+
+func (r *Router) SetServiceName(name string) {
+	root := r.root()
+	root.mu.Lock()
+	defer root.mu.Unlock()
+	root.serviceName = strings.TrimSpace(name)
 }
 
 func EmptyBinder[Req any]() Binder[Req] {

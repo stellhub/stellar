@@ -47,6 +47,9 @@ func NewConfigured(ctx context.Context, cfg config.Config, options ...Option) (*
 	baseOptions = append(baseOptions, options...)
 	app := New(cfg, baseOptions...)
 	configureConfigCenterStarter(app, configCenter)
+	if err := configureGovernanceStarter(ctx, app, cfg); err != nil {
+		return nil, err
+	}
 
 	metricsHandler := observer.MetricsHandler()
 	httpStarted := configureHTTPStarter(app, cfg)

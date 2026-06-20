@@ -32,12 +32,18 @@ func (a *App) Handler() stdhttp.Handler {
 
 func (a *App) NewHTTPClient(name string) (*stdhttp.Client, string, error) {
 	cfg := a.Config()
+	var router loadbalancer.Router
+	if a.governanceRouteEnabled {
+		governanceRouter := loadbalancer.NewGovernanceRouter(a.governance, nil)
+		governanceRouter.Metrics = a.governanceMetrics
+		router = governanceRouter
+	}
 	return boothttp.NewNamedClientFromConfig(
 		httpClientConfigWithDiscovery(cfg),
 		name,
 		a.observability,
 		boothttp.WithClientInterceptors(a.interceptors),
-		boothttp.WithClientRouter(loadbalancer.NewGovernanceRouter(a.governance, nil)),
+		boothttp.WithClientRouter(router),
 	)
 }
 

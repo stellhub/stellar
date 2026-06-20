@@ -21,6 +21,8 @@ require (
 	github.com/stellhub/stellflow-go-sdk v0.0.2
 	github.com/stellhub/stellmap-go-sdk v0.1.0
 	github.com/stellhub/stellnula-go-sdk v0.0.1
+	github.com/stellhub/stellorbit-go-sdk v0.0.1
+	github.com/stellhub/stellpulsar-go-sdk v0.0.1
 	go.etcd.io/etcd/api/v3 v3.6.12
 	go.etcd.io/etcd/client/v3 v3.6.12
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.69.0

@@ -74,3 +74,7 @@ type observabilityConsumer interface {
 type interceptorConsumer interface {
 	UseInterceptors(*interceptor.Registry)
 }
+
+type serviceNameConsumer interface {
+	UseServiceName(string)
+}

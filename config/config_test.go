@@ -394,6 +394,45 @@ opentelemetry:
 	}
 }
 
+func TestNormalizeGovernanceEnvInheritsConfigCenterWhenAppEnvOmitted(t *testing.T) {
+	cfg := Config{
+		AppName: "order-service",
+		ConfigCenter: &ConfigCenterConfig{
+			Endpoint: "http://localhost:8060",
+			Env:      "uat",
+		},
+		Governance: &GovernanceConfig{
+			ConfigCenter: GovernanceConfigCenterConfig{
+				Endpoint: "http://localhost:8060",
+			},
+		},
+	}.Normalize()
+
+	if cfg.Governance == nil || cfg.Governance.Env != "uat" {
+		t.Fatalf("expected governance env to inherit config center env, got %#v", cfg.Governance)
+	}
+}
+
+func TestNormalizeGovernanceEnvPrefersExplicitAppEnv(t *testing.T) {
+	cfg := Config{
+		AppName:     "order-service",
+		Environment: EnvProd,
+		ConfigCenter: &ConfigCenterConfig{
+			Endpoint: "http://localhost:8060",
+			Env:      "uat",
+		},
+		Governance: &GovernanceConfig{
+			ConfigCenter: GovernanceConfigCenterConfig{
+				Endpoint: "http://localhost:8060",
+			},
+		},
+	}.Normalize()
+
+	if cfg.Governance == nil || cfg.Governance.Env != string(EnvProd) {
+		t.Fatalf("expected governance env to prefer app env, got %#v", cfg.Governance)
+	}
+}
+
 func TestLoadBytesAndMergeConfig(t *testing.T) {
 	enabled := true
 	base := Config{
@@ -491,6 +530,73 @@ opentelemetry:
 	}
 	if cfg.Starter.OpenTelemetry.Log.FileName != "app.log" {
 		t.Fatalf("unexpected log file name %q", cfg.Starter.OpenTelemetry.Log.FileName)
+	}
+}
+
+func TestLoadGovernanceConfigDefaultsAndInheritance(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "application.yaml")
+	content := `
+app:
+  name: order-service
+  env: uat
+  zone: zone-a
+config_center:
+  enabled: true
+  adapter: stellnula
+  endpoint: http://localhost:8060
+  app_id: order-service
+  client_id: order-service-local
+  env: uat
+  labels:
+    region: local
+governance:
+  enabled: true
+  route:
+    enabled: true
+  rate_limit:
+    enabled: true
+    distributed:
+      enabled: true
+      address: 127.0.0.1:19091
+  auth:
+    enabled: true
+    key_provider:
+      placeholder: true
+`
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+
+	cfg, err := LoadFile(path)
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+	if cfg.Governance == nil {
+		t.Fatalf("expected governance config")
+	}
+	if cfg.Governance.Adapter != "stellorbit" {
+		t.Fatalf("unexpected governance adapter %q", cfg.Governance.Adapter)
+	}
+	if cfg.Governance.AppID != "order-service" || cfg.Governance.ClientID != "order-service-local" {
+		t.Fatalf("unexpected governance identity %#v", cfg.Governance)
+	}
+	if cfg.Governance.ConfigCenter.Adapter != "stellnula" || cfg.Governance.ConfigCenter.Endpoint != "http://localhost:8060" {
+		t.Fatalf("unexpected governance config center %#v", cfg.Governance.ConfigCenter)
+	}
+	if cfg.Governance.ConfigCenter.Namespace != "governance" || cfg.Governance.ConfigCenter.Group != "service-governance" {
+		t.Fatalf("unexpected governance rule scope %#v", cfg.Governance.ConfigCenter)
+	}
+	if cfg.Governance.RateLimit.Mode != "local" || cfg.Governance.RateLimit.Behavior != "reject" {
+		t.Fatalf("unexpected rate limit defaults %#v", cfg.Governance.RateLimit)
+	}
+	if cfg.Governance.RateLimit.Local.DefaultRate != 100 || cfg.Governance.RateLimit.Local.DefaultBurst != 100 {
+		t.Fatalf("unexpected local rate limit defaults %#v", cfg.Governance.RateLimit.Local)
+	}
+	if cfg.Governance.RateLimit.Distributed.Adapter != "stellpulsar" || cfg.Governance.RateLimit.Distributed.Fallback != "fail_open" {
+		t.Fatalf("unexpected distributed rate limit defaults %#v", cfg.Governance.RateLimit.Distributed)
+	}
+	if cfg.Governance.Auth.KeyProvider.Adapter != "stellguard-agent" || !cfg.Governance.Auth.KeyProvider.Placeholder {
+		t.Fatalf("unexpected auth key provider %#v", cfg.Governance.Auth.KeyProvider)
 	}
 }
 

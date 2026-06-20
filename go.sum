@@ -395,6 +395,10 @@ github.com/stellhub/stellmap-go-sdk v0.1.0 h1:upPwI14SMvQdraSzAMc0zEKgT9LgSNkF62
 github.com/stellhub/stellmap-go-sdk v0.1.0/go.mod h1:8vynoUd3yZpSJMcMbBjztqAd1o836vliF0DneOfX3X8=
 github.com/stellhub/stellnula-go-sdk v0.0.1 h1:SPN7szEFsZqopPiPo9qNS+4CGJ1sA8FENxnvqr3FRC0=
 github.com/stellhub/stellnula-go-sdk v0.0.1/go.mod h1:ROEl0YDrhv+agSVebF21dFOQcfz3TFBwxtDoEn9wv84=
+github.com/stellhub/stellorbit-go-sdk v0.0.1 h1:tjIafEbm4mFJC5INZc+jQ7GJQ5DiigB26zudTq8E4qU=
+github.com/stellhub/stellorbit-go-sdk v0.0.1/go.mod h1:xBjy71VB7ansMp5TqXxTOAH+j9FmRNbs4MTu0OyLo4Y=
+github.com/stellhub/stellpulsar-go-sdk v0.0.1 h1:xL1d0ta43J99BorGqEUTdcZ/mrocnD9XCgtcC1/SRx8=
+github.com/stellhub/stellpulsar-go-sdk v0.0.1/go.mod h1:W5FdaVSn5ODy7W0XMHDqG00vRAyDtmtI4xKb98sIFRg=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.2.0/go.mod h1:qt09Ya8vawLte6SNmTgCsAVtYtaKzEcn8ATUoHMkEqE=
