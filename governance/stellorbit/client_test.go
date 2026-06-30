@@ -51,6 +51,66 @@ func TestConvertRouteRuleFlattensFilterSpec(t *testing.T) {
 	}
 }
 
+func TestConvertRateLimitRulePromotesEnterpriseSpec(t *testing.T) {
+	rule := orbitgovernance.Rule{
+		RuleID:        "limit-v2",
+		RuleName:      "limit-v2",
+		ConfigKey:     "governance/order-service/limit",
+		RuleType:      orbitgovernance.RuleTypeRateLimit,
+		TargetService: "order-service",
+		Status:        orbitgovernance.RuleStatusActive,
+		Content: map[string]any{
+			"scope": map[string]any{
+				"transport": "http.server",
+			},
+			"limit": map[string]any{
+				"limitMode":         "HEADER",
+				"limitType":         "HEADER",
+				"limitAlgorithm":    "TOKEN_BUCKET",
+				"trafficProtocol":   "HTTP",
+				"executionLocation": "APPLICATION",
+				"coordinationMode":  "GLOBAL_QUOTA",
+				"quotaConfig": map[string]any{
+					"limit": 10,
+				},
+				"burstConfig": map[string]any{
+					"capacity": 20,
+				},
+				"keyExtractor": map[string]any{
+					"keys": []any{map[string]any{
+						"name":      "tenant",
+						"source":    "HEADER",
+						"key":       "x-tenant-id",
+						"normalize": "LOWERCASE",
+					}},
+				},
+				"fallbackPolicy": map[string]any{
+					"failPolicy": "FAIL_CLOSED",
+				},
+			},
+		},
+	}
+
+	converted, ok := ConvertRule(rule)
+	if !ok {
+		t.Fatalf("expected rule to be converted")
+	}
+	if converted.Kind != governance.RuleKindRateLimit || converted.Scope.Transport != "http.server" {
+		t.Fatalf("unexpected converted rule %#v", converted)
+	}
+	if converted.Spec["limitMode"] != "HEADER" || converted.Spec["coordinationMode"] != "GLOBAL_QUOTA" || converted.Spec["mode"] != "distributed" {
+		t.Fatalf("expected enterprise rate limit fields, got %#v", converted.Spec)
+	}
+	extractor, ok := converted.Spec["keyExtractor"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected keyExtractor map, got %#v", converted.Spec["keyExtractor"])
+	}
+	keys, ok := extractor["keys"].([]any)
+	if !ok || len(keys) != 1 {
+		t.Fatalf("expected keyExtractor keys, got %#v", extractor)
+	}
+}
+
 func TestSyncStoreReturnsErrorForMissingTarget(t *testing.T) {
 	_, err := SyncStore(context.Background(), governance.NewStore(), nil)
 	if !errors.Is(err, ErrSyncTargetRequired) {

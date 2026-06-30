@@ -21,8 +21,8 @@ require (
 	github.com/stellhub/stellflow-go-sdk v0.0.2
 	github.com/stellhub/stellmap-go-sdk v0.1.0
 	github.com/stellhub/stellnula-go-sdk v0.0.1
-	github.com/stellhub/stellorbit-go-sdk v0.0.1
-	github.com/stellhub/stellpulsar-go-sdk v0.0.1
+	github.com/stellhub/stellorbit-go-sdk v0.0.2
+	github.com/stellhub/stellpulsar-go-sdk v0.0.2
 	go.etcd.io/etcd/api/v3 v3.6.12
 	go.etcd.io/etcd/client/v3 v3.6.12
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.69.0
@@ -128,6 +128,7 @@ require (
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.59.0 // indirect
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.20.1 // indirect
+	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect

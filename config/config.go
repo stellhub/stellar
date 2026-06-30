@@ -313,12 +313,29 @@ type GovernanceRateLimitConfig struct {
 	Behavior    string                               `yaml:"behavior"`
 	Local       GovernanceLocalRateLimitConfig       `yaml:"local"`
 	Distributed GovernanceDistributedRateLimitConfig `yaml:"distributed"`
+	Headers     []GovernanceHeaderRateLimitConfig    `yaml:"headers"`
 }
 
 type GovernanceLocalRateLimitConfig struct {
 	Algorithm    string `yaml:"algorithm"`
 	DefaultRate  int64  `yaml:"default_rate"`
 	DefaultBurst int64  `yaml:"default_burst"`
+}
+
+type GovernanceHeaderRateLimitConfig struct {
+	Enabled          *bool  `yaml:"enabled"`
+	Name             string `yaml:"name"`
+	Transport        string `yaml:"transport"`
+	Header           string `yaml:"header"`
+	Service          string `yaml:"service"`
+	Method           string `yaml:"method"`
+	Path             string `yaml:"path"`
+	Rate             int64  `yaml:"rate"`
+	Burst            int64  `yaml:"burst"`
+	Behavior         string `yaml:"behavior"`
+	CoordinationMode string `yaml:"coordination_mode"`
+	Required         *bool  `yaml:"required"`
+	Normalize        string `yaml:"normalize"`
 }
 
 type GovernanceDistributedRateLimitConfig struct {
@@ -1031,6 +1048,37 @@ func normalizeGovernanceRateLimit(value GovernanceRateLimitConfig) GovernanceRat
 	}
 	if strings.TrimSpace(value.Distributed.RetryDelay) == "" {
 		value.Distributed.RetryDelay = "50ms"
+	}
+	if len(value.Headers) > 0 {
+		headers := make([]GovernanceHeaderRateLimitConfig, 0, len(value.Headers))
+		for _, header := range value.Headers {
+			header.Transport = strings.ToLower(strings.TrimSpace(header.Transport))
+			if header.Transport == "" {
+				header.Transport = "http"
+			}
+			header.Header = strings.TrimSpace(header.Header)
+			header.Name = strings.TrimSpace(header.Name)
+			header.Service = strings.TrimSpace(header.Service)
+			header.Method = strings.TrimSpace(header.Method)
+			header.Path = strings.TrimSpace(header.Path)
+			if header.Rate <= 0 {
+				header.Rate = value.Local.DefaultRate
+			}
+			if header.Burst <= 0 {
+				header.Burst = header.Rate
+			}
+			header.Behavior = strings.ToLower(strings.TrimSpace(header.Behavior))
+			if header.Behavior == "" {
+				header.Behavior = value.Behavior
+			}
+			header.CoordinationMode = strings.ToLower(strings.TrimSpace(header.CoordinationMode))
+			if header.CoordinationMode == "" {
+				header.CoordinationMode = "local_only"
+			}
+			header.Normalize = strings.ToLower(strings.TrimSpace(header.Normalize))
+			headers = append(headers, header)
+		}
+		value.Headers = headers
 	}
 	return value
 }

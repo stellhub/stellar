@@ -78,6 +78,10 @@ func validateGovernanceConfig(cfg *config.GovernanceConfig) error {
 }
 
 func newGovernanceRateLimitStarter(ctx context.Context, cfg *config.GovernanceConfig, orbitClient *governanceorbit.Client, metrics *governance.Metrics) (*governanceRateLimitStarter, error) {
+	configRules, err := configuredHeaderRateLimitRules(cfg)
+	if err != nil {
+		return nil, err
+	}
 	var pulsarClient stellpulsar.StellpulsarClient
 	var distributed governanceLimiter
 	if distributedRateLimitClientEnabled(cfg.RateLimit) {
@@ -123,6 +127,7 @@ func newGovernanceRateLimitStarter(ctx context.Context, cfg *config.GovernanceCo
 		metrics:      metrics,
 		distributed:  distributed,
 		pulsarClient: pulsarClient,
+		configRules:  configRules,
 	}, nil
 }
 
@@ -154,12 +159,22 @@ func (s *stellorbitGovernanceStarter) Start(ctx context.Context) error {
 		s.recordSync(ctx, "error")
 		return err
 	}
-	if err := s.sync(ctx); err != nil {
+	if err := s.initialSyncError(s.sync(ctx)); err != nil {
 		return err
 	}
 	loopCtx, cancel := context.WithCancel(context.Background())
 	s.cancel = cancel
 	go s.syncLoop(loopCtx)
+	return nil
+}
+
+func (s *stellorbitGovernanceStarter) initialSyncError(err error) error {
+	if err == nil {
+		return nil
+	}
+	if s.cfg.FailFastOnBootstrap {
+		return err
+	}
 	return nil
 }
 
@@ -261,6 +276,7 @@ type governanceRateLimitStarter struct {
 	metrics      *governance.Metrics
 	distributed  governanceLimiter
 	pulsarClient stellpulsar.StellpulsarClient
+	configRules  []governance.Rule
 }
 
 func (s *governanceRateLimitStarter) Name() string {
@@ -274,6 +290,7 @@ func (s *governanceRateLimitStarter) Condition(StarterContext) bool {
 func (s *governanceRateLimitStarter) Init(_ context.Context, app *App) error {
 	app.interceptors.Register(governanceratelimit.Definitions(governanceratelimit.PolicyOptions{
 		Store:               app.governance,
+		Rules:               s.configRules,
 		Metrics:             s.metrics,
 		Distributed:         s.distributed,
 		DefaultMode:         s.cfg.Mode,
@@ -352,14 +369,164 @@ func enabledByDefault(value *bool) bool {
 }
 
 func distributedRateLimitClientEnabled(cfg config.GovernanceRateLimitConfig) bool {
+	if rateLimitDefaultModeRequiresDistributed(cfg.Mode) {
+		return true
+	}
+	for _, header := range cfg.Headers {
+		if enabledByDefault(header.Enabled) && headerRateLimitRequiresDistributed(header) {
+			return true
+		}
+	}
 	if cfg.Distributed.Enabled != nil {
 		return *cfg.Distributed.Enabled
 	}
 	if strings.TrimSpace(cfg.Distributed.Address) != "" {
 		return true
 	}
-	return strings.EqualFold(strings.ReplaceAll(cfg.Mode, "_", "-"), "distributed") ||
-		strings.EqualFold(strings.ReplaceAll(cfg.Mode, "_", "-"), "global-sync") ||
-		strings.EqualFold(strings.ReplaceAll(cfg.Mode, "_", "-"), "global-quota") ||
-		strings.EqualFold(strings.ReplaceAll(cfg.Mode, "_", "-"), "edge")
+	return false
+}
+
+func configuredHeaderRateLimitRules(cfg *config.GovernanceConfig) ([]governance.Rule, error) {
+	if cfg == nil || len(cfg.RateLimit.Headers) == 0 {
+		return nil, nil
+	}
+	rules := make([]governance.Rule, 0, len(cfg.RateLimit.Headers))
+	for index, header := range cfg.RateLimit.Headers {
+		if !enabledByDefault(header.Enabled) {
+			continue
+		}
+		if strings.TrimSpace(header.Header) == "" {
+			return nil, fmt.Errorf("stellar: governance.rate_limit.headers[%d].header is required", index)
+		}
+		transport := header.Transport
+		if transport == "" {
+			transport = "http"
+		}
+		transport = strings.ToLower(strings.TrimSpace(transport))
+		if transport != "http" && transport != "grpc" {
+			return nil, fmt.Errorf("stellar: governance.rate_limit.headers[%d].transport must be http or grpc", index)
+		}
+		source := "HEADER"
+		limitType := "HEADER"
+		if transport == "grpc" {
+			source = "GRPC_METADATA"
+			limitType = "GRPC_METADATA"
+		}
+		coordinationMode, err := rateLimitCoordinationMode(header.CoordinationMode)
+		if err != nil {
+			return nil, fmt.Errorf("stellar: governance.rate_limit.headers[%d].coordination_mode: %w", index, err)
+		}
+		ruleID := header.Name
+		if ruleID == "" {
+			ruleID = "config-header-" + transport + "-" + normalizeRuleIDToken(header.Header)
+		}
+		rate := header.Rate
+		if rate <= 0 {
+			rate = cfg.RateLimit.Local.DefaultRate
+		}
+		burst := header.Burst
+		if burst <= 0 {
+			burst = rate
+		}
+		spec := map[string]any{
+			"limitMode":         "HEADER",
+			"limit_mode":        "header",
+			"limitType":         limitType,
+			"trafficProtocol":   strings.ToUpper(transport),
+			"executionLocation": "APPLICATION",
+			"coordinationMode":  coordinationMode,
+			"mode":              rateLimitModeForCoordination(coordinationMode),
+			"resource":          "header:" + transport + ":" + strings.ToLower(strings.TrimSpace(header.Header)),
+			"rate":              rate,
+			"burst":             burst,
+			"behavior":          header.Behavior,
+			"quotaConfig": map[string]any{
+				"limit": rate,
+			},
+			"burstConfig": map[string]any{
+				"capacity": burst,
+			},
+			"keyExtractor": map[string]any{
+				"keys": []any{map[string]any{
+					"name":      strings.TrimSpace(header.Header),
+					"source":    source,
+					"key":       strings.TrimSpace(header.Header),
+					"required":  headerRequired(header.Required),
+					"normalize": header.Normalize,
+				}},
+			},
+		}
+		rules = append(rules, governance.Rule{
+			ID:      ruleID,
+			Kind:    governance.RuleKindRateLimit,
+			Enabled: true,
+			Scope: governance.Scope{
+				Transport: transport + ".server",
+				Service:   header.Service,
+				Method:    header.Method,
+				Path:      header.Path,
+			},
+			Priority: 1000 + index,
+			Version:  "application.yaml",
+			Metadata: map[string]string{
+				"source": "application.yaml",
+			},
+			Spec: spec,
+		})
+	}
+	return rules, nil
+}
+
+func rateLimitCoordinationMode(value string) (string, error) {
+	switch strings.ToLower(strings.ReplaceAll(strings.TrimSpace(value), "_", "-")) {
+	case "", "local", "local-only":
+		return "LOCAL_ONLY", nil
+	case "distributed", "global", "global-sync":
+		return "GLOBAL_SYNC", nil
+	case "global-quota":
+		return "GLOBAL_QUOTA", nil
+	default:
+		return "", fmt.Errorf("unsupported coordination mode %q", value)
+	}
+}
+
+func rateLimitModeForCoordination(value string) string {
+	mode, err := rateLimitCoordinationMode(value)
+	if err != nil {
+		return ""
+	}
+	switch mode {
+	case "GLOBAL_SYNC", "GLOBAL_QUOTA":
+		return "distributed"
+	default:
+		return "local"
+	}
+}
+
+func rateLimitDefaultModeRequiresDistributed(value string) bool {
+	switch strings.ToLower(strings.ReplaceAll(strings.TrimSpace(value), "_", "-")) {
+	case "distributed", "global", "global-sync", "global-quota", "edge":
+		return true
+	default:
+		return false
+	}
+}
+
+func headerRateLimitRequiresDistributed(header config.GovernanceHeaderRateLimitConfig) bool {
+	return rateLimitModeForCoordination(header.CoordinationMode) == "distributed"
+}
+
+func normalizeRuleIDToken(value string) string {
+	value = strings.ToLower(strings.TrimSpace(value))
+	replacer := strings.NewReplacer(".", "-", "_", "-", ":", "-", "/", "-", " ", "-")
+	value = replacer.Replace(value)
+	value = strings.Trim(value, "-")
+	if value == "" {
+		return "header"
+	}
+	return value
+}
+
+func headerRequired(value *bool) bool {
+	return value != nil && *value
 }

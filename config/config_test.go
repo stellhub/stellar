@@ -555,6 +555,12 @@ governance:
     enabled: true
   rate_limit:
     enabled: true
+    headers:
+      - transport: grpc
+        header: x-tenant-id
+        rate: 5
+        coordination_mode: global_quota
+        normalize: lowercase
     distributed:
       enabled: true
       address: 127.0.0.1:19091
@@ -594,6 +600,16 @@ governance:
 	}
 	if cfg.Governance.RateLimit.Distributed.Adapter != "stellpulsar" || cfg.Governance.RateLimit.Distributed.Fallback != "fail_open" {
 		t.Fatalf("unexpected distributed rate limit defaults %#v", cfg.Governance.RateLimit.Distributed)
+	}
+	if len(cfg.Governance.RateLimit.Headers) != 1 {
+		t.Fatalf("expected one header rate limit, got %#v", cfg.Governance.RateLimit.Headers)
+	}
+	headerLimit := cfg.Governance.RateLimit.Headers[0]
+	if headerLimit.Transport != "grpc" || headerLimit.Header != "x-tenant-id" || headerLimit.Rate != 5 || headerLimit.Burst != 5 {
+		t.Fatalf("unexpected header rate limit %#v", headerLimit)
+	}
+	if headerLimit.CoordinationMode != "global_quota" || headerLimit.Behavior != "reject" || headerLimit.Normalize != "lowercase" {
+		t.Fatalf("unexpected normalized header rate limit %#v", headerLimit)
 	}
 	if cfg.Governance.Auth.KeyProvider.Adapter != "stellguard-agent" || !cfg.Governance.Auth.KeyProvider.Placeholder {
 		t.Fatalf("unexpected auth key provider %#v", cfg.Governance.Auth.KeyProvider)

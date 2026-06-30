@@ -109,6 +109,9 @@ func ConvertRule(rule orbitgovernance.Rule) (governance.Rule, bool) {
 		return governance.Rule{}, false
 	}
 	spec := normalizeSpec(rule.Content)
+	if kind == governance.RuleKindRateLimit {
+		mergeRateLimitSpec(spec, rule)
+	}
 	metadata := map[string]string{
 		"source":         "stellorbit",
 		"config_key":     rule.ConfigKey,
@@ -184,6 +187,100 @@ func normalizeSpec(content map[string]any) map[string]any {
 	promoteMap(spec, "limit")
 	promoteMap(spec, "rateLimit")
 	return spec
+}
+
+func mergeRateLimitSpec(spec map[string]any, rule orbitgovernance.Rule) {
+	rateLimit, ok := rule.RateLimit()
+	if !ok {
+		return
+	}
+	putSpecString(spec, "limitMode", string(rateLimit.LimitMode))
+	putSpecString(spec, "limit_mode", string(rateLimit.LimitMode))
+	putSpecString(spec, "limitType", string(rateLimit.LimitType))
+	putSpecString(spec, "limitAlgorithm", string(rateLimit.LimitAlgorithm))
+	putSpecString(spec, "trafficProtocol", string(rateLimit.TrafficProtocol))
+	putSpecString(spec, "executionLocation", string(rateLimit.ExecutionLocation))
+	putSpecString(spec, "coordinationMode", string(rateLimit.EffectiveCoordinationMode()))
+	putSpecString(spec, "coordination_mode", string(rateLimit.EffectiveCoordinationMode()))
+	putSpecString(spec, "enforcementMode", string(rateLimit.EnforcementMode))
+	if _, exists := spec["mode"]; !exists {
+		switch rateLimit.EffectiveCoordinationMode() {
+		case orbitgovernance.CoordinationModeGlobalQuota, orbitgovernance.CoordinationModeGlobalSync:
+			spec["mode"] = "distributed"
+		case orbitgovernance.CoordinationModeLocalOnly:
+			spec["mode"] = "local"
+		}
+	}
+	putSpecMap(spec, "targetSelector", rateLimit.TargetSelector)
+	putSpecMap(spec, "requestMatcher", rateLimit.RequestMatcher)
+	putSpecMap(spec, "keyExtractor", keyExtractorSpec(rateLimit.KeyExtractor))
+	putSpecSlice(spec, "dimensions", rateLimit.Dimensions)
+	putSpecMap(spec, "quotaConfig", rateLimit.QuotaConfig)
+	putSpecMap(spec, "windowConfig", rateLimit.WindowConfig)
+	putSpecMap(spec, "burstConfig", rateLimit.BurstConfig)
+	putSpecMap(spec, "concurrencyConfig", rateLimit.ConcurrencyConfig)
+	putSpecMap(spec, "hotspotConfig", rateLimit.HotspotConfig)
+	putSpecMap(spec, "customPolicy", rateLimit.CustomPolicy)
+	putSpecMap(spec, "modelLimitConfig", rateLimit.ModelLimitConfig)
+	putSpecMap(spec, "fallbackPolicy", rateLimit.FallbackPolicy)
+	putSpecMap(spec, "responsePolicy", rateLimit.ResponsePolicy)
+	putSpecMap(spec, "observabilityConfig", rateLimit.ObservabilityConfig)
+	putSpecMap(spec, "shadowConfig", rateLimit.ShadowConfig)
+}
+
+func keyExtractorSpec(extractor orbitgovernance.KeyExtractor) map[string]any {
+	spec := copyAnyMap(extractor.Raw)
+	keys := make([]any, 0, len(extractor.Keys))
+	for _, key := range extractor.Keys {
+		item := copyAnyMap(key.Raw)
+		putSpecString(item, "name", key.Name)
+		putSpecString(item, "source", string(key.Source))
+		putSpecString(item, "key", key.Key)
+		if key.Required {
+			item["required"] = true
+		}
+		if key.Normalize != nil {
+			item["normalize"] = deepCopyAny(key.Normalize)
+		}
+		if key.Unsupported {
+			item["unsupported"] = true
+		}
+		keys = append(keys, item)
+	}
+	if len(keys) > 0 {
+		spec["keys"] = keys
+	}
+	return spec
+}
+
+func putSpecString(spec map[string]any, key string, value string) {
+	if strings.TrimSpace(value) == "" {
+		return
+	}
+	if existing := stringValue(spec[key]); existing != "" {
+		return
+	}
+	spec[key] = value
+}
+
+func putSpecMap(spec map[string]any, key string, value map[string]any) {
+	if len(value) == 0 {
+		return
+	}
+	if len(mapValue(spec[key])) > 0 {
+		return
+	}
+	spec[key] = copyAnyMap(value)
+}
+
+func putSpecSlice(spec map[string]any, key string, value []any) {
+	if len(value) == 0 {
+		return
+	}
+	if existing, ok := spec[key].([]any); ok && len(existing) > 0 {
+		return
+	}
+	spec[key] = deepCopyAny(value)
 }
 
 func promoteMap(target map[string]any, key string) {

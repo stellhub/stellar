@@ -127,6 +127,17 @@ governance:
       api_token: local-dev-token
       timeout: 100ms
       fallback: fail_open
+    headers:
+      - transport: http
+        header: x-tenant-id
+        rate: 100
+        burst: 200
+        behavior: reject
+        coordination_mode: local_only
+      - transport: grpc
+        header: x-api-key
+        rate: 1000
+        coordination_mode: global_quota
   auth:
     enabled: false
     key_provider:
@@ -145,8 +156,11 @@ governance:
 - `governance.app_id` 为空时继承 `app.name` 或 `config_center.app_id`。
 - `governance.env` 为空时继承 `app.env` 或 `config_center.env`。
 - `governance.enabled=true` 且无法解析配置中心 endpoint 时启动失败。
-- `governance.rate_limit.mode=distributed` 时必须配置 `governance.rate_limit.distributed.address`。
+- `governance.rate_limit.mode=distributed`，或任意 header 规则声明 `coordination_mode=global_sync/global_quota` 时，必须配置 `governance.rate_limit.distributed.address`。
+- `governance.rate_limit.headers` 可以声明 HTTP header 或 gRPC metadata 维度的限流规则，框架会转换为 `limitMode=HEADER` 的服务端 admission 规则并自动加入拦截器。
 - `governance.auth.enabled=true` 且 key provider 仍为占位实现时默认启动失败，除非显式配置 `placeholder: true`。
+
+新版 StellOrbit 限流规则将业务限流模式和协调方式拆开：`limitMode` 表示 QPS、HEADER、HOT_KEY、QUOTA、CONCURRENCY、MODEL 等业务类型；`coordinationMode` 表示 `LOCAL_ONLY`、`GLOBAL_SYNC` 或 `GLOBAL_QUOTA`。Stellar 选择本地限流桶或 StellPulsar 分布式限流时只依据 `coordinationMode`，不再把旧版 `LOCAL/GLOBAL` 当作 `limitMode` 使用。
 
 ## Starter 拆分
 
@@ -279,9 +293,15 @@ rate_limit rule
 
 - `mode=distributed` 时由 `stellpulsar-go-sdk` 负责远端配额判定。
 - StellPulsar client 需要接收 StellOrbit client 或规则 provider，以便和远端限流规则保持 revision/checksum 对齐。
-- quota key 应由上层规则统一计算，避免 SDK adapter 各自重复拼接。
+- 本地限流由 Stellar 根据 key extractor 计算 quota key；分布式限流将请求 attributes 传给 StellPulsar，由 `stellpulsar-go-sdk` 依据 StellOrbit 规则中的 key extractor 解析 quota key。
 - 远端超时、拓扑不可用、非 owner 响应等情况按 `fallback` 处理。
 - 默认 fallback 建议为 `fail_open`，强保护场景可以配置为 `fail_closed`。
+
+限流模式支持边界：
+
+- `coordinationMode=GLOBAL_SYNC/GLOBAL_QUOTA` 的规则交给 StellPulsar，支持 StellOrbit 新版 `QPS`、`HEADER`、`HOT_KEY`、`CUSTOM`、`QUOTA`、`BANDWIDTH`、`CONCURRENCY`、`CONNECTION`、`MODEL` 等模式。
+- `coordinationMode=LOCAL_ONLY` 使用 Stellar 进程内 token bucket，支持 `QPS`、`HEADER`、`HOT_KEY`、`QUOTA`、`BANDWIDTH` 和按 cost 计数的 `MODEL`。
+- `CUSTOM`、`CONCURRENCY`、`CONNECTION` 没有本地 token bucket 等价语义；如果误配为本地模式，框架按规则的 `fallbackPolicy.failPolicy` 决定 fail-open 或 fail-closed。
 
 ### 否决式与阻塞式
 
